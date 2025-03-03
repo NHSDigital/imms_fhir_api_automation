@@ -24,25 +24,23 @@ steps:
     behave -f allure_behave.formatter:AllureFormatter -o output/allure-results
   displayName: 'Run Behave tests with Allure formatter'
 
-# - task: PublishTestResults@2
-#   inputs:
-#     testResultsFormat: 'JUnit'
-#     testResultsFiles: 'output/allure-results/*.xml'
-#     mergeTestResults: true
-#   displayName: 'Publish test results'
-
-- task: AllureReport@1
-  inputs:
-    resultsDirectory: 'output/allure-results'
-    targetDirectory: 'output/allure-reports'
+- script: |
+    allure generate output/allure-results -o output/allure-report
   displayName: 'Generate Allure report'
+
+
+# - task: AllureReport@1
+#   inputs:
+#     resultsDirectory: 'output/allure-results'
+#     targetDirectory: 'output/allure-report'
+#   displayName: 'Generate Allure report'
 
 - script: |
     mkdir -p $(Build.ArtifactStagingDirectory)/allure-report
-    cp -r allure-report/* $(Build.ArtifactStagingDirectory)/allure-report
+    cp -r output/allure-report/* $(Build.ArtifactStagingDirectory)/allure-report
   displayName: 'Copy Allure report to staging directory'
 
-- task: PublishBuildArtifacts@2
+- task: PublishBuildArtifacts@1
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)/allure-report'
     artifactName: 'AllureReport'

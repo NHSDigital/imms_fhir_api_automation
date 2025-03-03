@@ -12,19 +12,27 @@ Install Libraries
 
 Reporting
 -----------------------------------------------------
-1. To create the json report - 
+To create the json report - 
     pip install allure-behave
 
 Command - 
-    behave -f allure_behave.formatter:AllureFormatter -o FolderNameWhereReportWillBeSaved
+    behave -f allure_behave.formatter:AllureFormatter -o output/allure-results
 
 To convert the json file to html in Allure Reporting
 ----------------------------------------------------
-2. Dwnload the latest release allure-2.32.2.zip Allure Package from https://github.com/allure-framework/allure2/releases
-   Unzip the folder and add the bin directory to system variable path
+Dwnload the latest release allure-2.32.2.zip Allure Package from https://github.com/allure-framework/allure2/releases
+Unzip the folder and add the bin directory to system variable path
 
- Command to convert the json reports to html - 
-    allure serve FolderNameWhereReportIsSaved
+Command to convert the json reports to html - 
+    allure serve output/allure-results
+
+Command to generate the html report manually if BROWSE does not work - 
+allure generate output/allure-results -o output/allure-report
+
+To Open the index.html file
+----------------------------------------------------
+cd /output/allure-report
+python3 -m http.server 8000
 
 CSV file
 ----------------------------------------------------
