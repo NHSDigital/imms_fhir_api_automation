@@ -1,10 +1,10 @@
 from utilities.config import *
 from utilities.resources import apiResources
 
-configUrl = getConfigParser()
+config = getConfigParser()
 
 def searchURL():
-    url = configUrl['API']['baseUrl'] + apiResources.createEndpoint
+    url = config['API']['baseUrl'] + apiResources.createEndpoint
     return url
 
 # def searchPaylod():
@@ -27,15 +27,15 @@ def searchContextParam(parameters):
         DateTo = row['DateTo']
 
     if (DateFrom == "None" or DateFrom == "") and (DateTo == "None" or DateTo == ""):
-        searchParams={'patient.identifier': configUrl['API']['FHIRNHSNumber'] + NHSNumber, '-immunization.target' : DiseaseType, '_include' : Include}
+        searchParams={'patient.identifier': config['API']['FHIRNHSNumber'] + NHSNumber, '-immunization.target' : DiseaseType, '_include' : Include}
     else:
-        searchParams={'patient.identifier': configUrl['API']['FHIRNHSNumber'] + NHSNumber, '-immunization.target' : DiseaseType, '_include' : Include, '-date.from' : DateFrom, '-date.to' : DateTo}
+        searchParams={'patient.identifier': config['API']['FHIRNHSNumber'] + NHSNumber, '-immunization.target' : DiseaseType, '_include' : Include, '-date.from' : DateFrom, '-date.to' : DateTo}
 
     return searchParams
 
 def searchPaylodParam(patID,immTgt,incl,dtF,dtT):
     
-    patID = configUrl['API']['FHIRNHSNumber'] + patID
+    patID = config['API']['FHIRNHSNumber'] + patID
     searchParams={'patient.identifier': patID, '-immunization.target' : immTgt, '_include' : incl, '-date.from' : dtF, '-date.to' : dtT}
     return searchParams
 
@@ -46,7 +46,7 @@ def searchGETHeaders():
         'X-Correlation-ID': corID,
         'X-Request-ID': reqID,
         'Accept': 'application/fhir+json',
-        'Authorization': 'Bearer Iy3KWA2Z3coGgRO8LCT2Ai9eJ9IJ'
+        'Authorization': 'Bearer GicWTvnJEcg48zGdnB8u5ertUe78'
         }
     return searchHeaders
 
