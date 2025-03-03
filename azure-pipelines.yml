@@ -1,0 +1,49 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+    addToPath: true
+
+- script: |
+    python -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
+    pip install requests
+    pip install git+https://github.com/behave/behave
+    pip install allure-behave    
+  displayName: 'Install dependencies'
+
+- script: |
+    source venv/bin/activate
+    behave -f allure_behave.formatter:AllureFormatter -o output/allure-results
+  displayName: 'Run Behave tests with Allure formatter'
+
+# - task: PublishTestResults@2
+#   inputs:
+#     testResultsFormat: 'JUnit'
+#     testResultsFiles: 'output/allure-results/*.xml'
+#     mergeTestResults: true
+#   displayName: 'Publish test results'
+
+- task: AllureReport@1
+  inputs:
+    resultsDirectory: 'output/allure-results'
+    targetDirectory: 'output/allure-reports'
+  displayName: 'Generate Allure report'
+
+- script: |
+    mkdir -p $(Build.ArtifactStagingDirectory)/allure-report
+    cp -r allure-report/* $(Build.ArtifactStagingDirectory)/allure-report
+  displayName: 'Copy Allure report to staging directory'
+
+- task: PublishBuildArtifacts@2
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)/allure-report'
+    artifactName: 'AllureReport'
+  displayName: 'Publish Allure report artifact'
