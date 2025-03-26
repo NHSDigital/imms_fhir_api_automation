@@ -1,5 +1,6 @@
 from utilities.config import *
 from utilities.resources import apiResources
+import uuid
 
 config = getConfigParser()
 
@@ -39,14 +40,14 @@ def searchPaylodParam(patID,immTgt,incl,dtF,dtT):
     searchParams={'patient.identifier': patID, '-immunization.target' : immTgt, '_include' : incl, '-date.from' : dtF, '-date.to' : dtT}
     return searchParams
 
-def searchGETHeaders():
-    corID = "bc6A545e-028C-2aE4-0acF-38aDD0134f9f"
-    reqID = "bc6A545e-028C-2aE4-0acF-38aDD0134f9f"
+def searchGETHeaders(token):
+    corID = str(uuid.uuid4())
+    reqID = str(uuid.uuid4())
     searchHeaders = {
         'X-Correlation-ID': corID,
         'X-Request-ID': reqID,
         'Accept': 'application/fhir+json',
-        'Authorization': 'Bearer GicWTvnJEcg48zGdnB8u5ertUe78'
+        'Authorization': 'Bearer ' + token
         }
     return searchHeaders
 

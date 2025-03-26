@@ -8,7 +8,7 @@ Install Libraries
 1. pip install requests
 2. pip install git+https://github.com/behave/behave
 3. pip install allure-behave
-4. 
+4. npm install papaparse
 
 Reporting
 -----------------------------------------------------
