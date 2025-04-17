@@ -9,6 +9,8 @@ Install Libraries
 2. pip install git+https://github.com/behave/behave
 3. pip install allure-behave
 4. npm install papaparse
+5. pip install selenium
+6. pip install boto3
 
 Reporting
 -----------------------------------------------------
@@ -27,11 +29,14 @@ Command to convert the json reports to html -
     allure serve output/allure-results
 
 Command to generate the html report manually if BROWSE does not work - 
-allure generate output/allure-results -o output/allure-report
+allure generate output/allure-results -o output/allure-report --clean
+
+Start a http server to view the results - 
+python -m http.server
 
 To Open the index.html file
 ----------------------------------------------------
-cd /output/allure-report
+cd output/allure-report
 python3 -m http.server 8000
 
 CSV file

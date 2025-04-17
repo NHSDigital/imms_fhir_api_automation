@@ -4,20 +4,14 @@ import uuid
 
 config = getConfigParser()
 
-def searchURL():
-    url = config['API']['baseUrl'] + apiResources.createEndpoint
+def searchGETURL():
+    url = config['API']['baseUrl'] + apiResources.searchGETEndpoint
     return url
 
-# def searchPaylod():
-    
-#     patID = "https://fhir.nhs.uk/Id/nhs-number|9449310610"
-#     immTgt = "COVID19, FLU, RSV"
-#     incl = "Immunization:patient"
-#     dtF = None
-#     dtT = None
+def searchPOSTURL():
+    url = config['API']['baseUrl'] + apiResources.searchPOSTEndpoint
+    return url
 
-#     searchParams={'patient.identifier': patID, '-immunization.target' : immTgt, '_include' : incl, '-date.from' : dtF, '-date.to' : dtT}
-#     return searchParams
 
 def searchContextParam(parameters):
     for row in parameters.table:
@@ -35,10 +29,40 @@ def searchContextParam(parameters):
     return searchParams
 
 def searchPaylodParam(patID,immTgt,incl,dtF,dtT):
+
+    searchParams = {}
+
+    if patID.lower() not in ["none", "null", ""]:
+        searchParams["patient.identifier"] = config['API']['FHIRNHSNumber'] + patID
+    if immTgt.lower() not in ["none", "null", ""]:
+        searchParams["-immunization.target"] = immTgt
+    if incl.lower() not in ["none", "null", ""]:
+        searchParams["_include"] = incl
+    if dtF.lower() not in ["none", "null", ""]:
+        searchParams["-date.from"] = dtF
+    if dtT.lower() not in ["none", "null", ""]:
+        searchParams["-date.to"] = dtT
     
-    patID = config['API']['FHIRNHSNumber'] + patID
-    searchParams={'patient.identifier': patID, '-immunization.target' : immTgt, '_include' : incl, '-date.from' : dtF, '-date.to' : dtT}
     return searchParams
+
+
+def searchPaylodPatIdParam(patID,NhsNo,immTgt,incl,dtF,dtT):
+
+    searchParams = {}
+
+    if patID.lower() not in ["none", "null", ""] and NhsNo.lower() not in ["none", "null", ""]:
+        searchParams["patient.identifier"] = patID + "|" + NhsNo
+    if immTgt.lower() not in ["none", "null", ""]:
+        searchParams["-immunization.target"] = immTgt
+    if incl.lower() not in ["none", "null", ""]:
+        searchParams["_include"] = incl
+    if dtF.lower() not in ["none", "null", ""]:
+        searchParams["-date.from"] = dtF
+    if dtT.lower() not in ["none", "null", ""]:
+        searchParams["-date.to"] = dtT
+    
+    return searchParams
+
 
 def searchGETHeaders(token):
     corID = str(uuid.uuid4())
@@ -51,4 +75,16 @@ def searchGETHeaders(token):
         }
     return searchHeaders
 
+
+def searchPOSTHeaders(token):
+    corID = str(uuid.uuid4())
+    reqID = str(uuid.uuid4())
+    searchHeaders = {
+        'X-Correlation-ID': corID,
+        'X-Request-ID': reqID,
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/fhir+json',
+        'Authorization': 'Bearer ' + token
+        }
+    return searchHeaders
 
