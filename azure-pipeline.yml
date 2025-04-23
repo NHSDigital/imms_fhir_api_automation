@@ -48,20 +48,20 @@ steps:
   displayName: 'Generate Allure report'
 
 
-# # - task: AllureReport@1
-# #   inputs:
-# #     resultsDirectory: 'output/allure-results'
-# #     targetDirectory: 'output/allure-report'
-# #   displayName: 'Generate Allure report'
+- task: AllureReport@1
+  inputs:
+    resultsDirectory: 'output/allure-results'
+    targetDirectory: 'output/allure-report'
+  displayName: 'Generate Allure report'
 
-# - script: |
-#     mkdir -p $(Build.ArtifactStagingDirectory)/allure-report
-#     cp -r output/allure-report/* $(Build.ArtifactStagingDirectory)/allure-report
-#   displayName: 'Copy Allure report to staging directory'
+- script: |
+    mkdir -p $(Build.ArtifactStagingDirectory)/allure-report
+    cp -r output/allure-report/* $(Build.ArtifactStagingDirectory)/allure-report
+  displayName: 'Copy Allure report to staging directory'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    # pathtoPublish: '$(Build.ArtifactStagingDirectory)/allure-report'
-    pathtoPublish: 'output/allure-report'
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)/allure-report'
+    # pathtoPublish: 'output/allure-report'
     artifactName: 'AllureReport'
   displayName: 'Publish Allure report artifact'
