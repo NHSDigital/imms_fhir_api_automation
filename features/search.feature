@@ -1,5 +1,5 @@
-# @Search_Feature
-# Feature: Search the immunization of a patient
+@Search_Feature
+Feature: Search the immunization of a patient
 
 
 #   # Scenario: Verify that the Search will be successful with below valid parameters
