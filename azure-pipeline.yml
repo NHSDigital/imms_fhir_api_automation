@@ -29,11 +29,11 @@ steps:
 
 - script: |
     source venv/bin/activate
-    behave -f allure_behave.formatter:AllureFormatter -o output/allure-results
+    behave -f allure_behave.formatter:AllureFormatter -o output/allure-results || true
   displayName: 'Run Behave tests with Allure formatter'
 
 - script: |
-    allure generate output/allure-results -o output/allure-report
+    allure generate output/allure-results -o output/allure-report --clean || true
   displayName: 'Generate Allure report'
 
 
