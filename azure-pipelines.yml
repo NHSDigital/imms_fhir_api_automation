@@ -1,32 +1,35 @@
-# trigger:
-# - master
+trigger:
+- master
 
-# pool:
-#   vmImage: 'ubuntu-latest'
+pool:
+  vmImage: 'ubuntu-latest'
 
-# steps:
-# - task: UsePythonVersion@0
-#   inputs:
-#     versionSpec: '3.x'
-#     addToPath: true
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+    addToPath: true
 
-# - script: |
-#     python -m venv venv
-#     source venv/bin/activate
-#     pip install -r requirements.txt
-#     pip install requests
-#     pip install git+https://github.com/behave/behave
-#     pip install allure-behave    
-#   displayName: 'Install dependencies'
+- script: |
+    python -m venv venv
+    source venv/bin/activate
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+    pip install requests
+    pip install git+https://github.com/behave/behave
+    pip install allure-behave    
+    pip install selenium
+    pip install boto3    
+  displayName: 'Install dependencies'
 
-# - script: |
-#     source venv/bin/activate
-#     behave -f allure_behave.formatter:AllureFormatter -o output/allure-results
-#   displayName: 'Run Behave tests with Allure formatter'
+- script: |
+    source venv/bin/activate
+    behave -f allure_behave.formatter:AllureFormatter -o output/allure-results
+  displayName: 'Run Behave tests with Allure formatter'
 
-# - script: |
-#     allure generate output/allure-results -o output/allure-report
-#   displayName: 'Generate Allure report'
+- script: |
+    allure generate output/allure-results -o output/allure-report
+  displayName: 'Generate Allure report'
 
 
 # # - task: AllureReport@1
@@ -40,8 +43,9 @@
 #     cp -r output/allure-report/* $(Build.ArtifactStagingDirectory)/allure-report
 #   displayName: 'Copy Allure report to staging directory'
 
-# - task: PublishBuildArtifacts@1
-#   inputs:
-#     pathtoPublish: '$(Build.ArtifactStagingDirectory)/allure-report'
-#     artifactName: 'AllureReport'
-#   displayName: 'Publish Allure report artifact'
+- task: PublishBuildArtifacts@1
+  inputs:
+    # pathtoPublish: '$(Build.ArtifactStagingDirectory)/allure-report'
+    pathtoPublish: 'output/allure-report'
+    artifactName: 'AllureReport'
+  displayName: 'Publish Allure report artifact'

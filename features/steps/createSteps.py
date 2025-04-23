@@ -5,8 +5,8 @@ from utilities.payloadSearch import *
 from utilities.payloadCreate import *
 from utilities.config import *
 from utilities.dynamodbHelper import *
-from delta.dateValidation import *
-from delta.deltaHelper import *
+from src.delta.dateValidation import *
+from src.delta.deltaHelper import *
 # from boto3.dynamodb.conditions import Key, Attr
 # from utilities.helper import *
 

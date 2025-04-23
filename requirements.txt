@@ -1,0 +1,6 @@
+# requests
+# git+https://github.com/behave/behave
+# behave
+# allure-behave
+# selenium
+# boto3
