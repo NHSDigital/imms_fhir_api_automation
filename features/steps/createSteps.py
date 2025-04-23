@@ -1,9 +1,13 @@
+import time
 import boto3
 import requests
 from utilities.payloadSearch import *
 from utilities.payloadCreate import *
 from utilities.config import *
 from utilities.dynamodbHelper import *
+from delta.dateValidation import *
+from delta.deltaHelper import *
+# from boto3.dynamodb.conditions import Key, Attr
 # from utilities.helper import *
 
 from behave import *
@@ -26,6 +30,10 @@ def createData(context,NHSNumber,birthDate,occurrenceDateTime,recorded,expiratio
     context.requestFileName = context.createPayload[1]
     context.requestTotalFiles = context.createPayload[2]
     context.NHSNumber = NHSNumber
+    context.birthDate = birthDate
+    context.occurrenceDateTime = occurrenceDateTime
+    context.recorded = recorded
+    context.expirationDate = expirationDate
 
 @when('Send a create request with POST method for the input JSONs available')
 def cretaeImmsEvent(context):
@@ -64,7 +72,7 @@ def validateImmsEventTable(context):
     tableImmsEvent = context.dynamodb.Table(config['dynamoDB']['tableName1'])
 
     for fileName in context.requestFileName:
-
+        
         queryFetch = 'Immunization#' + context.responseImmsID[fileName]
         response = tableImmsEvent.get_item(Key={'PK': queryFetch})
         
@@ -88,5 +96,85 @@ def validateImmsEventTable(context):
                     context.requestJSON[fileName] = json.loads(context.requestJSON[fileName])  
 
                 validate_json_fields(context.requestJSON[fileName], item['Resource'], path="Resource")          
+        else:
+            assert False, f"Immunization Event not found in DynamoDB Immunization Event table for {fileName}. Immunization ID: {context.responseImmsID[fileName]}"
 
     soft_assertions.assert_all()
+
+
+@then('The delta table will be populated with the correct data for the above date fields')
+def validateDeltaDates(context):
+
+    tableDelta = context.dynamodb.Table(config['dynamoDB']['tableName2'])
+
+    for fileName in context.requestFileName:
+        
+        queryDeltaFetch = context.responseImmsID[fileName]
+        item = scanDelta(tableDelta,queryDeltaFetch)
+        
+        if item:
+            sorted_items = sorted(item, key=lambda x: x['DateTimeStamp'], reverse=True)
+            most_recent_item = sorted_items[0]
+
+
+
+
+
+            # # logger.info(most_recent_item['Operation'])
+            # immsData = most_recent_item['Imms']
+            # immsData = immsData[1:-1]
+            # immsData = immsData.replace("'", '"')
+            # immsData = immsData.split(",")[0]
+            # # logger.info(immsData)
+
+            # # immsData = json.loads(immsData)
+
+            # if isinstance(immsData, str):
+            #     try:
+            #         immsData = json.loads(immsData)
+            #     except json.JSONDecodeError as e:
+            #         logger.error(f"Invalid JSON string: {immsData}")
+            #         logger.error(f"JSONDecodeError: {e}")
+            #         raise
+            #     logger.info(immsData)
+            #     logger.info(immsData['PERSON_DOB'])
+          
+
+            # logger.info(1)
+
+
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            birthDateActual = most_recent_item['PERSON_DOB']
+            occurrenceDateTimeActual = most_recent_item['DATE_AND_TIME']
+            expirationDateActual = most_recent_item['EXPIRY_DATE']
+            recordedActual = most_recent_item['RECORDED_DATE']
+            birthDateExpected = dateToCSV(context.birthDate)
+            occurrenceDateTimeExpected = dateToCSV(context.occurrenceDateTime)
+            if context.expirationDate.lower() in ("null", "none", ""):
+                expirationDateExpected = ""
+            else:
+                expirationDateExpected = dateToCSV(context.expirationDate)
+            recordedExpected = dateFieldCheck(dateToCSV(context.recorded), "recorded") 
+
+            with allure.step(f"Validating Date fields for {fileName} and the immunization event {context.responseImmsID[fileName]}"):
+                soft_assertions.assert_condition((birthDateExpected == birthDateActual), f"Expected birthDate: {birthDateExpected}, Found: {birthDateActual}")
+                soft_assertions.assert_condition((occurrenceDateTimeExpected == occurrenceDateTimeActual), f"Expected birthDate: {occurrenceDateTimeExpected}, Found: {occurrenceDateTimeActual}")
+                soft_assertions.assert_condition((recordedExpected == recordedActual), f"Expected birthDate: {recordedExpected}, Found: {recordedActual}")
+                soft_assertions.assert_condition((expirationDateExpected == expirationDateActual), f"Expected birthDate: {expirationDateExpected}, Found: {expirationDateActual}")
+
+        else:
+            assert False, f"Immunization Event not found in DynamoDB Delta table {fileName}. Immunization ID: {context.responseImmsID[fileName]}"

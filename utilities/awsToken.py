@@ -24,6 +24,5 @@ def set_aws_session_token():
         os.system(f"aws configure set aws_secret_access_key {secret_key}")
         os.system(f"aws configure set aws_session_token {session_token}")
 
-        # logger.info("AWS credentials successfully set.")
     except Exception as e:
         print(f"Error setting AWS session token: {e}")

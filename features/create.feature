@@ -8,7 +8,7 @@ Feature: Create the immunization event for a patient
     And The location key in header will contain the Immunization Id
     And The X-Request-ID and X-Correlation-ID keys in header will populate correctly
     And The imms event table will be populated with the correct data for the above fields
-    # And The delta table will be populated with the correct data for the above fields
+    # And The delta table will be populated with the correct data for the above date fields
 
     Examples: POSTCreateDeltaDates
       | NHSNumber  | birthDate       | occurrenceDateTime              | recorded                           | expirationDate | Description                  |
