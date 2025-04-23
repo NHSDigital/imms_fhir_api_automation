@@ -1,12 +1,4 @@
 INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
 INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
-INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
-INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
-INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
-INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
-INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
-INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
-INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
-INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
-INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
-INFO:botocore.credentials:Found credentials in shared credentials file: ~/.aws/credentials
+ERROR:builtins:Invalid JSON string: {"NHS_NUMBER": "9452372249"
+ERROR:builtins:JSONDecodeError: Expecting ',' delimiter: line 1 column 28 (char 27)
