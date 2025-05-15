@@ -11,6 +11,7 @@ from src.delta.deltaHelper import *
 import logging
 from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
+from features.steps.common_steps import *
 
 config = getConfigParser()
 
@@ -20,7 +21,6 @@ logger = logging.getLogger(__name__)
 
 
 scenarios("create.feature")
-#@allure.suite("Create feature")
 
 # @given('Prepare create paylod with "{NHSNumber}", "{birthDate}", "{occurrenceDateTime}", "{recorded}", "{expirationDate}"')
 # def createData(context,NHSNumber,birthDate,occurrenceDateTime,recorded,expirationDate):
@@ -39,20 +39,6 @@ scenarios("create.feature")
 #     context.expirationDate = expirationDate
     
 
-@given("Valid json payload is created")
-def valid_json_payload_is_created(context):
-    context.patient = load_patient_by_id(context.patient_id)
-    context.immunization_object = create_immunization_object(context.patient, context.vaccine_type)
-    
-@when("Trigger the post create request")
-def Trigger_the_post_create_request(context):
-    context.url = createURL(context.baseUrl)
-    context.headers = createPOSTHeaders(context.token)
-    context.corrID = context.headers['X-Correlation-ID']
-    context.reqID = context.headers['X-Request-ID']
-    context.request = to_clean_dict(asdict(context.immunization_object))
-    context.response = requests.post(context.url, json=context.request, headers=context.headers)
-    print(f"Create Request is {json.dumps(context.request)}" )
 
 # @when('Send a create request with POST method for the input JSONs available')
 # def createImmsEvent(context):
@@ -61,9 +47,6 @@ def Trigger_the_post_create_request(context):
 #         response = requests.post(context.createUrl, json=context.requestJSON[fileName], headers=context.createHeaders)
 #         context.createResponse[fileName] = response
 
-@then(parsers.parse("The request will be successful with the status code '{statusCode:d}'"))
-def The_request_will_be_successful_with_the_status_code(context, statusCode):
-    assert context.response.status_code == statusCode
 
 # @then('The create will be successful with the status code 201')
 # def validateCreateStatus(context):
@@ -71,15 +54,7 @@ def The_request_will_be_successful_with_the_status_code(context, statusCode):
 #         statusCode = context.createResponse[fileName].status_code
 #         assert statusCode == 201, f"Failed to create immunization event for {fileName}. Status code: {statusCode}. Response: {context.createResponse[fileName].text}"
 
-@then('The location key in header will contain the Immunization Id')
-def validateCreateLocation(context):
-    location = context.response.headers['location']
-    assert  "location" in context.response.headers, f"Location header is missing in the response with Status code: {context.response.statusCode}. Response: {context.response.json()}"
-    context.ImmsID = location.split("/")[-1]
-    check.is_true(
-        context.ImmsID is not None, 
-        f"Expected IdentifierPK: {context.patient.identifier[0].value}, Found: {context.ImmsID}"
-    )
+
     # context.responseImmsID = {}
     # for fileName in context.requestFileName:
     #     statusCode = context.createResponse[fileName].status_code

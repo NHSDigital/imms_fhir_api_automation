@@ -18,22 +18,21 @@ scenario_counter = 0
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_bdd_after_step(request, feature, scenario, step, step_func, step_func_args):
-    if not step.failed:  # Check if the step failed before logging
+    if not step.failed: 
         message = f"✅ Step Passed: **{step.name}"
         allure.attach(message, name=f"Step Passed: {step.name}", attachment_type=allure.attachment_type.TEXT)
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_bdd_step_error(request, feature, scenario, step, exception):
-    """Log failed steps with additional debugging info."""
     message = f"❌ Step failed! **{step.name}** \nError: {exception}"
     allure.attach(message, name=f"Step Failed: {step.name}", attachment_type=allure.attachment_type.TEXT)
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_bdd_before_scenario(request, feature, scenario):
-    """Log scenario details in Allure."""
-    allure.dynamic.label("Feature", feature.name)
+    allure.dynamic.epic("Immunization Service")
+    allure.dynamic.suite(feature.name)  # Separates features into distinct suites
+    allure.dynamic.feature(feature.name)  # Ensures correct feature grouping
     allure.dynamic.label("Scenario", scenario.name)
-
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_environment():

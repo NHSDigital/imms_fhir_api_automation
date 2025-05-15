@@ -25,3 +25,4 @@ class ScenarioContext:
         self.ImmsID = None
         self.request = None
         self.baseUrl = None
+        self.location = None

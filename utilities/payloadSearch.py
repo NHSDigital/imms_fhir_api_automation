@@ -81,11 +81,11 @@ def searchPOSTHeaders(token):
     corID = str(uuid.uuid4())
     reqID = str(uuid.uuid4())
     searchHeaders = {
-        'X-Correlation-ID': corID,
-        'X-Request-ID': reqID,
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/fhir+json',
-        'Authorization': 'Bearer ' + token
+        "X-Correlation-ID": corID,
+        "X-Request-ID": reqID,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/fhir+json",
+        "Authorization": "Bearer " + token
         }
     return searchHeaders
 

@@ -18,7 +18,8 @@ from src.delta.deltaHelper import *
 import logging
 from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
-from features.steps.test_createSteps import valid_json_payload_is_created, Trigger_the_post_create_request, The_request_will_be_successful_with_the_status_code, validateCreateLocation
+from features.steps.common_steps import *
+from datetime import datetime
 
 
 
@@ -44,11 +45,13 @@ def TiggerSearchPostRequest(context):
     context.headers = searchPOSTHeaders(context.token)
     context.corrID = context.headers['X-Correlation-ID']
     context.reqID = context.headers['X-Request-ID']
-    context.request = convert_to_form_data(set_request_data(context.patient.identifier[0].value, context.vaccine_type))
+    context.request = convert_to_form_data(set_request_data(context.patient.identifier[0].value, context.vaccine_type, datetime.today().strftime("%Y-%m-%d")))
+    #context.request = "patient.identifier=https%3A%2F%2Ffhir.nhs.uk%2FId%2Fnhs-number|9449309981&-immunization.target=COVID19&_include=Immunization:patient&-date.from=2025-05-01"
+    print(f"Type of form_data: {type(context.request)}")
     print(f"Search Post request {context.request}")
     print(f"headers are {context.headers}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
-    print(f"Search Post response {context.response}")
+    print(f"Search Post response {context.response.json()}")
 
 # @given('After passing all the valid parameters')
 # def queryParamSearch(context):  
@@ -229,12 +232,12 @@ def TiggerSearchPostRequest(context):
 #         context.responseStatus[fileName] = responseSearch.status_code        
 
 
-@then('The search will be successful with the status code 200 for each Immunization event')
-def validateSearchAPIStatusCode(context):
-    for fileName in context.requestFileName:
-        statusCode = context.responseStatus[fileName]
-        response = context.responseJsons[fileName]
-        assert statusCode == 200, f"Failed to search for immunization event for {fileName}. Status code: {statusCode}. Response:{response}"        
+# @then('The search will be successful with the status code 200 for each Immunization event')
+# def validateSearchAPIStatusCode(context):
+#     for fileName in context.requestFileName:
+#         statusCode = context.responseStatus[fileName]
+#         response = context.responseJsons[fileName]
+#         assert statusCode == 200, f"Failed to search for immunization event for {fileName}. Status code: {statusCode}. Response:{response}"        
 
 
 @then('The Search Response JSONs should contain the detail of the immunization events created above')

@@ -1,4 +1,5 @@
 from dataclasses import asdict, dataclass, field
+from urllib.parse import urlencode
 
 @dataclass
 class ImmunizationRequest:
@@ -17,7 +18,7 @@ def set_request_data(nhs_number, target, date_from :str = None, date_to:str = No
         date_to=date_to
 )
 
-def convert_to_form_data(request: ImmunizationRequest) -> dict:
+def convert_to_form_data(request: ImmunizationRequest) -> str:
     data_dict = asdict(request)
 
     field_mapping = {
@@ -30,4 +31,11 @@ def convert_to_form_data(request: ImmunizationRequest) -> dict:
     
     clean_data = {field_mapping[key]: value for key, value in data_dict.items() if value is not None}
 
-    return clean_data
+    include_value = clean_data.pop("_include", None)
+
+    encoded_data = urlencode(clean_data, safe= "|")
+
+    if include_value:
+        encoded_data += f"&_include={include_value}"
+
+    return encoded_data

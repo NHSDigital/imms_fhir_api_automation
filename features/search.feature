@@ -1,4 +1,5 @@
 @Search_Feature
+@allure.suite:Search_Feature
 Feature: Search the immunization of a patient
 
 
@@ -127,7 +128,7 @@ Scenario: Verify that the POST method of Search API will be successful with all 
 #     And Create an immunization event for the patient with the input JSONs available
     When Send a search request with POST method for Immunization event create
     Then The request will be successful with the status code '200'
-#     And The Search Response JSONs should contain the detail of the immunization events created above
+   # And The Search Response JSONs should contain the detail of the immunization events created above
 #     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
 #     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
 

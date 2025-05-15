@@ -72,6 +72,6 @@ def get_access_token(context):
 def is_token_valid(token_expires_in_time, token_generated_time):
     if token_expires_in_time is None or token_generated_time is None:
         return False
-    expiration_time = token_generated_time + timedelta(seconds=token_expires_in_time)
+    expiration_time = token_generated_time + timedelta(seconds=int(token_expires_in_time))
     return datetime.now(timezone.utc) < expiration_time
 
