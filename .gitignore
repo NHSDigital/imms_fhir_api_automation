@@ -3,3 +3,4 @@ __pycache__/
 output/
 utilities/__pycache__
 mytest.py
+.env
