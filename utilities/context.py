@@ -26,3 +26,6 @@ class ScenarioContext:
         self.request = None
         self.baseUrl = None
         self.location = None
+        self.parsed_search__object= None
+        self.created_event = None
+        self.create_object = None

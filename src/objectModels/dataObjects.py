@@ -91,3 +91,44 @@ class Immunization:
     performer: List[Performer] = field(default_factory=list)
     reasonCode: List[CodeableConcept] = field(default_factory=list)
     protocolApplied: List[Dict[str, Any]] = field(default_factory=list)
+
+@dataclass
+class ImmunizationResponse:
+    resourceType: str =" "
+    id: str =" "
+    extension: List[Extension] = field(default_factory=list)
+    identifier: List[Identifier] = field(default_factory=list)
+    status: str = " "
+    vaccineCode: List[CodeableConcept] = field(default_factory=list)
+    patient: Patient = None
+    occurrenceDateTime: str =" "
+    recorded: str = " "
+    lotNumber: str =" "
+    expirationDate: str =" "
+    primarySource: bool = True
+    location: Dict[str, Any] = field(default_factory=list)
+    manufacturer: Dict[str, Any] = field(default_factory=list)    
+    site: CodeableConcept = field(default_factory=list)  
+    route: CodeableConcept = field(default_factory=list)  
+    doseQuantity: Dict[str, Any] = field(default_factory=dict)
+    performer: List[Performer] = field(default_factory=list)
+    reasonCode: List[CodeableConcept] = field(default_factory=list)
+    protocolApplied: List[Dict[str, Any]] = field(default_factory=list)
+
+@dataclass
+class Link:
+    relation: str
+    url: str
+@dataclass
+class Entry:
+    fullUrl: str
+    resource: ImmunizationResponse
+    search: Dict[str, str]
+
+@dataclass
+class FHIRImmunizationResponse:
+    resourceType: str
+    type: str
+    link: List[Link]
+    entry: List[Entry]
+    total: int

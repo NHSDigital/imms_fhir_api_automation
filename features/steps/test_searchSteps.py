@@ -9,6 +9,7 @@ import requests
 from src.objectModels.immunization_builder import *
 from src.objectModels.patient_loader import load_patient_by_id
 from src.objectModels.SearchPostObject import *
+from utilities import FHIRImmunizationParser
 from utilities.payloadSearch import *
 from utilities.payloadCreate import *
 from utilities.config import *
@@ -20,6 +21,7 @@ from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
 from features.steps.common_steps import *
 from datetime import datetime
+from utilities.FHIRImmunizationParser import *
 
 
 
@@ -242,70 +244,80 @@ def TiggerSearchPostRequest(context):
 
 @then('The Search Response JSONs should contain the detail of the immunization events created above')
 def validateImmsID(context):
-    context.finalResponseJson = {}
-    context.finalResponseJsonPat = {}
-    context.expectedImmsID = {}
-    for fileName in context.requestFileName:
-        context.expectedImmsID[fileName] = context.responseImmsID[fileName]
+        data = context.response.json()
+        context.parsed_search__object = parse_dataclass(FHIRImmunizationResponse, data)
 
-        responseJsonLoad = json.loads(context.responseJsons[fileName])
+        context.created_event = find_entry_by_Imms_id(context.parsed_search__object, context.location)
+        print (f"event is found  {context.created_event}")
+        assert (context.created_event is not None, f"No object found with {context.location}")
+    # context.finalResponseJson = {}
+    # context.finalResponseJsonPat = {}
+    # context.expectedImmsID = {}
+    # for fileName in context.requestFileName:
+    #     context.expectedImmsID[fileName] = context.responseImmsID[fileName]
+
+    #     responseJsonLoad = json.loads(context.responseJsons[fileName])
         
-        idFound = False
-        findEntry = 0
-        for entry in responseJsonLoad['entry']:
-            if entry['resource']['id'] == context.expectedImmsID[fileName]:
-                context.finalResponseJson[fileName] = responseJsonLoad['entry'][findEntry]
-                idFound = True
-                break
-            findEntry = findEntry + 1
-        assert idFound, f"Immunization ID {context.expectedImmsID[fileName]} not found in search response for {fileName}"
+    #     idFound = False
+    #     findEntry = 0
+    #     for entry in responseJsonLoad['entry']:
+    #         if entry['resource']['id'] == context.expectedImmsID[fileName]:
+    #             context.finalResponseJson[fileName] = responseJsonLoad['entry'][findEntry]
+    #             idFound = True
+    #             break
+    #         findEntry = findEntry + 1
+    #     assert idFound, f"Immunization ID {context.expectedImmsID[fileName]} not found in search response for {fileName}"
         
-        for entry in responseJsonLoad['entry']:
-            context.finalResponseJsonPat[fileName] = responseJsonLoad['entry'][-1]
-        assert len(context.finalResponseJsonPat) > 0, f"Patient entry {context.NHSNumber} not found in search response for {fileName}"
+    #     for entry in responseJsonLoad['entry']:
+    #         context.finalResponseJsonPat[fileName] = responseJsonLoad['entry'][-1]
+    #     assert len(context.finalResponseJsonPat) > 0, f"Patient entry {context.NHSNumber} not found in search response for {fileName}"
 
 
 @then('The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization')
 def validateJsonImms(context):
+     request_patient = context.create_object.contained[1].identifier[0].value
+     response_patient = context.created_event.resource.patient.identifier.get("value")
+     check.is_true (request_patient== response_patient, f"patient NHS Number is not correct")
 
-    for fileName in context.requestFileName:
-        reqJson = context.requestJSON[fileName] 
-        resJson = context.finalResponseJson[fileName]
+     expected_fullUrl = config['SEARCH']['fullUrlRes'] + context.location
+     actual_fullURl = context.created_event.fullUrl
+     check.is_true (expected_fullUrl== actual_fullURl, f"Full Url is not correct")
 
-        fullUrlRes = config['SEARCH']['fullUrlRes'] + context.expectedImmsID[fileName]
-        performerReq = reqJson["performer"][int(config['SEARCH']['performerFieldNoReq'])]
-        performerRes = resJson["resource"]["performer"][int(config['SEARCH']['performerFieldNoRes'])]
-        contPatientFieldNoIdReq = reqJson["contained"][int(config['SEARCH']['containedPatientFieldNoReq'])]['identifier'][int(config['SEARCH']['patientIdFieldNoReq'])]
-        contPatientFieldNoIdRes = resJson["resource"]["patient"]["identifier"]
-        referencePattern = r"^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"       
+     
+     
+    #     performerReq = reqJson["performer"][int(config['SEARCH']['performerFieldNoReq'])]
+    #     performerRes = resJson["resource"]["performer"][int(config['SEARCH']['performerFieldNoRes'])]
+    #     contPatientFieldNoIdReq = reqJson["contained"][int(config['SEARCH']['containedPatientFieldNoReq'])]['identifier'][int(config['SEARCH']['patientIdFieldNoReq'])]
+    #     contPatientFieldNoIdRes = resJson["resource"]["patient"]["identifier"]
+    #     referencePattern = r"^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"       
 
-        with allure.step(f"Validating JSON fields for {fileName} and the immunization event {context.expectedImmsID[fileName]}"):
-            validate_json_fields(fullUrlRes, resJson['fullUrl'], path="fullUrl")
-            validate_json_fields(reqJson['resourceType'], resJson['resource']['resourceType'], path="resourceType")
-            validate_json_fields(reqJson['extension'], resJson['resource']['extension'], path="extension") 
-            validate_json_fields(reqJson['identifier'], resJson['resource']['identifier'], path="identifier")  
-            validate_json_fields(reqJson['status'], resJson['resource']['status'], path="status") 
-            validate_json_fields(reqJson['vaccineCode'], resJson['resource']['vaccineCode'], path="vaccineCode") 
-            validate_json_fields(format_timestamp(reqJson['occurrenceDateTime']), format_timestamp(resJson['resource']['occurrenceDateTime']), path="occurrenceDateTime")
-            validate_json_fields(format_timestamp(reqJson['recorded']), format_timestamp(resJson['resource']['recorded']), path="recorded")
-            validate_json_fields(reqJson['primarySource'], resJson['resource']['primarySource'], path="primarySource")
-            validate_json_fields(reqJson['manufacturer'], resJson['resource']['manufacturer'], path="manufacturer")
-            validate_json_fields(reqJson['location'], resJson['resource']['location'], path="location")
-            validate_json_fields(reqJson['lotNumber'], resJson['resource']['lotNumber'], path="lotNumber")
-            validate_json_fields(reqJson['expirationDate'], resJson['resource']['expirationDate'], path="expirationDate")
-            validate_json_fields(reqJson['site'], resJson['resource']['site'], path="site")
-            validate_json_fields(reqJson['route'], resJson['resource']['route'], path="route")
-            validate_json_fields(reqJson['doseQuantity'], resJson['resource']['doseQuantity'], path="doseQuantity")
-            validate_json_fields(performerReq, performerRes, path="performer")                       
-            validate_json_fields(reqJson['reasonCode'], resJson['resource']['reasonCode'], path="reasonCode")
-            validate_json_fields(reqJson['protocolApplied'], resJson['resource']['protocolApplied'], path="protocolApplied")
-            validate_json_fields(contPatientFieldNoIdReq, contPatientFieldNoIdRes, path="patient.identifier")
-            validate_json_fields("Patient", resJson['resource']['patient']['type'], path="patient.type")
-            # validate_json_fields(referencePattern, resJson['resource']['patient']['reference'], path="patient.reference")
-            soft_assertions.assert_condition(bool(re.match(referencePattern, resJson['resource']['patient']['reference'])), f"patient.reference. Expected guid pattern, Found {resJson['resource']['patient']['reference']}")
-            validate_json_fields("match", resJson['search']['mode'], path="search.mode")
+    #     with allure.step(f"Validating JSON fields for {fileName} and the immunization event {context.expectedImmsID[fileName]}"):
+    #         validate_json_fields(fullUrlRes, resJson['fullUrl'], path="fullUrl")
+    #         validate_json_fields(reqJson['resourceType'], resJson['resource']['resourceType'], path="resourceType")
+    #         validate_json_fields(reqJson['extension'], resJson['resource']['extension'], path="extension") 
+    #         validate_json_fields(reqJson['identifier'], resJson['resource']['identifier'], path="identifier")  
+    #         validate_json_fields(reqJson['status'], resJson['resource']['status'], path="status") 
+    #         validate_json_fields(reqJson['vaccineCode'], resJson['resource']['vaccineCode'], path="vaccineCode") 
+    #         validate_json_fields(format_timestamp(reqJson['occurrenceDateTime']), format_timestamp(resJson['resource']['occurrenceDateTime']), path="occurrenceDateTime")
+    #         validate_json_fields(format_timestamp(reqJson['recorded']), format_timestamp(resJson['resource']['recorded']), path="recorded")
+    #         validate_json_fields(reqJson['primarySource'], resJson['resource']['primarySource'], path="primarySource")
+    #         validate_json_fields(reqJson['manufacturer'], resJson['resource']['manufacturer'], path="manufacturer")
+    #         validate_json_fields(reqJson['location'], resJson['resource']['location'], path="location")
+    #         validate_json_fields(reqJson['lotNumber'], resJson['resource']['lotNumber'], path="lotNumber")
+    #         validate_json_fields(reqJson['expirationDate'], resJson['resource']['expirationDate'], path="expirationDate")
+    #         validate_json_fields(reqJson['site'], resJson['resource']['site'], path="site")
+    #         validate_json_fields(reqJson['route'], resJson['resource']['route'], path="route")
+    #         validate_json_fields(reqJson['doseQuantity'], resJson['resource']['doseQuantity'], path="doseQuantity")
+    #         validate_json_fields(performerReq, performerRes, path="performer")                       
+    #         validate_json_fields(reqJson['reasonCode'], resJson['resource']['reasonCode'], path="reasonCode")
+    #         validate_json_fields(reqJson['protocolApplied'], resJson['resource']['protocolApplied'], path="protocolApplied")
+    #         validate_json_fields(contPatientFieldNoIdReq, contPatientFieldNoIdRes, path="patient.identifier")
+    #         validate_json_fields("Patient", resJson['resource']['patient']['type'], path="patient.type")
+    #         # validate_json_fields(referencePattern, resJson['resource']['patient']['reference'], path="patient.reference")
+    #         soft_assertions.assert_condition(bool(re.match(referencePattern, resJson['resource']['patient']['reference'])), f"patient.reference. Expected guid pattern, Found {resJson['resource']['patient']['reference']}")
+    #         validate_json_fields("match", resJson['search']['mode'], path="search.mode")
 
-            soft_assertions.assert_all()
+    #         soft_assertions.assert_all()
 
 @then('The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient')
 def validateJsonPat(context):

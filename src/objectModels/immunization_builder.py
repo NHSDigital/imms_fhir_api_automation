@@ -159,6 +159,28 @@ def to_clean_dict(obj) -> Any:
     else:
         return obj
 
+def clean_dataclass(obj):
+    """Cleans a dataclass instance without converting it to a dictionary."""
+    if not is_dataclass(obj):
+        return obj  # Return object as-is if it's not a dataclass
+
+    for f in fields(obj):
+        value = getattr(obj, f.name)
+
+        # Remove None or empty values
+        if value is None or (isinstance(value, list) and not value) or (isinstance(value, dict) and not value):
+            setattr(obj, f.name, None)  # Set empty values to None
+        
+        # Recursively clean nested dataclass objects
+        if is_dataclass(value):
+            setattr(obj, f.name, clean_dataclass(value))
+        elif isinstance(value, list):  # Clean list elements recursively
+            setattr(obj, f.name, [clean_dataclass(item) for item in value if item is not None])
+        elif isinstance(value, dict):  # Clean dictionary values recursively
+            setattr(obj, f.name, {k: clean_dataclass(v) for k, v in value.items() if v is not None})
+
+    return obj
+
 def create_immunization_object(patient: Patient, vaccine_type: str) -> Immunization:
     practitioner = Practitioner(name=[HumanName(family="Furlong", given=["Darren"])])
     extension = [build_vaccine_procedure_extension(vaccine_type.upper())]

@@ -1,5 +1,4 @@
 @Create_Feature
-@allure.suite:Create_Feature
 Feature: Create the immunization event for a patient
 
 
