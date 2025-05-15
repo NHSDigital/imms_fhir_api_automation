@@ -1,0 +1,24 @@
+{
+  "cSpell.words": [
+    "csvfile"
+  ],
+  "python.testing.testExplorer.testFrameworks": ["pytest"],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "python.testing.nosetestsEnabled": false,
+  "python.testing.behaveEnabled": false, 
+  "python.testing.pytestArgs": [
+    "."
+  ],
+  "cucumberautocomplete.steps": [
+    "features/steps/*.py"
+  ],
+  "cucumberautocomplete.syncfeatures": "features/**/*.feature",
+  "cucumberautocomplete.strictGherkinCompletion": true,
+  "cucumberautocomplete.smartSnippets": true,
+  "cucumberautocomplete.snippets": {
+    "Given": "def step_impl(context):\n    raise NotImplementedError(u'STEP: Given ${1}')",
+    "When": "def step_impl(context):\n    raise NotImplementedError(u'STEP: When ${1}')",
+    "Then": "def step_impl(context):\n    raise NotImplementedError(u'STEP: Then ${1}')"
+  }
+}

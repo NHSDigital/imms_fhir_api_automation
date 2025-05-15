@@ -17,7 +17,7 @@ class SoftAssertions():
             
 
     def assert_condition(self, condition, message="Assertion failed"):
-        with allure.step(message):
+       with allure.step(message):
             if not condition:
                 self.failures.append(message)
                 allure.attach(
