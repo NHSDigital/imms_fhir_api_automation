@@ -1,4 +1,5 @@
 import csv
+from datetime import datetime
 import os
 import shutil
 from utilities.soft_assertions import SoftAssertions
@@ -165,4 +166,10 @@ def readInputCSV_search():
         for row in searchReader:
             print(row)
 
-
+def covert_to_expected_date_format(date_string):
+    try:
+        dt = datetime.fromisoformat(date_string.replace("+00:00", ""))
+        formatted_dt = dt.isoformat(timespec="microseconds") + "+00:00"
+        return formatted_dt
+    except ValueError:
+        return "Invalid format"

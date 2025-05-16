@@ -9,7 +9,6 @@ import requests
 from src.objectModels.immunization_builder import *
 from src.objectModels.patient_loader import load_patient_by_id
 from src.objectModels.SearchPostObject import *
-from utilities import FHIRImmunizationParser
 from utilities.payloadSearch import *
 from utilities.payloadCreate import *
 from utilities.config import *
@@ -269,13 +268,6 @@ def validateImmsID(context):
     #     for entry in responseJsonLoad['entry']:
     #         context.finalResponseJsonPat[fileName] = responseJsonLoad['entry'][-1]
     #     assert len(context.finalResponseJsonPat) > 0, f"Patient entry {context.NHSNumber} not found in search response for {fileName}"
-def check_format(date_string):
-    try:
-        dt = datetime.fromisoformat(date_string.replace("+00:00", ""))
-        formatted_dt = dt.isoformat(timespec="microseconds") + "+00:00"
-        return formatted_dt
-    except ValueError:
-        return "Invalid format"
 
 @then('The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization')
 def validateJsonImms(context):
@@ -300,7 +292,7 @@ def validateJsonImms(context):
     check.is_true(context.create_object.status==context.created_event.resource.status, 
                   f"Expected Status is {context.create_object.status} but received status: {context.created_event.resource.status}")
     
-    expected_recorded = check_format(context.create_object.recorded)
+    expected_recorded = covert_to_expected_date_format(context.create_object.recorded)
     check.is_true(expected_recorded== context.created_event.resource.recorded, 
                   f"Expected recorded date {expected_recorded} but received recorded date: {context.created_event.resource.recorded}")
     
