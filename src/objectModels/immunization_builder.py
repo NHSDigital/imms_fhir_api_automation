@@ -85,11 +85,15 @@ def build_protocol_applied(vaccine_type: str, dose_number: int = 1) -> List[Dict
 def get_vaccine_details(vaccine_type: str, lot_number: str = "", expiry_date: str ="") -> Dict[str, Any]:
     selected_vaccine = random.choice(VACCINE_CODE_MAP[vaccine_type.upper()])
 
-    vaccine_code = CodeableConcept(coding=[Coding(
-        system=selected_vaccine.system,
-        code=selected_vaccine.code,
-        display=selected_vaccine.display
-    )])
+    vaccine_code = {
+        "coding": [
+            {
+                "system": selected_vaccine.system,
+                "code": selected_vaccine.code,
+                "display": selected_vaccine.display
+            }
+        ]
+    }
 
     manufacturer = {"display": selected_vaccine.manufacturer}
 
@@ -142,22 +146,50 @@ def get_dateTime(date: str = '') -> str:
 def get_unique_identifier()-> List[Dict[str, Any]]:
     return [Identifier(system="https://supplierABC/identifiers/vacc", value=str(uuid.uuid4()))]
 
+def build_reason_code(reason_code_map: List[Any]) -> List[ReasonCode]:
+    selected = random.choice(reason_code_map)
+    return [
+        ReasonCode(
+            coding=[
+                Coding(
+                    system=selected.system,
+                    code=selected.code,
+                    display=selected.display
+                )
+            ]
+        )
+    ]
+
 def to_clean_dict(obj) -> Any:
+    """Recursively clean dataclass objects, removing None & empty values, ensuring correct `reasonCode` serialization."""
+
     if is_dataclass(obj):
         result = {}
+
         for f in fields(obj):
             value = getattr(obj, f.name)
-            if value is not None:
-                cleaned = to_clean_dict(value)
-                if cleaned is not None:
-                    result[f.name] = cleaned
-        return result
+            cleaned_value = to_clean_dict(value)  # Recursively clean
+
+            # Ensure we filter out empty structures AFTER processing
+            if cleaned_value not in (None, [], {}, "", "null"):
+                result[f.name] = cleaned_value
+
+        # ✅ Fix reasonCode serialization issue: Ensure it remains a list
+        if isinstance(result.get("reasonCode"), dict):  
+            result["reasonCode"] = [result["reasonCode"]]  # Force list correction
+
+        return result if result else None  # Ensure empty objects aren't retained
+
     elif isinstance(obj, list):
-        return [to_clean_dict(item) for item in obj if item is not None]
+        cleaned_list = [to_clean_dict(item) for item in obj if item not in (None, {}, [], "", "null")]
+        return cleaned_list if cleaned_list else None  # Remove empty lists
+
     elif isinstance(obj, dict):
-        return {k: to_clean_dict(v) for k, v in obj.items() if v is not None}
+        cleaned_dict = {k: to_clean_dict(v) for k, v in obj.items() if v not in (None, [], {}, "", "null")}
+        return cleaned_dict if cleaned_dict else None  # Remove empty dictionaries
+
     else:
-        return obj
+       return obj if obj not in (None, "", [], {}, "null") else None
 
 def clean_dataclass(obj):
     """Cleans a dataclass instance without converting it to a dictionary."""
@@ -201,6 +233,6 @@ def create_immunization_object(patient: Patient, vaccine_type: str) -> Immunizat
         route=build_coding_concept(ROUTE_MAP),
         doseQuantity=DOSE_QUANTITY_MAP,
         performer = build_performer(),
-        reasonCode = [build_coding_concept(REASON_CODE_MAP)],
+        reasonCode = build_reason_code(REASON_CODE_MAP),
         protocolApplied = build_protocol_applied(vaccine_type)
 )

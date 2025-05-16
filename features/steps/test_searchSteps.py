@@ -22,6 +22,7 @@ import pytest_check as check
 from features.steps.common_steps import *
 from datetime import datetime
 from utilities.FHIRImmunizationParser import *
+from datetime import datetime
 
 
 
@@ -48,12 +49,9 @@ def TiggerSearchPostRequest(context):
     context.corrID = context.headers['X-Correlation-ID']
     context.reqID = context.headers['X-Request-ID']
     context.request = convert_to_form_data(set_request_data(context.patient.identifier[0].value, context.vaccine_type, datetime.today().strftime("%Y-%m-%d")))
-    #context.request = "patient.identifier=https%3A%2F%2Ffhir.nhs.uk%2FId%2Fnhs-number|9449309981&-immunization.target=COVID19&_include=Immunization:patient&-date.from=2025-05-01"
-    print(f"Type of form_data: {type(context.request)}")
     print(f"Search Post request {context.request}")
-    print(f"headers are {context.headers}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
-    print(f"Search Post response {context.response.json()}")
+    
 
 # @given('After passing all the valid parameters')
 # def queryParamSearch(context):  
@@ -271,19 +269,68 @@ def validateImmsID(context):
     #     for entry in responseJsonLoad['entry']:
     #         context.finalResponseJsonPat[fileName] = responseJsonLoad['entry'][-1]
     #     assert len(context.finalResponseJsonPat) > 0, f"Patient entry {context.NHSNumber} not found in search response for {fileName}"
-
+def check_format(date_string):
+    try:
+        dt = datetime.fromisoformat(date_string.replace("+00:00", ""))
+        formatted_dt = dt.isoformat(timespec="microseconds") + "+00:00"
+        return formatted_dt
+    except ValueError:
+        return "Invalid format"
 
 @then('The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization')
 def validateJsonImms(context):
-     request_patient = context.create_object.contained[1].identifier[0].value
-     response_patient = context.created_event.resource.patient.identifier.get("value")
-     check.is_true (request_patient== response_patient, f"patient NHS Number is not correct")
-
-     expected_fullUrl = config['SEARCH']['fullUrlRes'] + context.location
-     actual_fullURl = context.created_event.fullUrl
-     check.is_true (expected_fullUrl== actual_fullURl, f"Full Url is not correct")
-
+    request_patient = context.create_object.contained[1]
+    response_patient = context.created_event.resource.patient
+    check.is_true (request_patient.identifier[0].value== response_patient.identifier.value,
+                    f"expected patient NHS Number {request_patient.identifier[0].value}  actual nhs number {response_patient.identifier.value}")
+    referencePattern = r"^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
      
+    check.is_true(re.match(referencePattern, response_patient.reference), 
+                  f"Expected reference {referencePattern} Invalid reference format: {referencePattern}")
+    
+    check.is_true("Patient"== response_patient.type,
+                   f"Expected is  Patient nut actual patient Type is : {response_patient.type}")
+
+    check.is_true("Immunization"== context.created_event.resource.resourceType, f"Expected resource type is Immunization but received id : {response_patient.type}")
+
+    expected_fullUrl = config['SEARCH']['fullUrlRes'] + context.location
+    actual_fullURl = context.created_event.fullUrl
+    check.is_true (expected_fullUrl== actual_fullURl, f"Expected url is {expected_fullUrl} but received is {actual_fullURl}")
+
+    check.is_true(context.create_object.status==context.created_event.resource.status, 
+                  f"Expected Status is {context.create_object.status} but received status: {context.created_event.resource.status}")
+    
+    expected_recorded = check_format(context.create_object.recorded)
+    check.is_true(expected_recorded== context.created_event.resource.recorded, 
+                  f"Expected recorded date {expected_recorded} but received recorded date: {context.created_event.resource.recorded}")
+    
+    check.is_true(context.create_object.lotNumber==context.created_event.resource.lotNumber, 
+                  f"Expected lotNumber {context.create_object.lotNumber} but received lotNumber: {context.created_event.resource.lotNumber}")
+    
+    check.is_true(context.create_object.expirationDate== context.created_event.resource.expirationDate, 
+                  f"Expected expirationDate {context.create_object.expirationDate} but received expirationDate: {context.created_event.resource.expirationDate}")
+    
+    check.is_true(context.create_object.primarySource==context.created_event.resource.primarySource, 
+                  f"Expected primarySource {context.create_object.primarySource} but received primarySource: {context.created_event.resource.primarySource}")
+
+
+    check.is_true(context.create_object.doseQuantity==context.created_event.resource.doseQuantity, 
+                  f"Expected doseQuantity {context.create_object.doseQuantity} but received doseQuantity: {context.created_event.resource.doseQuantity}")
+    
+    check.is_true(context.create_object.site==context.created_event.resource.site, 
+                  f"Expected site {context.create_object.site} but received site: {context.created_event.resource.site}")
+    
+    check.is_true(context.create_object.manufacturer==context.created_event.resource.manufacturer, 
+                  f"Expected manufacturer {context.create_object.manufacturer} but received manufacturer: {context.created_event.resource.manufacturer}")
+    
+    check.is_true(context.create_object.vaccineCode==context.created_event.resource.vaccineCode, 
+                  f"Expected vaccineCode {context.create_object.vaccineCode} but received vaccineCode: {context.created_event.resource.vaccineCode}")
+    
+    check.is_true(context.create_object.reasonCode==context.created_event.resource.reasonCode, 
+                  f"Expected reasonCode {context.create_object.reasonCode} but received reasonCode: {context.created_event.resource.reasonCode}")
+    
+    check.is_true(context.create_object.protocolApplied==context.created_event.resource.protocolApplied, 
+                  f"Expected protocolApplied {context.create_object.protocolApplied} but received protocolApplied: {context.created_event.resource.protocolApplied}")
      
     #     performerReq = reqJson["performer"][int(config['SEARCH']['performerFieldNoReq'])]
     #     performerRes = resJson["resource"]["performer"][int(config['SEARCH']['performerFieldNoRes'])]
