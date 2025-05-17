@@ -1,7 +1,7 @@
 from src.objectModels.dataObjects import *
 from src.objectModels.vaccination_constants import *
 from datetime import datetime, timedelta, timezone
-from dataclasses import is_dataclass, fields
+from dataclasses import MISSING, is_dataclass, fields
 from typing import Any
 import random
 import uuid
@@ -153,33 +153,67 @@ def build_reason_code(reason_code_map: List[Any], text: str = "") -> List[Reason
 def dose_quantity_selection() -> DoseQuantity:
     return DoseQuantity(**random.choice(DOSE_QUANTITY_MAP))
 
-def clean_dataclass(obj):
-    """Recursively cleans a dataclass instance, removing None, empty lists/dicts, and 'null' values, while keeping it as an object."""
-    
-    if is_dataclass(obj):
-        obj_dict = {f.name: clean_dataclass(getattr(obj, f.name)) for f in fields(obj)}
-        obj_dict = {k: v for k, v in obj_dict.items() if v not in (None, "null", {}, [], "")}
-        
-        return obj.__class__(**obj_dict) if obj_dict else None  
+def clean_dataclass(obj: object) -> object:
+    if not is_dataclass(obj):
+        return obj
 
-    elif isinstance(obj, list):
-        return [clean_dataclass(item) for item in obj if item not in (None, "null", {}, [], "")]
+    for f in fields(obj):
+        # Retrieve the current value
+        current_val = getattr(obj, f.name)
 
-    elif isinstance(obj, dict):
-        return {k: clean_dataclass(v) for k, v in obj.items() if v not in (None, "null", {}, [], "")}
+        # Optionally check for None regardless of defaults:
+        if current_val is None:
+            if f.name in obj.__dict__:
+                del obj.__dict__[f.name]
+            continue  # Go to next field
 
+        # If a default or default_factory exists, get it.
+        default_val = MISSING
+        if f.default is not MISSING:
+            default_val = f.default
+        elif f.default_factory is not MISSING:  # default_factory is callable
+            default_val = f.default_factory()
+
+        # If the field has a default and the value is equal to it, remove it.
+        if default_val is not MISSING and current_val == default_val:
+            if f.name in obj.__dict__:
+                del obj.__dict__[f.name]
+        else:
+            # Otherwise, if the field is itself a dataclass, clean it recursively.
+            if is_dataclass(current_val):
+                clean_dataclass(current_val)
+            # Also, if this field is a list, clean any dataclass element contained.
+            elif isinstance(current_val, list):
+                for item in current_val:
+                    clean_dataclass(item)
     return obj
 
 def deep_asdict(obj):
-    """Recursively converts dataclass objects to dictionaries."""
     if is_dataclass(obj):
-        return {k: deep_asdict(v) for k, v in asdict(obj).items()}
+        d = asdict(obj)
+        new_dict = {}
+        for k, v in d.items():
+            cleaned = deep_asdict(v)
+            # Here filter out keys with "empty" values, e.g. None or empty string.
+            if cleaned not in (None, "", {}, []):
+                new_dict[k] = cleaned
+        return new_dict
     elif isinstance(obj, list):
-        return [deep_asdict(item) for item in obj]
+        new_list = []
+        for item in obj:
+            cleaned = deep_asdict(item)
+            if cleaned not in (None, "", {}, []):
+                new_list.append(cleaned)
+        return new_list
     elif isinstance(obj, dict):
-        return {k: deep_asdict(v) for k, v in obj.items()}
+        new_dict = {}
+        for k, v in obj.items():
+            cleaned = deep_asdict(v)
+            if cleaned not in (None, "", {}, []):
+                new_dict[k] = cleaned
+        return new_dict
     else:
-        return obj 
+        return obj
 
 def create_immunization_object(patient: Patient, vaccine_type: str) -> Immunization:
     practitioner = Practitioner(name=[HumanName(family="Furlong", given=["Darren"])])

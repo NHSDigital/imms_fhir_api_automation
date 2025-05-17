@@ -40,6 +40,7 @@ def load_patient_by_id(id: str) -> Patient:
                 return Patient(
                     identifier=[identifier],
                     name=[name],
+                    gender=row["gender"],
                     birthDate=row["birth_date"],
                     address=[address]
                 )

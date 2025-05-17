@@ -25,12 +25,12 @@ class Coding:
 @dataclass
 class TargetDisease:
     coding: List[Coding]
-    text: Optional[str] = None  
+    text: Optional[str] = None
 
 @dataclass
 class ProtocolApplied:
     targetDisease: List[TargetDisease]
-    doseNumberPositiveInt:  int
+    doseNumberPositiveInt: int
 
 @dataclass
 class CodeDetails:
@@ -51,7 +51,7 @@ class CodeableConcept:
 
 @dataclass
 class Type:
-    coding: List[Identifier_Coding]  # Ensuring it accepts multiple Coding instances
+    coding: List[Identifier_Coding]  
     text: Optional[str] = None
 
 @dataclass
@@ -60,12 +60,17 @@ class Period:
     end: str
 
 @dataclass
-class Identifier:
+class Patient_Identifier:
     system: str
     value: Optional[str] = None
-    use: Optional[str] = None  
-    type: Optional[Type] = None  
-    period: Optional[Period] = None  
+
+@dataclass
+class Identifier:
+    system: str
+    value: Optional[str] = None 
+    use: Optional[str] = None
+    type: Optional[Type] = None
+    period: Optional[Period] = None
 
 @dataclass
 class HumanName:
@@ -87,19 +92,19 @@ class Address:
 
 @dataclass
 class Practitioner:
+    name: List[HumanName]
     resourceType: str = "Practitioner"
     id: str = "Pract1"
-    name: List[HumanName] = field(default_factory=list)
 
 @dataclass
 class Patient:
+    identifier: List[Patient_Identifier]
+    name: List[HumanName]
+    gender: str
+    birthDate: str
+    address: List[Address]
     resourceType: str = "Patient"
     id: str = "Pat1"
-    identifier: List[Identifier] = field(default_factory=list)
-    name: List[HumanName] = field(default_factory=list)
-    gender: str = "unknown"
-    birthDate: str = "1980-01-01"
-    address: List[Address] = field(default_factory=list)
 
 @dataclass
 class Extension:
@@ -112,31 +117,31 @@ class Performer:
 
 @dataclass
 class ReasonCode:
-    coding: List[Coding] = field(default_factory=list)
+    coding: List[Coding]
     text: Optional[str] = None
 
 @dataclass
 class Immunization:
+    contained: List[Any]
+    extension: List[Extension]
+    identifier: List[Identifier]
+    vaccineCode: CodeDetails
+    patient: Dict[str, str]
+    manufacturer: Dict[str, str]
+    location: Identifier_Coding
+    site: CodeDetails
+    route: CodeDetails
+    doseQuantity: DoseQuantity
+    performer: List[Performer]
+    reasonCode: List[ReasonCode]
+    protocolApplied: List[ProtocolApplied]
     resourceType: str = "Immunization"
-    contained: List[Any] = field(default_factory=list)
-    extension: List[Extension] = field(default_factory=list)
-    identifier: List[Identifier] = field(default_factory=list)
     status: str = "completed"
-    vaccineCode: CodeDetails = None
-    patient: Dict[str, str] = field(default_factory=dict)
     occurrenceDateTime: str = ""
     recorded: str = ""
     primarySource: bool = True
-    manufacturer: Dict[str, str] = field(default_factory=dict)
-    location: Identifier_Coding = None
     lotNumber: str = ""
     expirationDate: str = ""
-    site: CodeDetails = None
-    route: CodeDetails = None
-    doseQuantity: DoseQuantity =None
-    performer: List[Performer] = None
-    reasonCode: List[ReasonCode] = None
-    protocolApplied: List[ProtocolApplied] = None
 
 @dataclass
 class ResponsePatient:
@@ -146,31 +151,32 @@ class ResponsePatient:
 
 @dataclass
 class ImmunizationResponse:
-    resourceType: str =" "
-    id: str =" "
-    extension: List[Extension] = field(default_factory=list)
-    identifier: List[Identifier] = field(default_factory=list)
-    status: str = " "
-    vaccineCode:CodeDetails = field(default_factory=list)
-    patient: ResponsePatient = None
-    occurrenceDateTime: str =" "
-    recorded: str = " "
-    lotNumber: str =" "
-    expirationDate: str =" "
-    primarySource: bool = True
-    location: Dict[str, Any] = field(default_factory=list)
-    manufacturer: Dict[str, Any] = field(default_factory=list)    
-    site: CodeDetails = field(default_factory=list)  
-    route: CodeDetails = field(default_factory=list)  
-    doseQuantity: DoseQuantity = None
-    performer: List[Performer] = None
-    reasonCode: List[ReasonCode] = None
-    protocolApplied: List[ProtocolApplied] = None
+    resourceType: str
+    id: str
+    extension: List[Extension]
+    identifier: List[Identifier]
+    status: str
+    vaccineCode: CodeDetails
+    patient: ResponsePatient
+    occurrenceDateTime: str
+    recorded: str
+    lotNumber: str
+    expirationDate: str
+    primarySource: bool
+    location: Identifier_Coding
+    manufacturer: Dict[str, Any]
+    site: CodeDetails
+    route: CodeDetails
+    doseQuantity: DoseQuantity
+    performer: List[Performer]
+    reasonCode: List[ReasonCode]
+    protocolApplied: List[ProtocolApplied]
 
 @dataclass
 class Link:
     relation: str
     url: str
+
 @dataclass
 class Entry:
     fullUrl: str
