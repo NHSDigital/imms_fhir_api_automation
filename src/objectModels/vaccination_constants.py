@@ -43,12 +43,14 @@ ROUTE_MAP = [
 ]
 
 
-DOSE_QUANTITY_MAP = {
+DOSE_QUANTITY_MAP = [
+    {
     "value": 0.3,
     "unit": "Inhalation - unit of product usage",
     "system": "http://snomed.info/sct",
     "code": "2622896019"
-}
+    }
+]
 
 REASON_CODE_MAP = [
     Coding(system="http://snomed.info/sct", code="443684005", display="Disease outbreak (event)"),

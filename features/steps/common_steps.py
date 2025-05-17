@@ -19,7 +19,7 @@ def Trigger_the_post_create_request(context):
     context.corrID = context.headers['X-Correlation-ID']
     context.reqID = context.headers['X-Request-ID']
     context.create_object = clean_dataclass(context.immunization_object)
-    context.request = asdict(context.create_object)
+    context.request = deep_asdict(context.create_object)
     context.response = requests.post(context.url, json=context.request, headers=context.headers)
     print(f"Create Request is {json.dumps(context.request)}" )
     print(f"Create Request is {context.response}" )

@@ -1,30 +1,71 @@
 from dataclasses import dataclass, field, asdict
 from typing import List, Optional, Dict, Any
 
-@dataclass 
+@dataclass
 class Vaccine_code:
     system: str
     code: str
     display: str
-    manufacturer : str
+    manufacturer: str
+
+@dataclass
+class Identifier_Coding:
+    system: str
+    code: str
+    display: str
+    userSelected: Optional[bool] = None
+    version: Optional[str] = None
 
 @dataclass
 class Coding:
     system: str
     code: str
-    display: str
+    display: Optional[str] = None
+
+@dataclass
+class TargetDisease:
+    coding: List[Coding]
+    text: Optional[str] = None  
+
+@dataclass
+class ProtocolApplied:
+    targetDisease: List[TargetDisease]
+    doseNumberPositiveInt:  int
+
+@dataclass
+class CodeDetails:
+    coding: List[Coding]
+    text: Optional[str] = None
+
+@dataclass
+class DoseQuantity:
+    value: float
+    unit: str
+    system: str
+    code: str
 
 @dataclass
 class CodeableConcept:
     coding: List[Coding]
+    text: Optional[str] = None
+
+@dataclass
+class Type:
+    coding: List[Identifier_Coding]  # Ensuring it accepts multiple Coding instances
+    text: Optional[str] = None
+
+@dataclass
+class Period:
+    start: str
+    end: str
 
 @dataclass
 class Identifier:
     system: str
-    value: str
+    value: Optional[str] = None
     use: Optional[str] = None  
-    type: Optional[Dict[str, Any]] = None  
-    period: Optional[Dict[str, str]] = None
+    type: Optional[Type] = None  
+    period: Optional[Period] = None  
 
 @dataclass
 class HumanName:
@@ -68,9 +109,11 @@ class Extension:
 @dataclass
 class Performer:
     actor: Dict[str, Any]
+
 @dataclass
 class ReasonCode:
     coding: List[Coding] = field(default_factory=list)
+    text: Optional[str] = None
 
 @dataclass
 class Immunization:
@@ -79,21 +122,21 @@ class Immunization:
     extension: List[Extension] = field(default_factory=list)
     identifier: List[Identifier] = field(default_factory=list)
     status: str = "completed"
-    vaccineCode: List[Coding] = None
+    vaccineCode: CodeDetails = None
     patient: Dict[str, str] = field(default_factory=dict)
     occurrenceDateTime: str = ""
     recorded: str = ""
     primarySource: bool = True
     manufacturer: Dict[str, str] = field(default_factory=dict)
-    location: Dict[str, Any] = field(default_factory=dict)
+    location: Identifier_Coding = None
     lotNumber: str = ""
     expirationDate: str = ""
-    site: List[Coding] = None
-    route: List[Coding] = None
-    doseQuantity: Dict[str, Any] = field(default_factory=dict)
-    performer: List[Performer] = field(default_factory=list)
-    reasonCode: List[ReasonCode] = field(default_factory=list)
-    protocolApplied: List[Dict[str, Any]] = field(default_factory=list)
+    site: CodeDetails = None
+    route: CodeDetails = None
+    doseQuantity: DoseQuantity =None
+    performer: List[Performer] = None
+    reasonCode: List[ReasonCode] = None
+    protocolApplied: List[ProtocolApplied] = None
 
 @dataclass
 class ResponsePatient:
@@ -108,7 +151,7 @@ class ImmunizationResponse:
     extension: List[Extension] = field(default_factory=list)
     identifier: List[Identifier] = field(default_factory=list)
     status: str = " "
-    vaccineCode:List[Coding] = field(default_factory=list)
+    vaccineCode:CodeDetails = field(default_factory=list)
     patient: ResponsePatient = None
     occurrenceDateTime: str =" "
     recorded: str = " "
@@ -117,12 +160,12 @@ class ImmunizationResponse:
     primarySource: bool = True
     location: Dict[str, Any] = field(default_factory=list)
     manufacturer: Dict[str, Any] = field(default_factory=list)    
-    site: List[Coding] = field(default_factory=list)  
-    route: List[Coding] = field(default_factory=list)  
-    doseQuantity: Dict[str, Any] = field(default_factory=dict)
-    performer: List[Performer] = field(default_factory=list)
-    reasonCode: List[ReasonCode] = field(default_factory=list) 
-    protocolApplied: List[Dict[str, Any]] = field(default_factory=list)
+    site: CodeDetails = field(default_factory=list)  
+    route: CodeDetails = field(default_factory=list)  
+    doseQuantity: DoseQuantity = None
+    performer: List[Performer] = None
+    reasonCode: List[ReasonCode] = None
+    protocolApplied: List[ProtocolApplied] = None
 
 @dataclass
 class Link:
