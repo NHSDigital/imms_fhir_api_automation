@@ -51,6 +51,15 @@ def TiggerSearchPostRequest(context):
     print(f"Search Post request {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
     
+@when(parsers.parse("Send a search request with POST method With the invalid '{NHSNumber}'"))
+def send_invalid_post_request(context, NHSNumber):
+    context.url = searchPOSTURL(context.baseUrl)
+    context.headers = searchPOSTHeaders(context.token)
+    context.corrID = context.headers['X-Correlation-ID']
+    context.reqID = context.headers['X-Request-ID']
+    context.request = convert_to_form_data(set_request_data(NHSNumber, context.vaccine_type, datetime.today().strftime("%Y-%m-%d")))
+    print(f"Search Post request {context.request}")
+    context.response = requests.post(context.url, headers=context.headers, data=context.request)
 
 # @given('After passing all the valid parameters')
 # def queryParamSearch(context):  
@@ -88,8 +97,28 @@ def TiggerSearchPostRequest(context):
 #     assert context.statusCode == 400, f"Failed to get the status code 400. Status code Received: {context.statusCode}. Response: {context.resText}"
 #     # context.soft_assertions.assert_condition(result['MAKE'] == MAKE, f"Make match: {result['MAKE']} = {MAKE}")
 
-# @then('The Search Response JSONs should contain the error message for invalid NHS Number') 
-# def operationOutcomeInvalidNHSNo(context):
+@then('The Search Response JSONs should contain the error message for invalid NHS Number') 
+def operationOutcomeInvalidNHSNo(context):
+    error_response = parse_errorResponse(context.response.json())
+    
+    uuid_obj = uuid.UUID(error_response.id, version=4)
+    check.is_true(isinstance(uuid_obj, uuid.UUID), f"Id is not UUID {error_response.id}")
+    
+    fields_to_compare = [
+        ("ResourceType", error_response.resourceType, ERROR_MAP["Common_field"]["resourceType"]),
+        ("Meta_Profile", error_response.meta.profile[0], ERROR_MAP["Common_field"]["profile"]),
+        ("Coding_system",  error_response.issue[0].details.coding[0].system, ERROR_MAP["Common_field"]["system"]),
+        ("Coding_Code",  error_response.issue[0].details.coding[0].code, ERROR_MAP["Common_field"]["code"]),
+        ("severity",  error_response.issue[0].severity, ERROR_MAP["invalid_NHSNumber"]["severity"]),
+        ("Issue_Code",  error_response.issue[0].code, ERROR_MAP["invalid_NHSNumber"]["code"]),
+        ("Diagnostics",  error_response.issue[0].diagnostics, ERROR_MAP["invalid_NHSNumber"]["diagnostics"]),
+    ]
+
+    for name, expected, actual in fields_to_compare:
+        check.is_true(
+            expected == actual,
+            f"Expected {name}: {expected}, got {actual}"
+        )
 #     # code = config['OPERATIONOUTCOME']['codeInvalid']
 #     # diagnostics = config['OPERATIONOUTCOME']['diagnosticsInvalid']
 #     code = config['OPERATIONOUTCOME']['codeInvariant']
@@ -241,13 +270,23 @@ def TiggerSearchPostRequest(context):
 
 @then('The Search Response JSONs should contain the detail of the immunization events created above')
 def validateImmsID(context):
-        data = context.response.json()
-        context.parsed_search__object = parse_FHIRImmunizationResponse(data)
+    data = context.response.json()
+    context.parsed_search_object = parse_FHIRImmunizationResponse(data)
 
-        context.created_event = find_entry_by_Imms_id(context.parsed_search__object, context.location)
-        context.Patient_fullUrl = context.created_event.resource.patient.reference
-        print (f"event is found  {context.created_event}")
-        assert (context.created_event is not None, f"No object found with {context.location}")
+    context.created_event = find_entry_by_Imms_id(context.parsed_search_object, context.location)
+    
+    if context.created_event is None:
+        raise AssertionError(f"No object found with {context.location}")
+
+    patient_reference = getattr(context.created_event.resource.patient, "reference", None)
+
+    if not patient_reference:
+        raise ValueError("Patient reference is missing in the found event.")
+
+    # Assign to context for further usage
+    context.Patient_fullUrl = patient_reference
+
+    print(f"Event is found: {context.created_event}")
     # context.finalResponseJson = {}
     # context.finalResponseJsonPat = {}
     # context.expectedImmsID = {}
@@ -312,13 +351,13 @@ def validateJsonImms(context):
         )
 
 @then('The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient')
-def validateJsonPat(context):
-    response_patient_entry = find_patient_by_fullurl(context.parsed_search__object,context.Patient_fullUrl)
+def validateJsonPat(context):        
+    response_patient_entry =  find_patient_by_fullurl(context.parsed_search_object)
     assert response_patient_entry is not None, f"No Patient found with fullUrl {context.Patient_fullUrl}"
     print(f"Patient entry is :{response_patient_entry}")
     
     response_patient = response_patient_entry.resource
-
+    check.is_true(context.Patient_fullUrl == response_patient_entry.fullUrl, f"Expected Patient ful, got {response_patient_entry.fullUrl}")
     expected_nhs_number = context.create_object.contained[1].identifier[0].value     
 
     check.is_true(response_patient.resourceType == "Patient", f"Expected Patient resource, got {response_patient.resourceType}")

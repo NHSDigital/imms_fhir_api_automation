@@ -18,15 +18,19 @@ def Trigger_the_post_create_request(context):
     context.headers = createPOSTHeaders(context.token)
     context.corrID = context.headers['X-Correlation-ID']
     context.reqID = context.headers['X-Request-ID']
-    context.create_object = clean_dataclass(context.immunization_object)
-    context.request = deep_asdict(context.create_object)
+    context.create_object = context.immunization_object
+    context.request = context.create_object.dict(exclude_none=True, exclude_unset=True)
+
+    # context.create_object = clean_dataclass(context.immunization_object)
+    # context.request = deep_asdict(context.create_object)
     context.response = requests.post(context.url, json=context.request, headers=context.headers)
     print(f"Create Request is {json.dumps(context.request)}" )
     print(f"Create Request is {context.response}" )
 
-@then(parsers.parse("The request will be successful with the status code '{statusCode:d}'"))
+@then(parsers.parse("The request will be unsuccessful with the status code '{statusCode}'"))
+@then(parsers.parse("The request will be successful with the status code '{statusCode}'"))
 def The_request_will_be_successful_with_the_status_code(context, statusCode):
-    assert context.response.status_code == statusCode
+    assert context.response.status_code == int(statusCode)
 
 
 @then('The location key in header will contain the Immunization Id')

@@ -1,12 +1,11 @@
-from src.objectModels.dataObjects import *
-from src.objectModels.vaccination_constants import *
+from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta, timezone
-from dataclasses import MISSING, is_dataclass, fields
-from typing import Any
 import random
 import uuid
+from src.objectModels.dataObjects import *
+from src.objectModels.vaccination_constants import *
 
-def build_vaccine_procedure_extension(vaccine_type: str, text: str = "") -> Extension:
+def build_vaccine_procedure_extension(vaccine_type: str, text: str = None) -> Extension:
     try:
         selected_vaccine_procedure = random.choice(VACCINATION_PROCEDURE_MAP[vaccine_type.upper()])
     except KeyError:
@@ -20,75 +19,33 @@ def build_vaccine_procedure_extension(vaccine_type: str, text: str = "") -> Exte
         )
     )
 
-
-def build_coding_concept(coding_map: List[Any], text: str = "") -> CodeDetails:
-    selected = random.choice(coding_map)
-    
-    return CodeDetails(
-        coding=[selected],
-        text=text
+def build_location_identifier() -> Location:
+    return Location(
+        identifier=LocationIdentifier(
+            system="https://fhir.nhs.uk/Id/ods-organization-code",
+            value="X99999"
+        )
     )
 
+def get_vaccine_details(vaccine_type: str, vacc_text: str = None, lot_number: str = "", expiry_date: str = "") -> Dict[str, Any]:
+    selected_vaccine = random.choice(VACCINE_CODE_MAP[vaccine_type.upper()])  
 
-def build_location_identifier() -> Identifier_Coding:
-    coding_list = [
-        Identifier_Coding(
-            system="http://terminology.hl7.org/CodeSystem/v2-0203",
-            version="Test version",
-            code="123456",
-            display="Test display",
-            userSelected=True
-        )
-    ]
-
-    return {
-        "identifier": Identifier(
-            value="X99999",
-            system="https://fhir.nhs.uk/Id/ods-organization-code",
-            use="official",
-            type=IType(
-                coding=coding_list,
-                text="test string Location"
-            ),
-            period=Period(
-                start="2000-01-01",
-                end="2025-01-01"
-            )
-        )
-    }
-
-def build_protocol_applied(vaccine_type: str, dose_number: int = 1, text: str = "") -> List[ProtocolApplied]:
-    selected_disease = random.choice(PROTOCOL_DISEASE_MAP.get(vaccine_type.upper(), []))
-
-    if not selected_disease:
-        raise ValueError(f"Unsupported vaccine type: {vaccine_type}")
-
-    return [
-        ProtocolApplied(
-            targetDisease=[TargetDisease(coding=[selected_disease], text=text)],  
-            doseNumberPositiveInt=dose_number
-        )
-    ]
-
-def get_vaccine_details(vaccine_type: str, vacc_text: str = "", lot_number: str = "", expiry_date: str ="") -> Dict[str, Any]:
-    selected_vaccine = random.choice(VACCINE_CODE_MAP[vaccine_type.upper()])
-
-    vaccine_code = CodeDetails(
+    vaccine_code = CodeableConcept(
         coding=[Coding(
-            system=selected_vaccine.system,
-            code=selected_vaccine.code,
-            display=selected_vaccine.display
-        )],  # Only include relevant Coding attributes
+            system=selected_vaccine["system"],  
+            code=selected_vaccine["code"], 
+            display=selected_vaccine["display"]
+        )],
         text=vacc_text
     )
 
-    manufacturer = {"display": selected_vaccine.manufacturer}
+    manufacturer = {"display": selected_vaccine["manufacturer"]}  
 
     if not lot_number:
         lot_number = str(random.randint(100000, 999999))
 
     if not expiry_date:
-        future_date = datetime.now() + timedelta(days=365 * 2)  # 2 years from today
+        future_date = datetime.now() + timedelta(days=365 * 2)  
         expiry_date = future_date.strftime('%Y-%m-%d')
 
     return {
@@ -98,19 +55,20 @@ def get_vaccine_details(vaccine_type: str, vacc_text: str = "", lot_number: str 
         "expiryDate": expiry_date
     }
 
+
 def build_performer() -> List[Performer]:
     return [
-        Performer(actor={"reference": "#Pract1"}),
-        Performer(actor={
-            "type": "Organization",
-            "display": "UNIVERSITY HOSPITAL OF WALES",
-            "identifier": Identifier(
+        Performer(actor=Reference(reference="#Pract1", type="Practitioner")),
+        Performer(actor=Reference(
+            reference="Organization/B0C4P",  
+            type="Organization",
+            identifier=Identifier(
                 value="B0C4P",
                 system="https://fhir.nhs.uk/Id/ods-organization-code",
                 use="usual",
-                type=IType(
+                type=CodeableConcept(
                     coding=[
-                        Identifier_Coding(
+                        Coding(
                             system="http://terminology.hl7.org/CodeSystem/v2-0203",
                             code="123456",
                             display="Test display performer",
@@ -124,121 +82,48 @@ def build_performer() -> List[Performer]:
                     start="2000-01-01",
                     end="2025-01-01"
                 )
-            )
-        })
+            ),
+            display="UNIVERSITY HOSPITAL OF WALES"
+        ))
     ]
 
-def get_dateTime(date: str = '') -> str:
-    if not date:
-        date = datetime.now(timezone.utc).isoformat(timespec='milliseconds')
-    return date
-
-def get_unique_identifier()-> List[Dict[str, Any]]:
-    return [Identifier(system="https://supplierABC/identifiers/vacc", value=str(uuid.uuid4()))]
-
-def build_reason_code(reason_code_map: List[Any], text: str = "") -> List[ReasonCode]:
-    selected = random.choice(reason_code_map)
-
-    return [
-        ReasonCode(
-            coding=[Coding(
-                system=selected.system,
-                code=selected.code,
-                display=selected.display
-            )],
-            text=text
-        )
-    ]
-
-def dose_quantity_selection() -> DoseQuantity:
-    return DoseQuantity(**random.choice(DOSE_QUANTITY_MAP))
-
-def clean_dataclass(obj: object) -> object:
-    if not is_dataclass(obj):
-        return obj
-
-    for f in fields(obj):
-        current_val = getattr(obj, f.name)
-
-        # Normalize text fields: convert "" to None
-        if f.name == "text" and current_val == "":
-            setattr(obj, f.name, None)
-            current_val = None
-
-        # Remove fields that are None
-        if current_val is None:
-            if f.name in obj.__dict__:
-                del obj.__dict__[f.name]
-            continue
-
-        # Handle default or default_factory
-        default_val = MISSING
-        if f.default is not MISSING:
-            default_val = f.default
-        elif f.default_factory is not MISSING:
-            default_val = f.default_factory()
-
-        # Remove fields equal to default
-        if default_val is not MISSING and current_val == default_val:
-            if f.name in obj.__dict__:
-                del obj.__dict__[f.name]
-        else:
-            # Recurse for nested dataclasses
-            if is_dataclass(current_val):
-                clean_dataclass(current_val)
-            elif isinstance(current_val, list):
-                for item in current_val:
-                    clean_dataclass(item)
-
-    return obj
-
-def deep_asdict(obj):
-    if is_dataclass(obj):
-        d = asdict(obj)
-        new_dict = {}
-        for k, v in d.items():
-            cleaned = deep_asdict(v)
-            # Here filter out keys with "empty" values, e.g. None or empty string.
-            if cleaned not in (None, "", {}, []):
-                new_dict[k] = cleaned
-        return new_dict
-    elif isinstance(obj, list):
-        new_list = []
-        for item in obj:
-            cleaned = deep_asdict(item)
-            if cleaned not in (None, "", {}, []):
-                new_list.append(cleaned)
-        return new_list
-    elif isinstance(obj, dict):
-        new_dict = {}
-        for k, v in obj.items():
-            cleaned = deep_asdict(v)
-            if cleaned not in (None, "", {}, []):
-                new_dict[k] = cleaned
-        return new_dict
+def remove_empty_fields(data):
+    """ Recursively removes fields with empty values from a dictionary. """
+    if isinstance(data, dict):
+        return {k: remove_empty_fields(v) for k, v in data.items() if v != ""}
+    elif isinstance(data, list):
+        return [remove_empty_fields(item) for item in data]
     else:
-        return obj
-
+        return data
+    
 def create_immunization_object(patient: Patient, vaccine_type: str) -> Immunization:
-    practitioner = Practitioner(name=[HumanName(family="Furlong", given=["Darren"])])
+    practitioner = Practitioner(
+        resourceType="Practitioner",  # ✅ Explicitly set resourceType
+        id="Pract1",  
+        name=[HumanName(family="Furlong", given=["Darren"])]
+    )
     extension = [build_vaccine_procedure_extension(vaccine_type.upper())]
     vaccine_details = get_vaccine_details(vaccine_type)
+
     return Immunization(
+        resourceType="Immunization",
         contained=[practitioner, patient],
         extension=extension,
-        identifier=get_unique_identifier(),
-        vaccineCode=vaccine_details["vaccine_code"],
-        patient={"reference": f"#{patient.id}"},
-        occurrenceDateTime=get_dateTime(),
-        recorded=get_dateTime(),
+        identifier=[Identifier(system="https://supplierABC/identifiers/vacc", value=str(uuid.uuid4()))],
+        vaccineCode=vaccine_details["vaccine_code"], 
+        patient=Reference(reference=f"#{patient.id}", type="Patient"),  
+        occurrenceDateTime=datetime.now(timezone.utc).isoformat(timespec='milliseconds'),
+        recorded=datetime.now(timezone.utc).isoformat(timespec='milliseconds'),
         manufacturer=vaccine_details["manufacturer"],
-        location = build_location_identifier(),
+        location=build_location_identifier(),
         lotNumber=vaccine_details["lotNumber"],
+        status="completed",
+        primarySource= True,
         expirationDate=vaccine_details["expiryDate"],
-        site=build_coding_concept(SITE_MAP),
-        route=build_coding_concept(ROUTE_MAP),
-        doseQuantity=dose_quantity_selection(),
-        performer = build_performer(),
-        reasonCode = build_reason_code(REASON_CODE_MAP),
-        protocolApplied = build_protocol_applied(vaccine_type)
-)
+        site=CodeableConcept(coding=[random.choice(SITE_MAP)]),
+        route=CodeableConcept(coding=[random.choice(ROUTE_MAP)]),
+        doseQuantity=DoseQuantity(**random.choice(DOSE_QUANTITY_MAP)),
+        performer=build_performer(),
+        reasonCode=[CodeableConcept(coding=[random.choice(REASON_CODE_MAP)])],
+        protocolApplied=[ProtocolApplied(targetDisease=[CodeableConcept(coding=[random.choice(PROTOCOL_DISEASE_MAP.get(vaccine_type.upper(), []))])], doseNumberPositiveInt=1)]
+    )

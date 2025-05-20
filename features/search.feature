@@ -78,18 +78,17 @@ Feature: Search the immunization of a patient
 #       | 1 | COVID19, FLU, RSV | Immunization:patient | None     | None   | # Single Digit NHS Number  |
 #       | 1000000000000000001 | COVID19, FLU, RSV | Immunization:patient | None     | None   | # Long NHS Number  |
 
+@vaccine_type_RSV
+Scenario Outline: Verify that the POST method of Search API will throw error for an invalid patient NHS Number
+    When Send a search request with POST method With the invalid '<NHSNumber>'
+    Then The request will be unsuccessful with the status code '400'
+    And The Search Response JSONs should contain the error message for invalid NHS Number
 
-#   Scenario Outline: Verify that the POST method of Search API will throw error for an invalid patient NHS Number
-#     Given With the invalid "<NHSNumber>" and valid "<DiseaseType>", "<Include>", "<DateFrom>" & "<DateTo>" parameters
-#     When Send a search request with POST method
-#     Then The search will throw error with the status code 400
-#     And The Search Response JSONs should contain the error message for invalid NHS Number
-
-#     Examples: POSTSearchInvalidNHSNumber
-#       | NHSNumber  | DiseaseType       | Include              | DateFrom | DateTo | Description                       |
-#       | 1234567890 | COVID19, FLU, RSV | Immunization:patient | None     | None   | # Invalid MOD11 check NHS Number  |
-#       | 1 | COVID19, FLU, RSV | Immunization:patient | None     | None   | # Single Digit NHS Number  |
-#       | 1000000000000000001 | COVID19, FLU, RSV | Immunization:patient | None     | None   | # Long NHS Number  |    
+    Examples:
+      | NHSNumber  |
+      | 1234567890 | 
+      | 1 |
+      | 1000000000000000001 |    
 
 
 #   ################## Scenario Outline: Verify that the GET method of Search API will throw error for an invalid Disease Type

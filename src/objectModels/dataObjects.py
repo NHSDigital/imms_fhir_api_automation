@@ -1,84 +1,37 @@
-from dataclasses import dataclass, field, asdict
-from typing import List, Optional, Dict, Any, Union
+from typing import  List, Literal, Optional, Dict, Any, Union
+from pydantic import BaseModel, Field
+from typing_extensions import Annotated
 
-@dataclass
-class Vaccine_code:
-    system: str
-    code: str
-    display: str
-    manufacturer: str
-
-@dataclass
-class Identifier_Coding:
-    system: str
-    code: str
-    display: str
-    userSelected: Optional[bool] = None
-    version: Optional[str] = None
-
-@dataclass
-class Coding:
+class Coding(BaseModel):
     system: str
     code: str
     display: Optional[str] = None
 
-@dataclass
-class TargetDisease:
+class CodeableConcept(BaseModel):
     coding: List[Coding]
-    text: Optional[str] = None
+    text: Optional[str] = None 
 
-@dataclass
-class ProtocolApplied:
-    targetDisease: List[TargetDisease]
-    doseNumberPositiveInt: int
-
-@dataclass
-class CodeDetails:
-    coding: List[Coding]
-    text: Optional[str] = None
-
-@dataclass
-class DoseQuantity:
-    value: float
-    unit: str
-    system: str
-    code: str
-
-@dataclass
-class CodeableConcept:
-    coding: List[Coding]
-    text: Optional[str] = None
-
-@dataclass
-class IType:
-    coding: List[Identifier_Coding]  
-    text: Optional[str] = None
-
-@dataclass
-class Period:
+class Period(BaseModel):
     start: str
     end: str
 
-@dataclass
-class Patient_Identifier:
+class Identifier(BaseModel):
     system: str
     value: Optional[str] = None
-
-@dataclass
-class Identifier:
-    system: str
-    value: Optional[str] = None 
     use: Optional[str] = None
-    type: Optional[IType] = None
+    type: Optional[CodeableConcept] = None
     period: Optional[Period] = None
 
-@dataclass
-class HumanName:
+class Reference(BaseModel):
+    reference: str
+    type: str
+    identifier: Optional[Identifier] = None
+
+class HumanName(BaseModel):
     family: str
     given: List[str]
 
-@dataclass
-class Address:
+class Address(BaseModel):
     use: str
     type: str
     text: str
@@ -88,116 +41,138 @@ class Address:
     state: str
     postalCode: str
     country: str
-    period: Dict[str, str]
+    period: Period
 
-@dataclass
-class Practitioner:
-    name: List[HumanName]
+class Practitioner(BaseModel):
     resourceType: str = "Practitioner"
-    id: str = "Pract1"
+    id: str
+    name: List[HumanName]
 
-@dataclass
-class Patient:
-    identifier: List[Patient_Identifier]
+class Patient(BaseModel):
+    resourceType: str 
+    id: str
+    identifier: List[Identifier]
     name: List[HumanName]
     gender: str
     birthDate: str
     address: List[Address]
-    resourceType: str = "Patient"
-    id: str = "Pat1"
 
-@dataclass
-class Extension:
+class Extension(BaseModel):
     url: str
     valueCodeableConcept: CodeableConcept
 
-@dataclass
-class Performer:
-    actor: Dict[str, Any]
+class Performer(BaseModel):
+    actor: Reference  # Updated to match FHIR structure
 
-@dataclass
-class ReasonCode:
+class ReasonCode(BaseModel):
     coding: List[Coding]
     text: Optional[str] = None
 
-@dataclass
-class Immunization:
+class DoseQuantity(BaseModel):
+    value: float
+    unit: str
+    system: str
+    code: str
+
+class ProtocolApplied(BaseModel):
+    targetDisease: List[CodeableConcept]
+    doseNumberPositiveInt: int
+
+class LocationIdentifier(BaseModel):
+    system: str
+    value: str
+
+class Location(BaseModel):
+    identifier: LocationIdentifier
+
+class Immunization(BaseModel):
+    resourceType: str = "Immunization"
     contained: List[Any]
     extension: List[Extension]
     identifier: List[Identifier]
-    vaccineCode: CodeDetails
-    patient: Dict[str, str]
+    status: str = "completed"
+    vaccineCode: CodeableConcept  # Fixed type
+    patient: Reference  # Fixed type
     manufacturer: Dict[str, str]
-    location: Identifier_Coding
-    site: CodeDetails
-    route: CodeDetails
+    location: Location  
+    site: CodeableConcept
+    route: CodeableConcept
     doseQuantity: DoseQuantity
     performer: List[Performer]
     reasonCode: List[ReasonCode]
     protocolApplied: List[ProtocolApplied]
-    resourceType: str = "Immunization"
-    status: str = "completed"
     occurrenceDateTime: str = ""
     recorded: str = ""
     primarySource: bool = True
     lotNumber: str = ""
     expirationDate: str = ""
 
-@dataclass
-class ResponsePatient:
+    class Config:
+        orm_mode = True 
+
+class ResponseActorOrganization(BaseModel):
+    type: str = "Organization"
+    display: Optional[str] = None
+    identifier: Identifier  
+
+class ResponsePerformer(BaseModel):
+    actor: ResponseActorOrganization
+
+
+class Link(BaseModel):
+    relation: str
+    url: str
+
+class Search(BaseModel):
+    mode: str
+
+class PatientIdentifier(BaseModel):
+    system: str
+    value: Optional[str] = None
+
+class ResponsePatient(BaseModel):
     reference: str
     type: str
-    identifier: Patient_Identifier
+    identifier: PatientIdentifier
+   
 
-@dataclass
-class ImmunizationResponse:
-    resourceType: str
+class ImmunizationResponse(BaseModel):
+    resourceType:  Literal["Immunization"]
     id: str
     extension: List[Extension]
     identifier: List[Identifier]
     status: str
-    vaccineCode: CodeDetails
+    vaccineCode: CodeableConcept
     patient: ResponsePatient
     occurrenceDateTime: str
     recorded: str
     lotNumber: str
     expirationDate: str
     primarySource: bool
-    location: Identifier_Coding
+    location: Location
     manufacturer: Dict[str, Any]
-    site: CodeDetails
-    route: CodeDetails
+    site: CodeableConcept
+    route: CodeableConcept
     doseQuantity: DoseQuantity
-    performer: List[Performer]
+    performer: List[ResponsePerformer]
     reasonCode: List[ReasonCode]
     protocolApplied: List[ProtocolApplied]
 
-@dataclass
-class Link:
-    relation: str
-    url: str
-
-@dataclass
-class Search:
-    mode: str
-
-@dataclass
-class PatientResource:
-    resourceType: str
+class PatientResource(BaseModel):
+    resourceType: Literal["Patient"]
     id: str
-    identifier: List[Patient_Identifier]
+    identifier: List[PatientIdentifier]
 
-@dataclass
-class Entry:
+class Entry(BaseModel):
     fullUrl: str
-    resource: Union[ImmunizationResponse, PatientResource] 
-    search: Search
+    resource:Annotated[
+        Union[ImmunizationResponse, PatientResource],
+        Field(discriminator="resourceType")]
+    search: Dict[str, str]
 
-@dataclass
-class FHIRImmunizationResponse:
+class FHIRImmunizationResponse(BaseModel):
     resourceType: str
-    type: str
-    link: List[Link]
-    entry: List[Entry]
-    total: int
-
+    type: Optional[str] = None  
+    link: Optional[List[Link]] = []  
+    entry: Optional[List[Entry]] = []  
+    total: Optional[int] = None

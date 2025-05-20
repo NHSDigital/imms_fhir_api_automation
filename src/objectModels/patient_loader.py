@@ -1,5 +1,5 @@
 import csv
-from src.objectModels.dataObjects import Identifier, HumanName, Address, Patient
+from src.objectModels.dataObjects import  HumanName, Address, Identifier, Patient
 
 csv_path = "input/testData.csv"
 
@@ -38,6 +38,8 @@ def load_patient_by_id(id: str) -> Patient:
                 )
 
                 return Patient(
+                    id="Pat1",
+                    resourceType = "Patient",
                     identifier=[identifier],
                     name=[name],
                     gender=row["gender"],
