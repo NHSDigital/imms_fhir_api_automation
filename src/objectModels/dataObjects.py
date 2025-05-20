@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field, asdict
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Union
 
 @dataclass
 class Vaccine_code:
@@ -50,7 +50,7 @@ class CodeableConcept:
     text: Optional[str] = None
 
 @dataclass
-class Type:
+class IType:
     coding: List[Identifier_Coding]  
     text: Optional[str] = None
 
@@ -69,7 +69,7 @@ class Identifier:
     system: str
     value: Optional[str] = None 
     use: Optional[str] = None
-    type: Optional[Type] = None
+    type: Optional[IType] = None
     period: Optional[Period] = None
 
 @dataclass
@@ -147,7 +147,7 @@ class Immunization:
 class ResponsePatient:
     reference: str
     type: str
-    identifier: Identifier
+    identifier: Patient_Identifier
 
 @dataclass
 class ImmunizationResponse:
@@ -178,10 +178,20 @@ class Link:
     url: str
 
 @dataclass
+class Search:
+    mode: str
+
+@dataclass
+class PatientResource:
+    resourceType: str
+    id: str
+    identifier: List[Patient_Identifier]
+
+@dataclass
 class Entry:
     fullUrl: str
-    resource: ImmunizationResponse
-    search: Dict[str, str]
+    resource: Union[ImmunizationResponse, PatientResource] 
+    search: Search
 
 @dataclass
 class FHIRImmunizationResponse:
@@ -190,3 +200,4 @@ class FHIRImmunizationResponse:
     link: List[Link]
     entry: List[Entry]
     total: int
+

@@ -242,9 +242,10 @@ def TiggerSearchPostRequest(context):
 @then('The Search Response JSONs should contain the detail of the immunization events created above')
 def validateImmsID(context):
         data = context.response.json()
-        context.parsed_search__object = parse_dataclass(FHIRImmunizationResponse, data)
+        context.parsed_search__object = parse_FHIRImmunizationResponse(data)
 
         context.created_event = find_entry_by_Imms_id(context.parsed_search__object, context.location)
+        context.Patient_fullUrl = context.created_event.resource.patient.reference
         print (f"event is found  {context.created_event}")
         assert (context.created_event is not None, f"No object found with {context.location}")
     # context.finalResponseJson = {}
@@ -271,8 +272,10 @@ def validateImmsID(context):
 
 @then('The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization')
 def validateJsonImms(context):
-    request_patient = context.create_object.contained[1]
-    response_patient = context.created_event.resource.patient
+    create_obj = context.create_object
+    created_event= context.created_event.resource
+    request_patient = create_obj.contained[1]
+    response_patient = created_event.patient
     check.is_true (request_patient.identifier[0].value== response_patient.identifier.value,
                     f"expected patient NHS Number {request_patient.identifier[0].value}  actual nhs number {response_patient.identifier.value}")
     referencePattern = r"^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
@@ -282,98 +285,48 @@ def validateJsonImms(context):
     
     check.is_true("Patient"== response_patient.type,
                    f"Expected is  Patient nut actual patient Type is : {response_patient.type}")
-
-    check.is_true("Immunization"== context.created_event.resource.resourceType, f"Expected resource type is Immunization but received id : {response_patient.type}")
-
-    expected_fullUrl = config['SEARCH']['fullUrlRes'] + context.location
-    actual_fullURl = context.created_event.fullUrl
-    check.is_true (expected_fullUrl== actual_fullURl, f"Expected url is {expected_fullUrl} but received is {actual_fullURl}")
-
-    check.is_true(context.create_object.status==context.created_event.resource.status, 
-                  f"Expected Status is {context.create_object.status} but received status: {context.created_event.resource.status}")
     
     expected_recorded = covert_to_expected_date_format(context.create_object.recorded)
-    check.is_true(expected_recorded== context.created_event.resource.recorded, 
-                  f"Expected recorded date {expected_recorded} but received recorded date: {context.created_event.resource.recorded}")
-    
-    check.is_true(context.create_object.lotNumber==context.created_event.resource.lotNumber, 
-                  f"Expected lotNumber {context.create_object.lotNumber} but received lotNumber: {context.created_event.resource.lotNumber}")
-    
-    check.is_true(context.create_object.expirationDate== context.created_event.resource.expirationDate, 
-                  f"Expected expirationDate {context.create_object.expirationDate} but received expirationDate: {context.created_event.resource.expirationDate}")
-    
-    check.is_true(context.create_object.primarySource==context.created_event.resource.primarySource, 
-                  f"Expected primarySource {context.create_object.primarySource} but received primarySource: {context.created_event.resource.primarySource}")
 
+    expected_fullUrl = config['SEARCH']['fullUrlRes'] + context.location
 
-    check.is_true(context.create_object.doseQuantity==context.created_event.resource.doseQuantity, 
-                  f"Expected doseQuantity {context.create_object.doseQuantity} but received doseQuantity: {context.created_event.resource.doseQuantity}")
-    
-    check.is_true(context.create_object.site==context.created_event.resource.site, 
-                  f"Expected site {context.create_object.site} but received site: {context.created_event.resource.site}")
-    
-    check.is_true(context.create_object.manufacturer==context.created_event.resource.manufacturer, 
-                  f"Expected manufacturer {context.create_object.manufacturer} but received manufacturer: {context.created_event.resource.manufacturer}")
-    
-    check.is_true(context.create_object.vaccineCode==context.created_event.resource.vaccineCode, 
-                  f"Expected vaccineCode {context.create_object.vaccineCode} but received vaccineCode: {context.created_event.resource.vaccineCode}")
-    
-    check.is_true(context.create_object.reasonCode==context.created_event.resource.reasonCode, 
-                  f"Expected reasonCode {context.create_object.reasonCode} but received reasonCode: {context.created_event.resource.reasonCode}")
-    
-    check.is_true(context.create_object.protocolApplied==context.created_event.resource.protocolApplied, 
-                  f"Expected protocolApplied {context.create_object.protocolApplied} but received protocolApplied: {context.created_event.resource.protocolApplied}")
-     
-    #     performerReq = reqJson["performer"][int(config['SEARCH']['performerFieldNoReq'])]
-    #     performerRes = resJson["resource"]["performer"][int(config['SEARCH']['performerFieldNoRes'])]
-    #     contPatientFieldNoIdReq = reqJson["contained"][int(config['SEARCH']['containedPatientFieldNoReq'])]['identifier'][int(config['SEARCH']['patientIdFieldNoReq'])]
-    #     contPatientFieldNoIdRes = resJson["resource"]["patient"]["identifier"]
-    #     referencePattern = r"^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"       
+    fields_to_compare = [
+        ("FullUrl", expected_fullUrl, context.created_event.fullUrl),
+        ("status", create_obj.status, created_event.status),
+        ("Recorded", expected_recorded, created_event.recorded),
+        ("lotNumber", create_obj.lotNumber, created_event.lotNumber),
+        ("expirationDate", create_obj.expirationDate, created_event.expirationDate),
+        ("primarySource", create_obj.primarySource, created_event.primarySource),
+        ("doseQuantity", create_obj.doseQuantity, created_event.doseQuantity),
+        ("site", create_obj.site, created_event.site),
+        ("manufacturer", create_obj.manufacturer, created_event.manufacturer),
+        ("vaccineCode", create_obj.vaccineCode, created_event.vaccineCode),
+        ("reasonCode", create_obj.reasonCode, created_event.reasonCode),
+        ("protocolApplied", create_obj.protocolApplied, created_event.protocolApplied),
+    ]
 
-    #     with allure.step(f"Validating JSON fields for {fileName} and the immunization event {context.expectedImmsID[fileName]}"):
-    #         validate_json_fields(fullUrlRes, resJson['fullUrl'], path="fullUrl")
-    #         validate_json_fields(reqJson['resourceType'], resJson['resource']['resourceType'], path="resourceType")
-    #         validate_json_fields(reqJson['extension'], resJson['resource']['extension'], path="extension") 
-    #         validate_json_fields(reqJson['identifier'], resJson['resource']['identifier'], path="identifier")  
-    #         validate_json_fields(reqJson['status'], resJson['resource']['status'], path="status") 
-    #         validate_json_fields(reqJson['vaccineCode'], resJson['resource']['vaccineCode'], path="vaccineCode") 
-    #         validate_json_fields(format_timestamp(reqJson['occurrenceDateTime']), format_timestamp(resJson['resource']['occurrenceDateTime']), path="occurrenceDateTime")
-    #         validate_json_fields(format_timestamp(reqJson['recorded']), format_timestamp(resJson['resource']['recorded']), path="recorded")
-    #         validate_json_fields(reqJson['primarySource'], resJson['resource']['primarySource'], path="primarySource")
-    #         validate_json_fields(reqJson['manufacturer'], resJson['resource']['manufacturer'], path="manufacturer")
-    #         validate_json_fields(reqJson['location'], resJson['resource']['location'], path="location")
-    #         validate_json_fields(reqJson['lotNumber'], resJson['resource']['lotNumber'], path="lotNumber")
-    #         validate_json_fields(reqJson['expirationDate'], resJson['resource']['expirationDate'], path="expirationDate")
-    #         validate_json_fields(reqJson['site'], resJson['resource']['site'], path="site")
-    #         validate_json_fields(reqJson['route'], resJson['resource']['route'], path="route")
-    #         validate_json_fields(reqJson['doseQuantity'], resJson['resource']['doseQuantity'], path="doseQuantity")
-    #         validate_json_fields(performerReq, performerRes, path="performer")                       
-    #         validate_json_fields(reqJson['reasonCode'], resJson['resource']['reasonCode'], path="reasonCode")
-    #         validate_json_fields(reqJson['protocolApplied'], resJson['resource']['protocolApplied'], path="protocolApplied")
-    #         validate_json_fields(contPatientFieldNoIdReq, contPatientFieldNoIdRes, path="patient.identifier")
-    #         validate_json_fields("Patient", resJson['resource']['patient']['type'], path="patient.type")
-    #         # validate_json_fields(referencePattern, resJson['resource']['patient']['reference'], path="patient.reference")
-    #         soft_assertions.assert_condition(bool(re.match(referencePattern, resJson['resource']['patient']['reference'])), f"patient.reference. Expected guid pattern, Found {resJson['resource']['patient']['reference']}")
-    #         validate_json_fields("match", resJson['search']['mode'], path="search.mode")
-
-    #         soft_assertions.assert_all()
+    for name, expected, actual in fields_to_compare:
+        check.is_true(
+            expected == actual,
+            f"Expected {name}: {expected}, got {actual}"
+        )
 
 @then('The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient')
 def validateJsonPat(context):
-    for fileName in context.requestFileName:
-        reqJson = context.requestJSON[fileName] 
-        resJson = context.finalResponseJsonPat[fileName]
+    response_patient_entry = find_patient_by_fullurl(context.parsed_search__object,context.Patient_fullUrl)
+    assert response_patient_entry is not None, f"No Patient found with fullUrl {context.Patient_fullUrl}"
+    print(f"Patient entry is :{response_patient_entry}")
+    
+    response_patient = response_patient_entry.resource
 
-        fullUrlPattern = r"^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"  
-        contPatientFieldNoIdReq = reqJson["contained"][int(config['SEARCH']['containedPatientFieldNoReq'])]['identifier']
-        contPatientFieldNoIdRes = resJson["resource"]["identifier"]
+    expected_nhs_number = context.create_object.contained[1].identifier[0].value     
 
-        with allure.step(f"Validating JSON fields for {fileName} and the patient {context.NHSNumber}"):
-            soft_assertions.assert_condition(bool(re.match(fullUrlPattern, resJson['fullUrl'])), f"patient.fullUrl. Expected guid pattern, Found {resJson['fullUrl']}")
-            # validate_json_fields(fullUrlPattern, resJson['fullUrl'], path="fullUrl")
-            validate_json_fields("Patient", resJson['resource']['resourceType'], path="resourceType")
-            validate_json_fields(context.NHSNumber, resJson['resource']['id'], path="id")
-            validate_json_fields(contPatientFieldNoIdReq, contPatientFieldNoIdRes, path="identifier")
-            validate_json_fields("include", resJson['search']['mode'], path="search.mode")
+    check.is_true(response_patient.resourceType == "Patient", f"Expected Patient resource, got {response_patient.resourceType}")
+    check.is_true(response_patient.id == expected_nhs_number, f"Expected Patient ID {expected_nhs_number}, got {response_patient.id}")
+    
+    actual_nhs_number = response_patient.identifier[0].value
+    check.is_true(actual_nhs_number == expected_nhs_number, f"Expected Patient Identifier value {expected_nhs_number}, got {actual_nhs_number}")
 
-            soft_assertions.assert_all()
+    actual_system = response_patient.identifier[0].system
+    expected_system = context.create_object.contained[1].identifier[0].system
+    check.is_true(actual_system == expected_system, f"Expected Patient Identifier system {expected_system}, got {actual_system}")

@@ -123,18 +123,8 @@ Feature: Search the immunization of a patient
 @vaccine_type_RSV @patient_id_ValidNhs
 Scenario: Verify that the POST method of Search API will be successful with all the valid parameters
     Given I have created a valid vaccination record
-#     Given With the valid "<NHSNumber>", "<DiseaseType>", "<Include>", "<DateFrom>" & "<DateTo>" parameters
-#     And Create an immunization event for the patient with the input JSONs available
     When Send a search request with POST method for Immunization event create
     Then The request will be successful with the status code '200'
     And The Search Response JSONs should contain the detail of the immunization events created above
     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-#     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
-
-
-#     Examples: POSTSearchValidNHSNumber
-#       | NHSNumber  | DiseaseType       | Include              | DateFrom | DateTo | Description                       |
-#       | 9449304424 | COVID19, FLU, RSV | Immunization:patient | None     | None   | # Valid NHS Number                |
-#     #   | 9452372249 | COVID19, FLU, RSV | Immunization:patient | None     | None   | # Supersede NHS Number             |
-#       # | 9449310599 | COVID19, FLU, RSV | Immunization:patient | None     | None   | # Invalid in PDS NHS Number       |
-#       # | 9452372230 | COVID19, FLU, RSV | Immunization:patient | None     | None   | # Old NHS Number                  |
+    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient

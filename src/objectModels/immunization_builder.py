@@ -46,7 +46,7 @@ def build_location_identifier() -> Identifier_Coding:
             value="X99999",
             system="https://fhir.nhs.uk/Id/ods-organization-code",
             use="official",
-            type=Type(
+            type=IType(
                 coding=coding_list,
                 text="test string Location"
             ),
@@ -108,7 +108,7 @@ def build_performer() -> List[Performer]:
                 value="B0C4P",
                 system="https://fhir.nhs.uk/Id/ods-organization-code",
                 use="usual",
-                type=Type(
+                type=IType(
                     coding=[
                         Identifier_Coding(
                             system="http://terminology.hl7.org/CodeSystem/v2-0203",
@@ -153,39 +153,78 @@ def build_reason_code(reason_code_map: List[Any], text: str = "") -> List[Reason
 def dose_quantity_selection() -> DoseQuantity:
     return DoseQuantity(**random.choice(DOSE_QUANTITY_MAP))
 
+# def clean_dataclass(obj: object) -> object:
+#     if not is_dataclass(obj):
+#         return obj
+
+#     for f in fields(obj):
+#         # Retrieve the current value
+#         current_val = getattr(obj, f.name)
+
+#         # Optionally check for None regardless of defaults:
+#         if current_val is None:
+#             if f.name in obj.__dict__:
+#                 del obj.__dict__[f.name]
+#             continue  # Go to next field
+
+#         # If a default or default_factory exists, get it.
+#         default_val = MISSING
+#         if f.default is not MISSING:
+#             default_val = f.default
+#         elif f.default_factory is not MISSING:  # default_factory is callable
+#             default_val = f.default_factory()
+
+#         # If the field has a default and the value is equal to it, remove it.
+#         if default_val is not MISSING and current_val == default_val:
+#             if f.name in obj.__dict__:
+#                 del obj.__dict__[f.name]
+#         else:
+#             # Otherwise, if the field is itself a dataclass, clean it recursively.
+#             if is_dataclass(current_val):
+#                 clean_dataclass(current_val)
+#             # Also, if this field is a list, clean any dataclass element contained.
+#             elif isinstance(current_val, list):
+#                 for item in current_val:
+#                     clean_dataclass(item)
+#     return obj
+
 def clean_dataclass(obj: object) -> object:
     if not is_dataclass(obj):
         return obj
 
     for f in fields(obj):
-        # Retrieve the current value
         current_val = getattr(obj, f.name)
 
-        # Optionally check for None regardless of defaults:
+        # Normalize text fields: convert "" to None
+        if f.name == "text" and current_val == "":
+            setattr(obj, f.name, None)
+            current_val = None
+
+        # Remove fields that are None
         if current_val is None:
             if f.name in obj.__dict__:
                 del obj.__dict__[f.name]
-            continue  # Go to next field
+            continue
 
-        # If a default or default_factory exists, get it.
+        # Handle default or default_factory
         default_val = MISSING
         if f.default is not MISSING:
             default_val = f.default
-        elif f.default_factory is not MISSING:  # default_factory is callable
+        elif f.default_factory is not MISSING:
             default_val = f.default_factory()
 
-        # If the field has a default and the value is equal to it, remove it.
+        # Remove fields equal to default
         if default_val is not MISSING and current_val == default_val:
             if f.name in obj.__dict__:
                 del obj.__dict__[f.name]
         else:
-            # Otherwise, if the field is itself a dataclass, clean it recursively.
+            # Recurse for nested dataclasses
             if is_dataclass(current_val):
                 clean_dataclass(current_val)
-            # Also, if this field is a list, clean any dataclass element contained.
             elif isinstance(current_val, list):
                 for item in current_val:
                     clean_dataclass(item)
+
     return obj
 
 def deep_asdict(obj):

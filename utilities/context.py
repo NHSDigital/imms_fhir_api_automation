@@ -29,3 +29,4 @@ class ScenarioContext:
         self.parsed_search__object= None
         self.created_event = None
         self.create_object = None
+        self.Patient_fullUrl = None
