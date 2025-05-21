@@ -20,7 +20,7 @@ from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
 from features.steps.common_steps import *
 from datetime import datetime
-from utilities.FHIRImmunizationParser import *
+from utilities.FHIRImmunizationHelper import *
 from datetime import datetime
 
 
@@ -100,25 +100,10 @@ def send_invalid_post_request(context, NHSNumber):
 @then('The Search Response JSONs should contain the error message for invalid NHS Number') 
 def operationOutcomeInvalidNHSNo(context):
     error_response = parse_errorResponse(context.response.json())
-    
-    uuid_obj = uuid.UUID(error_response.id, version=4)
-    check.is_true(isinstance(uuid_obj, uuid.UUID), f"Id is not UUID {error_response.id}")
-    
-    fields_to_compare = [
-        ("ResourceType", error_response.resourceType, ERROR_MAP["Common_field"]["resourceType"]),
-        ("Meta_Profile", error_response.meta.profile[0], ERROR_MAP["Common_field"]["profile"]),
-        ("Coding_system",  error_response.issue[0].details.coding[0].system, ERROR_MAP["Common_field"]["system"]),
-        ("Coding_Code",  error_response.issue[0].details.coding[0].code, ERROR_MAP["Common_field"]["code"]),
-        ("severity",  error_response.issue[0].severity, ERROR_MAP["invalid_NHSNumber"]["severity"]),
-        ("Issue_Code",  error_response.issue[0].code, ERROR_MAP["invalid_NHSNumber"]["code"]),
-        ("Diagnostics",  error_response.issue[0].diagnostics, ERROR_MAP["invalid_NHSNumber"]["diagnostics"]),
-    ]
 
-    for name, expected, actual in fields_to_compare:
-        check.is_true(
-            expected == actual,
-            f"Expected {name}: {expected}, got {actual}"
-        )
+    errorName= "invalid_NHSNumber"
+    
+    
 #     # code = config['OPERATIONOUTCOME']['codeInvalid']
 #     # diagnostics = config['OPERATIONOUTCOME']['diagnosticsInvalid']
 #     code = config['OPERATIONOUTCOME']['codeInvariant']

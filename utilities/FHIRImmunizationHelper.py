@@ -1,6 +1,7 @@
 from dataclasses import fields, is_dataclass
-from typing import Type, TypeVar, get_args, get_origin, Union, List, Dict
+from typing import Type, Dict
 from pydantic import BaseModel
+import pytest_check as check
 
 from src.objectModels.dataObjects import *
 from src.objectModels.operation_outcome import OperationOutcome
@@ -43,6 +44,26 @@ def parse_entry(entry_data: dict) -> Entry:
         resource=parsed_resource,
         search=parsed_search
     )
+
+def validateErrorResponse(error_response, error):
+    uuid_obj = uuid.UUID(error_response.id, version=4)
+    check.is_true(isinstance(uuid_obj, uuid.UUID), f"Id is not UUID {error_response.id}")
+    
+    fields_to_compare = [
+        ("ResourceType", error_response.resourceType, ERROR_MAP["Common_field"]["resourceType"]),
+        ("Meta_Profile", error_response.meta.profile[0], ERROR_MAP["Common_field"]["profile"]),
+        ("Coding_system",  error_response.issue[0].details.coding[0].system, ERROR_MAP["Common_field"]["system"]),
+        ("Coding_Code",  error_response.issue[0].details.coding[0].code, ERROR_MAP["Common_field"]["code"]),
+        ("severity",  error_response.issue[0].severity, ERROR_MAP[errorName]["severity"]),
+        ("Issue_Code",  error_response.issue[0].code, ERROR_MAP[errorName]["code"]),
+        ("Diagnostics",  error_response.issue[0].diagnostics, ERROR_MAP[errorName]["diagnostics"]),
+    ]
+
+    for name, expected, actual in fields_to_compare:
+        check.is_true(
+            expected == actual,
+            f"Expected {name}: {expected}, got {actual}"
+        )
 
 
 def parse_FHIRImmunizationResponse(json_data: dict) -> FHIRImmunizationResponse:
