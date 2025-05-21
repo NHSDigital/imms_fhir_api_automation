@@ -29,11 +29,22 @@ To execute the tests from your system, please follow the 4 easy steps below:
     source .venv/Scripts/activate
     ```
 
-    in Terminal 
-     ```console
+5. in Terminal 
+    
+    ```console
     .venv\Scripts\Activate.ps1
 
     ```
+
+------------------------------------------------------------------------
+
+6. Need to create .env file, please get in touch with Imms FHIR API Test team to get the content of the file
+
+7. 
+
+
+
+----DO NOT USE BELOW---------------------------------------------
 
 Reporting
 -----------------------------------------------------

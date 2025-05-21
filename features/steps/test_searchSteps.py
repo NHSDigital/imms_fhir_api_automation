@@ -43,20 +43,14 @@ def validVaccinationRecordIsCreated(context):
 
 @when("Send a search request with POST method for Immunization event create")
 def TiggerSearchPostRequest(context):
-    context.url = searchPOSTURL(context.baseUrl)
-    context.headers = searchPOSTHeaders(context.token)
-    context.corrID = context.headers['X-Correlation-ID']
-    context.reqID = context.headers['X-Request-ID']
+    get_search_postURLHeader(context)
     context.request = convert_to_form_data(set_request_data(context.patient.identifier[0].value, context.vaccine_type, datetime.today().strftime("%Y-%m-%d")))
     print(f"Search Post request {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
     
 @when(parsers.parse("Send a search request with POST method With the invalid '{NHSNumber}'"))
 def send_invalid_post_request(context, NHSNumber):
-    context.url = searchPOSTURL(context.baseUrl)
-    context.headers = searchPOSTHeaders(context.token)
-    context.corrID = context.headers['X-Correlation-ID']
-    context.reqID = context.headers['X-Request-ID']
+    get_search_postURLHeader(context)
     context.request = convert_to_form_data(set_request_data(NHSNumber, context.vaccine_type, datetime.today().strftime("%Y-%m-%d")))
     print(f"Search Post request {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
