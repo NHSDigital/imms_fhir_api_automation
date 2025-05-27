@@ -55,13 +55,25 @@ VACCINE_CODE_MAP = {
 
 VACCINATION_PROCEDURE_MAP = {
     "COVID": [
-        Coding(system="http://snomed.info/sct", code="1362591000000103" , display= "Immunisation course to maintain protection against SARS-CoV-2 (severe acute respiratory syndrome coronavirus 2)")
+        Coding(
+            system="http://snomed.info/sct",
+            code="1362591000000103",
+            display="Immunisation course to maintain protection against SARS-CoV-2 (severe acute respiratory syndrome coronavirus 2).",
+        ),
     ],
     "FLU": [
-        Coding(system="http://snomed.info/sct", code="884861000000100"  , display="Seasonal influenza vaccination (procedure)")
+        Coding(
+            system="http://snomed.info/sct",
+            code="884861000000100",
+            display="Seasonal influenza vaccination (procedure)",
+        )
     ],
     "RSV": [
-        Coding(system="http://snomed.info/sct", code="1303503001", display="Administration of RSV (respiratory syncytial virus) vaccine")
+        Coding(
+            system="http://snomed.info/sct",
+            code="1303503001",
+            display="Administration of RSV (respiratory syncytial virus) vaccine",
+        )
     ]
 }
 

@@ -5,16 +5,32 @@ import uuid
 from src.objectModels.dataObjects import *
 from src.objectModels.vaccination_constants import *
 
+def create_extension(url: str, stringValue: bool = False, idValue: bool = False) -> ExtensionItem:
+    return ExtensionItem(
+        url=url,
+        valueString=f"Test Value string {random.randint(1, 999999)}" if stringValue else None,
+        valueId=str(random.randint(100000000,9999999999)) if idValue else None)
+
 def build_vaccine_procedure_extension(vaccine_type: str, text: str = None) -> Extension:
     try:
         selected_vaccine_procedure = random.choice(VACCINATION_PROCEDURE_MAP[vaccine_type.upper()])
     except KeyError:
         raise ValueError(f"Unsupported vaccine type: {vaccine_type}")
+    
+    procedure = Coding(
+        system=selected_vaccine_procedure.system,
+        code=selected_vaccine_procedure.code,
+        display=selected_vaccine_procedure.display,
+        extension=[
+            create_extension("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-CodingSCTDescDisplay", stringValue=True),
+            create_extension("http://hl7.org/fhir/StructureDefinition/coding-sctdescid", idValue=True)
+        ]
+    )
 
     return Extension(
         url="https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-VaccinationProcedure",
         valueCodeableConcept=CodeableConcept(
-            coding=[selected_vaccine_procedure],
+            coding=[procedure],
             text=text
         )
     )
@@ -34,7 +50,11 @@ def get_vaccine_details(vaccine_type: str, vacc_text: str = None, lot_number: st
         coding=[Coding(
             system=selected_vaccine["system"],  
             code=selected_vaccine["code"], 
-            display=selected_vaccine["display"]
+            display=selected_vaccine["display"],
+            extension=[
+                create_extension("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-CodingSCTDescDisplay", stringValue=True),
+                create_extension("http://hl7.org/fhir/StructureDefinition/coding-sctdescid", idValue=True)
+            ]
         )],
         text=vacc_text
     )
@@ -95,7 +115,20 @@ def remove_empty_fields(data):
         return [remove_empty_fields(item) for item in data]
     else:
         return data
+
+def build_site_route(obj: Coding, text: str = None) -> CodeableConcept:
     
+    return CodeableConcept(
+        coding=[Coding(
+        system=obj.system,
+        code=obj.code,
+        display=obj.display,
+        extension=[
+            create_extension("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-CodingSCTDescDisplay", stringValue=True),
+            create_extension("http://hl7.org/fhir/StructureDefinition/coding-sctdescid", idValue=True)
+        ]
+    )])
+
 def create_immunization_object(patient: Patient, vaccine_type: str) -> Immunization:
     practitioner = Practitioner(
         resourceType="Practitioner",  # ✅ Explicitly set resourceType
@@ -104,6 +137,7 @@ def create_immunization_object(patient: Patient, vaccine_type: str) -> Immunizat
     )
     extension = [build_vaccine_procedure_extension(vaccine_type.upper())]
     vaccine_details = get_vaccine_details(vaccine_type)
+    # site_details = get_site_details(vaccine_type.upper())
 
     return Immunization(
         resourceType="Immunization",
@@ -120,8 +154,10 @@ def create_immunization_object(patient: Patient, vaccine_type: str) -> Immunizat
         status="completed",
         primarySource= True,
         expirationDate=vaccine_details["expiryDate"],
-        site=CodeableConcept(coding=[random.choice(SITE_MAP)]),
-        route=CodeableConcept(coding=[random.choice(ROUTE_MAP)]),
+        site=build_site_route(random.choice(SITE_MAP)),
+        # CodeableConcept(coding=[random.choice(SITE_MAP)]),
+        route=build_site_route(random.choice(ROUTE_MAP)),
+        # route=CodeableConcept(coding=[random.choice(ROUTE_MAP)]),
         doseQuantity=DoseQuantity(**random.choice(DOSE_QUANTITY_MAP)),
         performer=build_performer(),
         reasonCode=[CodeableConcept(coding=[random.choice(REASON_CODE_MAP)])],

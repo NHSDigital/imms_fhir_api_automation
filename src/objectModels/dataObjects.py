@@ -2,7 +2,15 @@ from typing import  List, Literal, Optional, Dict, Any, Union
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated
 
+
+class ExtensionItem(BaseModel):
+    url: str
+    valueString: Optional[str] = None
+    valueId: Optional[str] = None
+
+
 class Coding(BaseModel):
+    extension: Optional[List[ExtensionItem]] = None
     system: str
     code: str
     display: Optional[str] = None
