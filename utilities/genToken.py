@@ -5,8 +5,10 @@ import uuid
 from lxml import html
 # import datetime
 from datetime import datetime, timezone, timedelta
+import dotenv
 
 config = getConfigParser()
+
 
 def extract_code(response):
     qs = urlparse(response.history[-1].headers["Location"]).query
@@ -15,15 +17,15 @@ def extract_code(response):
         auth_code = auth_code[0]
     return auth_code
 
-def get_access_token():
+def get_access_token(context):
     login_session = requests.session()
-    client_id = config['auth']['client_id']
-    client_secret = config['auth']['client_secret']
-    callback_url = config['auth']['callback_url']
-    username = config['auth']['username']
-    auth_url = config['auth']['auth_url']
-    token_url = config['auth']['token_url']
-    scope = config['auth']['scope']
+    client_id = context.auth_client_Id
+    client_secret = context.auth_client_Secret
+    callback_url = context.callback_url
+    username = context.username
+    auth_url = context.auth_url
+    token_url = context.token_url
+    scope = context.scope
     
     #Login Page
     authorize_resp = login_session.get(
@@ -70,6 +72,6 @@ def get_access_token():
 def is_token_valid(token_expires_in_time, token_generated_time):
     if token_expires_in_time is None or token_generated_time is None:
         return False
-    expiration_time = token_generated_time + timedelta(seconds=token_expires_in_time)
+    expiration_time = token_generated_time + timedelta(seconds=int(token_expires_in_time))
     return datetime.now(timezone.utc) < expiration_time
 

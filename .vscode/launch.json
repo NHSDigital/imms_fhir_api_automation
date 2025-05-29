@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Pytest-BDD",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/.venv/Scripts/pytest",
+      "args": [
+        "path/to/your/tests",  // Path to your test files or feature files
+        "--maxfail=1",         // Optional: limits the number of test failures before stopping
+        "--disable-warnings",  // Optional: to disable warnings in the output
+        "--capture=no"         // Optional: to disable capturing output
+      ],
+      "console": "integratedTerminal"
+    }
+  ]
+}

@@ -9,10 +9,14 @@ import logging
 logging.basicConfig(filename='debugLog.log', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-config = getConfigParser()
+def get_create_postURLHeader(context):
+    context.url = createURL(context.baseUrl)
+    context.headers = createPOSTHeaders(context.token)
+    context.corrID = context.headers['X-Correlation-ID']
+    context.reqID = context.headers['X-Request-ID']
 
-def createURL():
-    url = config['API']['baseUrl'] + apiResources.createEndpoint
+def createURL(url: str ):
+    url = url + apiResources.createEndpoint
     return url
 
 def createPOSTHeaders(token):
