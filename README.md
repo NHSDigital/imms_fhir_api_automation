@@ -40,7 +40,11 @@ To execute the tests from your system, please follow the 4 easy steps below:
 
 6. Need to create .env file, please get in touch with Imms FHIR API Test team to get the content of the file
 
-7. 
+7. run following command to see that test are discovered
+ 
+     ```console
+        # pytest --collect-only
+     ```
 
 
 
