@@ -5,6 +5,8 @@ import uuid
 from pydantic import BaseModel
 import pytest_check as check
 
+import uuid
+
 from src.objectModels.dataObjects import *
 from src.objectModels.operation_outcome import OperationOutcome
 from src.objectModels.vaccination_constants import ERROR_MAP

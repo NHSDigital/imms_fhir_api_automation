@@ -5,6 +5,12 @@ import uuid
 config = getConfigParser()
 
 
+def get_search_getURLHeader(context):
+    context.url = searchGETURL(context.baseUrl)
+    context.headers = searchGETHeaders(context.token)
+    context.corrID = context.headers['X-Correlation-ID']
+    context.reqID = context.headers['X-Request-ID']
+
 def get_search_postURLHeader(context):
     context.url = searchPOSTURL(context.baseUrl)
     context.headers = searchPOSTHeaders(context.token)

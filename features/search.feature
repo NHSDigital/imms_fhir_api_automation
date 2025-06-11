@@ -119,10 +119,19 @@ Scenario Outline: Verify that the POST method of Search API will throw error for
 #       # | 9449310599 | COVID19, FLU, RSV | Immunization:patient | None     | None   | # Invalid in PDS NHS Number       |
 #       # | 9452372230 | COVID19, FLU, RSV | Immunization:patient | None     | None   | # Old NHS Number                  |
 
-@vaccine_type_RSV @patient_id_ValidNHS
+@vaccine_type_RSV @patient_id_ValidNhs
+Scenario: Verify that the GET method of Search API will be successful with all the valid parameters
+    Given I have created a valid vaccination record
+    When Send a search request with GET method for Immunization event created
+    Then The request will be successful with the status code '200'
+    And The Search Response JSONs should contain the detail of the immunization events created above
+    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
+    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
+
+@vaccine_type_RSV @patient_id_ValidNhs
 Scenario: Verify that the POST method of Search API will be successful with all the valid parameters
     Given I have created a valid vaccination record
-    When Send a search request with POST method for Immunization event create
+    When Send a search request with POST method for Immunization event created
     Then The request will be successful with the status code '200'
     And The Search Response JSONs should contain the detail of the immunization events created above
     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
