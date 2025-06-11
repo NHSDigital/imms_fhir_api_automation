@@ -1,6 +1,7 @@
 import glob
 import itertools
 from urllib.parse import urlencode
+import pytest
 import requests
 import json
 import re
@@ -8,7 +9,7 @@ import boto3
 import requests
 from src.objectModels.immunization_builder import *
 from src.objectModels.patient_loader import load_patient_by_id
-from src.objectModels.SearchPostObject import *
+from src.objectModels.SearchObject import *
 from utilities.payloadSearch import *
 from utilities.payloadCreate import *
 from utilities.config import *
@@ -41,12 +42,23 @@ def validVaccinationRecordIsCreated(context):
     The_request_will_be_successful_with_the_status_code(context, 201)
     validateCreateLocation(context)
 
-@when("Send a search request with POST method for Immunization event create")
+@when("Send a search request with GET method for Immunization event created")
+def TiggerSearchGetRequest(context):
+    get_search_getURLHeader(context)
+    context.params = convert_to_form_data(set_request_data(context.patient.identifier[0].value, context.vaccine_type, datetime.today().strftime("%Y-%m-%d")))
+    print(f"\n Search Get Parameters - \n {context.params}")
+    context.response = requests.get(context.url, params = context.params, headers = context.headers)
+    
+    print(f"\n Search Get Response - \n {context.response.json()}")
+
+@when("Send a search request with POST method for Immunization event created")
 def TiggerSearchPostRequest(context):
     get_search_postURLHeader(context)
     context.request = convert_to_form_data(set_request_data(context.patient.identifier[0].value, context.vaccine_type, datetime.today().strftime("%Y-%m-%d")))
-    print(f"Search Post request {context.request}")
+    print(f"\n Search Post Request - \n {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
+    
+    print(f"\n Search Post Response - \n {context.response.json()}")    
     
 @when(parsers.parse("Send a search request with POST method With the invalid '{NHSNumber}'"))
 def send_invalid_post_request(context, NHSNumber):
@@ -91,12 +103,11 @@ def send_invalid_post_request(context, NHSNumber):
 #     assert context.statusCode == 400, f"Failed to get the status code 400. Status code Received: {context.statusCode}. Response: {context.resText}"
 #     # context.soft_assertions.assert_condition(result['MAKE'] == MAKE, f"Make match: {result['MAKE']} = {MAKE}")
 
-@then('The Search Response JSONs should contain the error message for invalid NHS Number') 
+@then('The Search Response JSONs should contain the error message for invalid NHS Number')    
 def operationOutcomeInvalidNHSNo(context):
     error_response = parse_errorResponse(context.response.json())
-
     errorName= "invalid_NHSNumber"
-    
+    validateErrorResponse(error_response, errorName)    
     
 #     # code = config['OPERATIONOUTCOME']['codeInvalid']
 #     # diagnostics = config['OPERATIONOUTCOME']['diagnosticsInvalid']
@@ -252,11 +263,11 @@ def validateImmsID(context):
     data = context.response.json()
     context.parsed_search_object = parse_FHIRImmunizationResponse(data)
 
-    context.created_event = find_entry_by_Imms_id(context.parsed_search_object, context.location)
+    context.created_event = find_entry_by_Imms_id(context.parsed_search_object, context.ImmsID)
     
     if context.created_event is None:
-        raise AssertionError(f"No object found with {context.location}")
-
+        raise AssertionError(f"No object found with Immunisation ID {context.ImmsID} in the search response.")
+    
     patient_reference = getattr(context.created_event.resource.patient, "reference", None)
 
     if not patient_reference:
@@ -265,28 +276,6 @@ def validateImmsID(context):
     # Assign to context for further usage
     context.Patient_fullUrl = patient_reference
 
-    print(f"Event is found: {context.created_event}")
-    # context.finalResponseJson = {}
-    # context.finalResponseJsonPat = {}
-    # context.expectedImmsID = {}
-    # for fileName in context.requestFileName:
-    #     context.expectedImmsID[fileName] = context.responseImmsID[fileName]
-
-    #     responseJsonLoad = json.loads(context.responseJsons[fileName])
-        
-    #     idFound = False
-    #     findEntry = 0
-    #     for entry in responseJsonLoad['entry']:
-    #         if entry['resource']['id'] == context.expectedImmsID[fileName]:
-    #             context.finalResponseJson[fileName] = responseJsonLoad['entry'][findEntry]
-    #             idFound = True
-    #             break
-    #         findEntry = findEntry + 1
-    #     assert idFound, f"Immunization ID {context.expectedImmsID[fileName]} not found in search response for {fileName}"
-        
-    #     for entry in responseJsonLoad['entry']:
-    #         context.finalResponseJsonPat[fileName] = responseJsonLoad['entry'][-1]
-    #     assert len(context.finalResponseJsonPat) > 0, f"Patient entry {context.NHSNumber} not found in search response for {fileName}"
 
 @then('The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization')
 def validateJsonImms(context):
@@ -295,22 +284,30 @@ def validateJsonImms(context):
     request_patient = create_obj.contained[1]
     response_patient = created_event.patient
     check.is_true (request_patient.identifier[0].value== response_patient.identifier.value,
-                    f"expected patient NHS Number {request_patient.identifier[0].value}  actual nhs number {response_patient.identifier.value}")
+                    f"Expected patient NHS Number {request_patient.identifier[0].value}.  Actual patient NHS Number {response_patient.identifier.value}")
+    
     referencePattern = r"^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-     
     check.is_true(re.match(referencePattern, response_patient.reference), 
                   f"Expected reference {referencePattern} Invalid reference format: {referencePattern}")
     
     check.is_true("Patient"== response_patient.type,
-                   f"Expected is  Patient nut actual patient Type is : {response_patient.type}")
+                   f"Expected patient type is 'Patient' but actual patient Type is : {response_patient.type}")
     
     expected_recorded = covert_to_expected_date_format(context.create_object.recorded)
 
-    expected_fullUrl = config['SEARCH']['fullUrlRes'] + context.location
+    expected_fullUrl = config['SEARCH']['fullUrlRes'] + context.ImmsID
 
     fields_to_compare = [
         ("FullUrl", expected_fullUrl, context.created_event.fullUrl),
+
+        ("resourceType", create_obj.resourceType, created_event.resourceType),
+        # ("extension", create_obj.extension, created_event.extension),
+        # ("identifier", create_obj.identifier, created_event.identifier),
         ("status", create_obj.status, created_event.status),
+        ("vaccineCode", create_obj.vaccineCode, created_event.vaccineCode),
+        # ("patient.type", create_obj.patient.type, created_event.patient.type),
+
+
         ("Recorded", expected_recorded, created_event.recorded),
         ("lotNumber", create_obj.lotNumber, created_event.lotNumber),
         ("expirationDate", create_obj.expirationDate, created_event.expirationDate),
@@ -318,22 +315,46 @@ def validateJsonImms(context):
         ("doseQuantity", create_obj.doseQuantity, created_event.doseQuantity),
         ("site", create_obj.site, created_event.site),
         ("manufacturer", create_obj.manufacturer, created_event.manufacturer),
-        ("vaccineCode", create_obj.vaccineCode, created_event.vaccineCode),
+        
         ("reasonCode", create_obj.reasonCode, created_event.reasonCode),
         ("protocolApplied", create_obj.protocolApplied, created_event.protocolApplied),
+        ("extension", create_obj.protocolApplied, created_event.extension),
     ]
 
+
+
+
+
+
+
+
+    NumberOfFailures = 0
     for name, expected, actual in fields_to_compare:
-        check.is_true(
+        if not check.is_true(
             expected == actual,
-            f"Expected {name}: {expected}, got {actual}"
-        )
+            f"Expected {name}: {expected}, Actual {actual}"
+        ):
+            NumberOfFailures += 1
+
+    if NumberOfFailures > 0:
+        raise AssertionError(f"Validation failed for {NumberOfFailures} fields in the Immunization resource.")
+
+    #Validation missing
+    # Extension
+    # Identifier.system
+    # Identifier.value
+    # patient.identifier.system
+    # occurrenceDateTime
+    # location
+    # route
+    # search.mode
+
 
 @then('The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient')
 def validateJsonPat(context):        
     response_patient_entry =  find_patient_by_fullurl(context.parsed_search_object)
     assert response_patient_entry is not None, f"No Patient found with fullUrl {context.Patient_fullUrl}"
-    print(f"Patient entry is :{response_patient_entry}")
+    # print(f"Patient entry is :{response_patient_entry}")
     
     response_patient = response_patient_entry.resource
     check.is_true(context.Patient_fullUrl == response_patient_entry.fullUrl, f"Expected Patient ful, got {response_patient_entry.fullUrl}")

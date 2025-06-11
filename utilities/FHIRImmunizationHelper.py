@@ -3,8 +3,11 @@ from typing import Type, Dict
 from pydantic import BaseModel
 import pytest_check as check
 
+import uuid
+
 from src.objectModels.dataObjects import *
 from src.objectModels.operation_outcome import OperationOutcome
+from src.objectModels.vaccination_constants import ERROR_MAP
 
 
 def find_entry_by_Imms_id(parsed_data, imms_id) -> Optional[object]:
@@ -46,7 +49,7 @@ def parse_entry(entry_data: dict) -> Entry:
         search=parsed_search
     )
 
-def validateErrorResponse(error_response, error):
+def validateErrorResponse(error_response, errorName: str):
     uuid_obj = uuid.UUID(error_response.id, version=4)
     check.is_true(isinstance(uuid_obj, uuid.UUID), f"Id is not UUID {error_response.id}")
     

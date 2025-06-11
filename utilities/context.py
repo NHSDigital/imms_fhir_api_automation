@@ -30,3 +30,6 @@ class ScenarioContext:
         self.created_event = None
         self.create_object = None
         self.Patient_fullUrl = None
+        self.params = None
+        self.soft_assertions = None
+
