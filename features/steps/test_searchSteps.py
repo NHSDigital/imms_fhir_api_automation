@@ -94,8 +94,8 @@ def send_invalid_post_request(context, NHSNumber):
 @then('The Search Response JSONs should contain the error message for invalid NHS Number') 
 def operationOutcomeInvalidNHSNo(context):
     error_response = parse_errorResponse(context.response.json())
-
     errorName= "invalid_NHSNumber"
+    validateErrorResponse(error_response, errorName)
     
     
 #     # code = config['OPERATIONOUTCOME']['codeInvalid']
@@ -292,42 +292,8 @@ def validateImmsID(context):
 def validateJsonImms(context):
     create_obj = context.create_object
     created_event= context.created_event.resource
-    request_patient = create_obj.contained[1]
-    response_patient = created_event.patient
-    check.is_true (request_patient.identifier[0].value== response_patient.identifier.value,
-                    f"expected patient NHS Number {request_patient.identifier[0].value}  actual nhs number {response_patient.identifier.value}")
-    referencePattern = r"^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-     
-    check.is_true(re.match(referencePattern, response_patient.reference), 
-                  f"Expected reference {referencePattern} Invalid reference format: {referencePattern}")
-    
-    check.is_true("Patient"== response_patient.type,
-                   f"Expected is  Patient nut actual patient Type is : {response_patient.type}")
-    
-    expected_recorded = covert_to_expected_date_format(context.create_object.recorded)
+    validateToCompareRequestAndResponse(context, create_obj, created_event)
 
-    expected_fullUrl = config['SEARCH']['fullUrlRes'] + context.location
-
-    fields_to_compare = [
-        ("FullUrl", expected_fullUrl, context.created_event.fullUrl),
-        ("status", create_obj.status, created_event.status),
-        ("Recorded", expected_recorded, created_event.recorded),
-        ("lotNumber", create_obj.lotNumber, created_event.lotNumber),
-        ("expirationDate", create_obj.expirationDate, created_event.expirationDate),
-        ("primarySource", create_obj.primarySource, created_event.primarySource),
-        ("doseQuantity", create_obj.doseQuantity, created_event.doseQuantity),
-        ("site", create_obj.site, created_event.site),
-        ("manufacturer", create_obj.manufacturer, created_event.manufacturer),
-        ("vaccineCode", create_obj.vaccineCode, created_event.vaccineCode),
-        ("reasonCode", create_obj.reasonCode, created_event.reasonCode),
-        ("protocolApplied", create_obj.protocolApplied, created_event.protocolApplied),
-    ]
-
-    for name, expected, actual in fields_to_compare:
-        check.is_true(
-            expected == actual,
-            f"Expected {name}: {expected}, got {actual}"
-        )
 
 @then('The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient')
 def validateJsonPat(context):        

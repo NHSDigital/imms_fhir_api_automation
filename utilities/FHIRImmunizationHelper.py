@@ -1,10 +1,14 @@
 from dataclasses import fields, is_dataclass
+from logging import config
 from typing import Type, Dict
+import uuid
 from pydantic import BaseModel
 import pytest_check as check
 
 from src.objectModels.dataObjects import *
 from src.objectModels.operation_outcome import OperationOutcome
+from src.objectModels.vaccination_constants import ERROR_MAP
+from utilities.helper import covert_to_expected_date_format
 
 
 def find_entry_by_Imms_id(parsed_data, imms_id) -> Optional[object]:
@@ -46,7 +50,7 @@ def parse_entry(entry_data: dict) -> Entry:
         search=parsed_search
     )
 
-def validateErrorResponse(error_response, error):
+def validateErrorResponse(error_response, errorName: str):
     uuid_obj = uuid.UUID(error_response.id, version=4)
     check.is_true(isinstance(uuid_obj, uuid.UUID), f"Id is not UUID {error_response.id}")
     
@@ -73,7 +77,43 @@ def parse_FHIRImmunizationResponse(json_data: dict) -> FHIRImmunizationResponse:
 def parse_errorResponse(json_data: dict) -> OperationOutcome:
     return OperationOutcome.parse_obj(json_data) 
 
+def validateToCompareRequestAndResponse(context, create_obj, created_event):
+    request_patient = create_obj.contained[1]
+    response_patient = created_event.patient
+    check.is_true (request_patient.identifier[0].value== response_patient.identifier.value,
+                    f"expected patient NHS Number {request_patient.identifier[0].value}  actual nhs number {response_patient.identifier.value}")
+    referencePattern = r"^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+     
+    check.is_true(re.match(referencePattern, response_patient.reference), 
+                  f"Expected reference {referencePattern} Invalid reference format: {referencePattern}")
+    
+    check.is_true("Patient"== response_patient.type,
+                   f"Expected is  Patient nut actual patient Type is : {response_patient.type}")
+    
+    expected_recorded = covert_to_expected_date_format(context.create_object.recorded)
 
+    expected_fullUrl = config['SEARCH']['fullUrlRes'] + context.location
+
+    fields_to_compare = [
+        ("FullUrl", expected_fullUrl, context.created_event.fullUrl),
+        ("status", create_obj.status, created_event.status),
+        ("Recorded", expected_recorded, created_event.recorded),
+        ("lotNumber", create_obj.lotNumber, created_event.lotNumber),
+        ("expirationDate", create_obj.expirationDate, created_event.expirationDate),
+        ("primarySource", create_obj.primarySource, created_event.primarySource),
+        ("doseQuantity", create_obj.doseQuantity, created_event.doseQuantity),
+        ("site", create_obj.site, created_event.site),
+        ("manufacturer", create_obj.manufacturer, created_event.manufacturer),
+        ("vaccineCode", create_obj.vaccineCode, created_event.vaccineCode),
+        ("reasonCode", create_obj.reasonCode, created_event.reasonCode),
+        ("protocolApplied", create_obj.protocolApplied, created_event.protocolApplied),
+    ]
+
+    for name, expected, actual in fields_to_compare:
+         check.is_true(
+                expected == actual,
+                f"Expected {name}: {expected}, got {actual}"
+            )
 
 
 

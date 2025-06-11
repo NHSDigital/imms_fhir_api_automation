@@ -11,13 +11,12 @@ import pytest_check as check
 def valid_json_payload_is_created(context):
     context.patient = load_patient_by_id(context.patient_id)
     context.immunization_object = create_immunization_object(context.patient, context.vaccine_type)
-    
+        
 @when("Trigger the post create request")
 def Trigger_the_post_create_request(context):
     get_create_postURLHeader(context)
     context.create_object = context.immunization_object
     context.request = context.create_object.dict(exclude_none=True, exclude_unset=True)
-
     context.response = requests.post(context.url, json=context.request, headers=context.headers)
     print(f"Create Request is {json.dumps(context.request)}" )
     print(f"Create Request is {context.response}" )
@@ -26,7 +25,6 @@ def Trigger_the_post_create_request(context):
 @then(parsers.parse("The request will be successful with the status code '{statusCode}'"))
 def The_request_will_be_successful_with_the_status_code(context, statusCode):
     assert context.response.status_code == int(statusCode)
-
 
 @then('The location key in header will contain the Immunization Id')
 def validateCreateLocation(context):

@@ -4,7 +4,7 @@ import allure
 import allure_pytest
 from pytest_bdd import given, when, then
 from utilities.genToken import get_access_token, is_token_valid
-from utilities.awsToken import set_aws_session_token
+from utilities.awsToken import *
 from utilities.helper import deleteCreate
 from utilities.soft_assertions import SoftAssertions
 from utilities.context import ScenarioContext
@@ -54,8 +54,6 @@ def context(request) -> ScenarioContext:
     for var in env_vars:
         setattr(ctx, var, os.getenv(var))
 
-    ctx.soft_assertions = SoftAssertions()
-
     node = request.node
     tags = [marker.name for marker in node.own_markers] 
    
@@ -71,8 +69,8 @@ def context(request) -> ScenarioContext:
         ctx.token_gen_time = current_time_global
         scenario_counter += 1
 
-    # if "Create_Feature" in tags:
-    #     set_aws_session_token()
+    if "Create_Feature" in tags:
+        set_aws_session_token()
 
     for tag in tags:
         if tag.startswith('vaccine_type_'):

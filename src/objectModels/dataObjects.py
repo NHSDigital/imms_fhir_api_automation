@@ -184,3 +184,26 @@ class FHIRImmunizationResponse(BaseModel):
     link: Optional[List[Link]] = []  
     entry: Optional[List[Entry]] = []  
     total: Optional[int] = None
+
+class ImmunizationIntTable(BaseModel):
+    resourceType: str
+    contained: List[Any]
+    extension: List[Extension]
+    identifier: List[Identifier]
+    status: str 
+    vaccineCode: CodeableConcept  # Fixed type
+    patient: Reference  # Fixed type
+    manufacturer: Dict[str, str]
+    id: str
+    location: Location  
+    site: CodeableConcept
+    route: CodeableConcept
+    doseQuantity: DoseQuantity
+    performer: List[Performer]
+    reasonCode: List[ReasonCode]
+    protocolApplied: List[ProtocolApplied]
+    occurrenceDateTime: str = ""
+    recorded: str = ""
+    primarySource: bool = True
+    lotNumber: str = ""
+    expirationDate: str = ""

@@ -129,7 +129,7 @@ def build_site_route(obj: Coding, text: str = None) -> CodeableConcept:
         ]
     )])
 
-def create_immunization_object(patient: Patient, vaccine_type: str) -> Immunization:
+def create_immunization_object(patient, vaccine_type: str) -> Immunization:
     practitioner = Practitioner(
         resourceType="Practitioner",  # ✅ Explicitly set resourceType
         id="Pract1",  
