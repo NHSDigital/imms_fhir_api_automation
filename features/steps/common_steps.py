@@ -20,7 +20,7 @@ def Trigger_the_post_create_request(context):
 
     context.response = requests.post(context.url, json=context.request, headers=context.headers)
     print(f"Create Request is {json.dumps(context.request)}" )
-    print(f"Create Request is {context.response}" )
+    # print(f"Create Response is {context.response}" )
 
 @then(parsers.parse("The request will be unsuccessful with the status code '{statusCode}'"))
 @then(parsers.parse("The request will be successful with the status code '{statusCode}'"))
@@ -32,9 +32,9 @@ def The_request_will_be_successful_with_the_status_code(context, statusCode):
 def validateCreateLocation(context):
     location = context.response.headers['location']
     assert  "location" in context.response.headers, f"Location header is missing in the response with Status code: {context.response.statusCode}. Response: {context.response.json()}"
-    context.location = location.split("/")[-1]
-    print(f"Location is {context.location}")
+    context.ImmsID = location.split("/")[-1]
+    print(f"\n Immunisation ID is {context.ImmsID}")
     check.is_true(
-        context.location is not None, 
-        f"Expected IdentifierPK: {context.patient.identifier[0].value}, Found: {context.location}"
+        context.ImmsID is not None, 
+        f"Expected IdentifierPK: {context.patient.identifier[0].value}, Found: {context.ImmsID}"
     )

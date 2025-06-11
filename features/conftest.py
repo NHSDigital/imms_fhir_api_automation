@@ -24,7 +24,7 @@ def pytest_bdd_after_step(request, feature, scenario, step, step_func, step_func
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_bdd_step_error(request, feature, scenario, step, exception):
-    message = f"❌ Step failed! **{step.name}** \nError: {exception}"
+    message = f"❌ Step failed! **{step.name}** \n Error: {exception}"
     allure.attach(message, name=f"Step Failed: {step.name}", attachment_type=allure.attachment_type.TEXT)
 
 @pytest.hookimpl(tryfirst=True)
