@@ -1,11 +1,5 @@
-import glob
-import itertools
 from urllib.parse import urlencode
-import pytest
 import requests
-import json
-import re
-import boto3
 import requests
 from src.objectModels.immunization_builder import *
 from src.objectModels.patient_loader import load_patient_by_id
@@ -107,7 +101,7 @@ def send_invalid_post_request(context, NHSNumber):
 def operationOutcomeInvalidNHSNo(context):
     error_response = parse_errorResponse(context.response.json())
     errorName= "invalid_NHSNumber"
-    validateErrorResponse(error_response, errorName)    
+    
     
 #     # code = config['OPERATIONOUTCOME']['codeInvalid']
 #     # diagnostics = config['OPERATIONOUTCOME']['diagnosticsInvalid']
@@ -281,73 +275,7 @@ def validateImmsID(context):
 def validateJsonImms(context):
     create_obj = context.create_object
     created_event= context.created_event.resource
-    request_patient = create_obj.contained[1]
-    response_patient = created_event.patient
-    check.is_true (request_patient.identifier[0].value== response_patient.identifier.value,
-                    f"Expected patient NHS Number {request_patient.identifier[0].value}.  Actual patient NHS Number {response_patient.identifier.value}")
-    
-    referencePattern = r"^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-    check.is_true(re.match(referencePattern, response_patient.reference), 
-                  f"Expected reference {referencePattern} Invalid reference format: {referencePattern}")
-    
-    check.is_true("Patient"== response_patient.type,
-                   f"Expected patient type is 'Patient' but actual patient Type is : {response_patient.type}")
-    
-    expected_recorded = covert_to_expected_date_format(context.create_object.recorded)
-
-    expected_fullUrl = config['SEARCH']['fullUrlRes'] + context.ImmsID
-
-    fields_to_compare = [
-        ("FullUrl", expected_fullUrl, context.created_event.fullUrl),
-
-        ("resourceType", create_obj.resourceType, created_event.resourceType),
-        # ("extension", create_obj.extension, created_event.extension),
-        # ("identifier", create_obj.identifier, created_event.identifier),
-        ("status", create_obj.status, created_event.status),
-        ("vaccineCode", create_obj.vaccineCode, created_event.vaccineCode),
-        # ("patient.type", create_obj.patient.type, created_event.patient.type),
-
-
-        ("Recorded", expected_recorded, created_event.recorded),
-        ("lotNumber", create_obj.lotNumber, created_event.lotNumber),
-        ("expirationDate", create_obj.expirationDate, created_event.expirationDate),
-        ("primarySource", create_obj.primarySource, created_event.primarySource),
-        ("doseQuantity", create_obj.doseQuantity, created_event.doseQuantity),
-        ("site", create_obj.site, created_event.site),
-        ("manufacturer", create_obj.manufacturer, created_event.manufacturer),
-        
-        ("reasonCode", create_obj.reasonCode, created_event.reasonCode),
-        ("protocolApplied", create_obj.protocolApplied, created_event.protocolApplied),
-        ("extension", create_obj.protocolApplied, created_event.extension),
-    ]
-
-
-
-
-
-
-
-
-    NumberOfFailures = 0
-    for name, expected, actual in fields_to_compare:
-        if not check.is_true(
-            expected == actual,
-            f"Expected {name}: {expected}, Actual {actual}"
-        ):
-            NumberOfFailures += 1
-
-    if NumberOfFailures > 0:
-        raise AssertionError(f"Validation failed for {NumberOfFailures} fields in the Immunization resource.")
-
-    #Validation missing
-    # Extension
-    # Identifier.system
-    # Identifier.value
-    # patient.identifier.system
-    # occurrenceDateTime
-    # location
-    # route
-    # search.mode
+    validateToCompareRequestAndResponse(context, create_obj, created_event)
 
 
 @then('The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient')

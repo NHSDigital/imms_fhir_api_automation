@@ -2,7 +2,7 @@
 
 Behave Automation for Immunisation FHIR API
 
-# Need to check in case any other libraries to be added
+## Need to check in case any other libraries to be added
 
 ## Installation
 
@@ -29,24 +29,24 @@ To execute the tests from your system, please follow the 4 easy steps below:
     source .venv/Scripts/activate
     ```
 
-5. in Terminal 
-    
+5. in Terminal
+
     ```console
-    .venv\Scripts\Activate.ps1
+        .venv\Scripts\Activate.ps1
 
     ```
-
-------------------------------------------------------------------------
 
 6. Need to create .env file, please get in touch with Imms FHIR API Test team to get the content of the file
 
 7. run following command to see that test are discovered
- 
+
      ```console
         # pytest --collect-only
      ```
 
-
+8. install and configure Aws CLI using following commands:
+   1. pip install awscli
+   2. aws configure
 
 ----DO NOT USE BELOW---------------------------------------------
 
