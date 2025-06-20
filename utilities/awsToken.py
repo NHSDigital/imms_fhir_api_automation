@@ -1,5 +1,8 @@
+import json
 import os
 import boto3
+from aws_sso_lite import get_sso_token_by_start_url, do_sso_login
+import botocore
 
 import logging
 logging.basicConfig(filename='debugLog.log', level=logging.INFO)
@@ -7,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 def set_aws_session_token():
     try:
+        print("token started.......")
         # Create a session using your AWS credentials
         session = boto3.Session()
 
