@@ -122,12 +122,18 @@ ERROR_MAP = {
         "resourceType": "OperationOutcome",
         "profile": "https://simplifier.net/guide/UKCoreDevelopment2/ProfileUKCore-OperationOutcome",
         "system": "https://fhir.nhs.uk/Codesystem/http-error-codes",
-        "code": "INVARIANT"
     },
     "invalid_NHSNumber": {
+        "issue_code": "invariant",
         "severity": "error",
-        "code": "invariant",
+        "code": "INVARIANT",
         "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].identifier[0].value does not exists."
-    }
+    },
+    "invalid_DiseaseType": {
+        "issue_code": "invalid",
+        "severity": "error",
+        "code": "INVALID",
+        "diagnostics": "immunization-target must be one or more of the following: COVID19,FLU,HPV,MMR,RSV"
+    },
 }
 

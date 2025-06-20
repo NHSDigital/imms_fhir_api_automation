@@ -184,10 +184,22 @@ Scenario Outline: Verify that the POST method of Search API will throw error for
 
     Examples:
       | NHSNumber  |
+      |   ""    |
       | 1234567890 | 
-      | 1 |
+      | 1          |
       | 1000000000000000001 |  
 
+
+Scenario Outline: Verify that the POST method of Search API will throw error for an invalid vaccine type
+    When Send a search request with POST method With the '<NHSNumber>' and invalid '<DiseaseType>'
+    Then The request will be unsuccessful with the status code '400'
+    And The Search Response JSONs should contain the error message for invalid Disease Type
+
+    Examples:
+      | NHSNumber  |        DiseaseType       |
+      | 1234567890 |        ABC            |
+    #   | 1          |
+    #   | 1000000000000000001 |  
 
 
 
