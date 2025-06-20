@@ -64,10 +64,10 @@ def validateErrorResponse(error_response, errorName: str):
     fields_to_compare = [
         ("ResourceType", error_response.resourceType, ERROR_MAP["Common_field"]["resourceType"]),
         ("Meta_Profile", error_response.meta.profile[0], ERROR_MAP["Common_field"]["profile"]),
+        ("Issue_Code",  error_response.issue[0].code, ERROR_MAP[errorName]["issue_code"]),
         ("Coding_system",  error_response.issue[0].details.coding[0].system, ERROR_MAP["Common_field"]["system"]),
-        ("Coding_Code",  error_response.issue[0].details.coding[0].code, ERROR_MAP["Common_field"]["code"]),
+        ("Coding_Code",  error_response.issue[0].details.coding[0].code, ERROR_MAP[errorName]["code"]),
         ("severity",  error_response.issue[0].severity, ERROR_MAP[errorName]["severity"]),
-        ("Issue_Code",  error_response.issue[0].code, ERROR_MAP[errorName]["code"]),
         ("Diagnostics",  error_response.issue[0].diagnostics, ERROR_MAP[errorName]["diagnostics"]),
     ]
 

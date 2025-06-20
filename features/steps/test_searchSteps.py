@@ -56,10 +56,20 @@ def TiggerSearchPostRequest(context):
 @when(parsers.parse("Send a search request with POST method With the invalid '{NHSNumber}'"))
 def send_invalid_post_request(context, NHSNumber):
     get_search_postURLHeader(context)
+    if NHSNumber.lower() in ["none", "null", ""]:
+        NHSNumber = ""
     context.request = convert_to_form_data(set_request_data(NHSNumber, context.vaccine_type, datetime.today().strftime("%Y-%m-%d")))
     print(f"\n Search Post request {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
 
+@when(parsers.parse("Send a search request with POST method With the '{NHSNumber}' and invalid '{DiseaseType}'"))
+def send_invalid_disease_type_post_request(context, NHSNumber, DiseaseType):
+    get_search_postURLHeader(context)
+    context.request = convert_to_form_data(set_request_data(NHSNumber, DiseaseType, datetime.today().strftime("%Y-%m-%d")))
+    print(f"\n Search Post request {context.request}")
+    context.response = requests.post(context.url, headers=context.headers, data=context.request)
+
+    
 # @given('After passing all the valid parameters except an invalid nhsnumber')
 # def invalidNHSNoSearch(context):
 #     context.getUrl = searchGETURL()
@@ -78,7 +88,15 @@ def operationOutcomeInvalidNHSNo(context):
     error_response = parse_errorResponse(context.response.json())
     errorName= "invalid_NHSNumber"
     validateErrorResponse(error_response, errorName)
+    print(f"\n Error Response - \n {error_response}")
     
+@then('The Search Response JSONs should contain the error message for invalid Disease Type')    
+def operationOutcomeInvalidNHSNo(context):
+    error_response = parse_errorResponse(context.response.json())
+    errorName= "invalid_DiseaseType"
+    validateErrorResponse(error_response, errorName)
+    print(f"\n Error Response - \n {error_response}")
+
 #     # code = config['OPERATIONOUTCOME']['codeInvalid']
 #     # diagnostics = config['OPERATIONOUTCOME']['diagnosticsInvalid']
 #     code = config['OPERATIONOUTCOME']['codeInvariant']
