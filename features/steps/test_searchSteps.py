@@ -77,7 +77,7 @@ def send_invalid_post_request(context, NHSNumber):
 def operationOutcomeInvalidNHSNo(context):
     error_response = parse_errorResponse(context.response.json())
     errorName= "invalid_NHSNumber"
-    
+    validateErrorResponse(error_response, errorName)
     
 #     # code = config['OPERATIONOUTCOME']['codeInvalid']
 #     # diagnostics = config['OPERATIONOUTCOME']['diagnosticsInvalid']
