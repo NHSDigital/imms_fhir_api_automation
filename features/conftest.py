@@ -1,12 +1,10 @@
 import os
 import pytest
 import allure
-import allure_pytest
 from pytest_bdd import given, when, then
 from utilities.genToken import get_access_token, is_token_valid
 from utilities.awsToken import *
 from utilities.helper import deleteCreate
-from utilities.soft_assertions import SoftAssertions
 from utilities.context import ScenarioContext
 from dotenv import load_dotenv
 

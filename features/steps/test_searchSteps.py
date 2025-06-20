@@ -1,11 +1,5 @@
-import glob
-import itertools
 from urllib.parse import urlencode
-import pytest
 import requests
-import json
-import re
-import boto3
 import requests
 from src.objectModels.immunization_builder import *
 from src.objectModels.patient_loader import load_patient_by_id
