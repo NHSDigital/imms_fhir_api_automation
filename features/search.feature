@@ -4,7 +4,7 @@ Feature: Search the immunization of a patient
 # Positive Scenarios
 # Scenarios for RSV vaccine type
 
-@vaccine_type_RSV @patient_id_ValidNHS
+@vaccine_type_RSV @patient_id_Random
 Scenario: Verify that the GET method of Search API will be successful with all the valid parameters for RSV and valid NHS Number
     Given I have created a valid vaccination record
     When Send a search request with GET method for Immunization event created
@@ -13,7 +13,7 @@ Scenario: Verify that the GET method of Search API will be successful with all t
     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
 
-@vaccine_type_RSV @patient_id_ValidNHS
+@vaccine_type_RSV @patient_id_Random
 Scenario: Verify that the POST method of Search API will be successful with all the valid parameters for RSV and valid NHS Number
     Given I have created a valid vaccination record
     When Send a search request with POST method for Immunization event created
@@ -61,7 +61,7 @@ Scenario: Verify that the POST method of Search API will be successful with all 
 
 # Next set of scenarios for COVID19 vaccine type
 
-@vaccine_type_COVID19 @patient_id_ValidNHS
+@vaccine_type_COVID19 @patient_id_Random
 Scenario: Verify that the GET method of Search API will be successful with all the valid parameters for COVID19 and valid NHS Number
     Given I have created a valid vaccination record
     When Send a search request with GET method for Immunization event created
@@ -70,7 +70,7 @@ Scenario: Verify that the GET method of Search API will be successful with all t
     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
 
-@vaccine_type_COVID19 @patient_id_ValidNHS
+@vaccine_type_COVID19 @patient_id_Random
 Scenario: Verify that the POST method of Search API will be successful with all the valid parameters for COVID19 and valid NHS Number
     Given I have created a valid vaccination record
     When Send a search request with POST method for Immunization event created
@@ -118,7 +118,7 @@ Scenario: Verify that the POST method of Search API will be successful with all 
 
 # Next set of scenarios for FLU vaccine type
 
-@vaccine_type_FLU @patient_id_ValidNHS
+@vaccine_type_FLU @patient_id_Random
 Scenario: Verify that the GET method of Search API will be successful with all the valid parameters for FLU and valid NHS Number
     Given I have created a valid vaccination record
     When Send a search request with GET method for Immunization event created
@@ -127,7 +127,7 @@ Scenario: Verify that the GET method of Search API will be successful with all t
     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
 
-@vaccine_type_FLU @patient_id_ValidNHS
+@vaccine_type_FLU @patient_id_Random
 Scenario: Verify that the POST method of Search API will be successful with all the valid parameters for FLU and valid NHS Number
     Given I have created a valid vaccination record
     When Send a search request with POST method for Immunization event created

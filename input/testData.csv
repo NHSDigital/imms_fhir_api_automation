@@ -5,7 +5,7 @@ SFlag,9449310610,test1,test2,unknown,1980-11-01,Validate Obf,"1, obf_2",obf_3,ob
 InvalidInPDS,9449310599,test1,test2,unknown,1980-11-01,Validate Obf,"1, obf_2",obf_3,obf_4,obf_5,LS01 1AB,obf_7,2000-01-01,2025-01-01
 InvalidMOD11Check,1234567890,test1,test2,unknown,1980-11-01,Validate Obf,"1, obf_2",obf_3,obf_4,obf_5,LS01 1AB,obf_7,2000-01-01,2025-01-01
 OldNHSNo,9452372230,test1,test2,unknown,1980-11-01,Validate Obf,"1, obf_2",obf_3,obf_4,obf_5,LS01 1AB,obf_7,2000-01-01,2025-01-01
-SupersedeNhsNo,9452372230,test1,test2,unknown,1980-11-01,Validate Obf,"1, obf_2",obf_3,obf_4,obf_5,LS01 1AB,obf_7,2000-01-01,2025-01-01
+SupersedeNhsNo,9452372249,test1,test2,unknown,1980-11-01,Validate Obf,"1, obf_2",obf_3,obf_4,obf_5,LS01 1AB,obf_7,2000-01-01,2025-01-01
 Valid_NHS,9001066569,CAMELIA,DURGAN,male,2007-06-04,Moore 01 Bishop,Essex,City,district,State,N8 7RE,UK,2025-06-04,2033-01-01
 Valid_NHS,9001076599,ROBIN,VAUGHAN,male,2000-08-11,10 Jamaica Road Torquay,MO,City,district,State,NW4 2PJ,UK,2025-06-04,2033-01-01
 Valid_NHS,9001089518,ALEX,PAUCEK,female,2009-06-04,Bad Oyenhausen,Notgiven,City,district,State,ZZ99 4QZ,UK,2025-06-04,2033-01-01

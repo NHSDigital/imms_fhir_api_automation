@@ -5,7 +5,7 @@ from typing import Type, Dict
 import uuid
 from pydantic import BaseModel
 import pytest_check as check
-from utilities.config import configparser
+from utilities.config import configparser, getConfigParser
 import uuid
 from src.objectModels.dataObjects import *
 from src.objectModels.operation_outcome import OperationOutcome
@@ -14,6 +14,8 @@ from utilities.helper import covert_to_expected_date_format
 import allure
 from allure_commons.lifecycle import AllureLifecycle
 from allure_commons.model2 import Status
+
+config = getConfigParser()
 
 
 def find_entry_by_Imms_id(parsed_data, imms_id) -> Optional[object]:

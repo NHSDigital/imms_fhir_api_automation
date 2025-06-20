@@ -1,7 +1,6 @@
 import json
 import os
 import boto3
-from aws_sso_lite import get_sso_token_by_start_url, do_sso_login
 import botocore
 
 import logging
