@@ -13,6 +13,11 @@ expires_in_global = None
 current_time_global = None
 scenario_counter = 0
 
+@pytest.hookimpl(tryfirst=True)
+def pytest_collection_modifyitems(items):
+    for item in items:
+        if "Scenario" in item.nodeid:
+            item.nodeid = item.nodeid.replace("_", " ")
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_bdd_after_step(request, feature, scenario, step, step_func, step_func_args):
@@ -30,7 +35,7 @@ def pytest_bdd_before_scenario(request, feature, scenario):
     allure.dynamic.epic("Immunization Service")
     allure.dynamic.suite(feature.name)  # Separates features into distinct suites
     allure.dynamic.feature(feature.name)  # Ensures correct feature grouping
-    allure.dynamic.label("Scenario", scenario.name)
+    allure.dynamic.title(scenario.name)
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_environment():

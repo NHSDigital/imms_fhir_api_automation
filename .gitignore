@@ -4,3 +4,4 @@ output/
 utilities/__pycache__
 mytest.py
 .env
+*.log
