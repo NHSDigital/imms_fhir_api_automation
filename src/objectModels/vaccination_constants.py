@@ -1,7 +1,7 @@
 from src.objectModels.dataObjects import *
 
 VACCINE_CODE_MAP = {
-    "COVID": [
+    "COVID19": [
         {
             "system": "http://snomed.info/sct",
             "code": "43111411000001101",
@@ -54,7 +54,7 @@ VACCINE_CODE_MAP = {
 
 
 VACCINATION_PROCEDURE_MAP = {
-    "COVID": [
+    "COVID19": [
         Coding(
             system="http://snomed.info/sct",
             code="1362591000000103",
@@ -104,12 +104,13 @@ REASON_CODE_MAP = [
 ]
 
 PROTOCOL_DISEASE_MAP ={ 
-    "COVID":[
+    "COVID19":[
         Coding( system="http://snomed.info/sct", code="840539006", display="Disease caused by severe acute respiratory syndrome coronavirus 2 (disorder)" ),
-        Coding( system="http://snomed.info/sct", code="6142004", display="Influenza caused by Influenza virus (disorder)" )
+        # Coding( system="http://snomed.info/sct", code="6142004", display="Influenza caused by Influenza virus (disorder)" )
     ],
     "FLU":[
-        Coding( system="http://snomed.info/sct", code="840539006", display="Disease caused by severe acute respiratory syndrome coronavirus 2 (disorder)" ),
+        # Coding( system="http://snomed.info/sct", code="840539006", display="Disease caused by severe acute respiratory syndrome coronavirus 2 (disorder)" ),
+        Coding( system="http://snomed.info/sct", code="6142004", display="Influenza caused by Influenza virus (disorder)" )
     ],
     "RSV":[
         Coding( system="http://snomed.info/sct", code="55735004", display="Respiratory syncytial virus infection (disorder)" ),

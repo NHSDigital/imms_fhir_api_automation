@@ -32,7 +32,6 @@ config = getConfigParser()
 logging.basicConfig(filename='debugLog.log', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 scenarios("search.feature")
 
 @given("I have created a valid vaccination record")
@@ -64,31 +63,8 @@ def TiggerSearchPostRequest(context):
 def send_invalid_post_request(context, NHSNumber):
     get_search_postURLHeader(context)
     context.request = convert_to_form_data(set_request_data(NHSNumber, context.vaccine_type, datetime.today().strftime("%Y-%m-%d")))
-    print(f"Search Post request {context.request}")
+    print(f"\n Search Post request {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
-
-# @given('After passing all the valid parameters')
-# def queryParamSearch(context):  
-#     context.getUrl = searchGETURL()
-#     context.params = searchContextParam(context)
-#     context.headersGet = searchGETHeaders(context.token)
-
-# @when('Send a search request with GET method')
-# def GETAPISearch(context):
-#     context.response = requests.get(context.getUrl, params = context.params, headers = context.headersGet)
-
-# @when('Send a search request with POST method')
-# def GETAPISearch(context):
-#     context.response = requests.post(context.postUrl, data = context.params, headers = context.headersPost)    
-
-
-# @then('The search will be successful with the status code 200')
-# def APIResponseStatus(context):
-#     statusCode = context.response.status_code
-#     resText = context.response.text
-#     assert statusCode == 200, f"Failed to get the status code 200. Status code Received: {statusCode}. Response: {resText}"
-#     # context.soft_assertions.assert_condition(statusCode == 200, f"Status Code of the Response API: {statusCode}")
-
 
 # @given('After passing all the valid parameters except an invalid nhsnumber')
 # def invalidNHSNoSearch(context):
@@ -212,58 +188,16 @@ def operationOutcomeInvalidNHSNo(context):
 #     context.headersPost = searchPOSTHeaders(context.token)   
 #     context.NHSNumber = NHSNumber
 
-# @given('Create an immunization event for the patient with the input JSONs available')
-# def cretaeImms(context):
-#         context.createUrl = createURL()
-#         # context.createPayload = createPayload(context.NHSNumber,"search")
-#         context.createPayload = createPayload("NHSNumber",context.NHSNumber,"create")
-#         context.createHeaders = createPOSTHeaders(context.token)
-#         context.responseImmsID = {}
-#         context.requestJSON = context.createPayload[0]
-#         context.requestFileName = context.createPayload[1]
-#         context.requestTotalFiles = context.createPayload[2]
-        
-#         for fileName in context.requestFileName:
-#             response = requests.post(context.createUrl, json=context.requestJSON[fileName], headers=context.createHeaders)
-#             assert response.status_code == 201, f"Failed to create immunization event for {fileName}. Status code: {response.status_code}. Response: {response.text}"
-#             context.responseImmsID[fileName] = response.headers['Location'].split("/")[-1]
-
-# @when('Send a search request with GET method for each Immunization event created')
-# def searchGETAPI(context):
-#     context.responseJsons = {}
-#     context.responseStatus = {}
-
-#     for fileName in context.requestFileName:
-#         responseSearch = requests.get(context.getUrl, params = context.params, headers = context.headersGet)
-#         context.responseJsons[fileName] = responseSearch.text
-#         context.responseStatus[fileName] = responseSearch.status_code
-
-
-# @when('Send a search request with POST method for each Immunization event created')
-# def searchPOSTAPI(context):
-#     context.responseJsons = {}
-#     context.responseStatus = {}
-
-#     for fileName in context.requestFileName:      
-#         responseSearch = requests.post(context.postUrl, data = context.params, headers = context.headersPost)
-#         context.responseJsons[fileName] = responseSearch.text
-#         context.responseStatus[fileName] = responseSearch.status_code        
-
-
-# @then('The search will be successful with the status code 200 for each Immunization event')
-# def validateSearchAPIStatusCode(context):
-#     for fileName in context.requestFileName:
-#         statusCode = context.responseStatus[fileName]
-#         response = context.responseJsons[fileName]
-#         assert statusCode == 200, f"Failed to search for immunization event for {fileName}. Status code: {statusCode}. Response:{response}"        
-
-
 @then('The Search Response JSONs should contain the detail of the immunization events created above')
 def validateImmsID(context):
     data = context.response.json()
     context.parsed_search_object = parse_FHIRImmunizationResponse(data)
 
     context.created_event = find_entry_by_Imms_id(context.parsed_search_object, context.ImmsID)
+
+    # print(f"{data}\n")
+    # print(f"{context.parsed_search_object}\n")
+    # print(f"{context.created_event}\n")
     
     if context.created_event is None:
         raise AssertionError(f"No object found with Immunisation ID {context.ImmsID} in the search response.")
@@ -283,89 +217,74 @@ def validateJsonImms(context):
     created_event= context.created_event.resource
     request_patient = create_obj.contained[1]
     response_patient = created_event.patient
-    check.is_true (request_patient.identifier[0].value== response_patient.identifier.value,
-                    f"Expected patient NHS Number {request_patient.identifier[0].value}.  Actual patient NHS Number {response_patient.identifier.value}")
-    
-    referencePattern = r"^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-    check.is_true(re.match(referencePattern, response_patient.reference), 
-                  f"Expected reference {referencePattern} Invalid reference format: {referencePattern}")
-    
-    check.is_true("Patient"== response_patient.type,
-                   f"Expected patient type is 'Patient' but actual patient Type is : {response_patient.type}")
-    
-    expected_recorded = covert_to_expected_date_format(context.create_object.recorded)
 
     expected_fullUrl = config['SEARCH']['fullUrlRes'] + context.ImmsID
+    referencePattern = r"^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"   
+    expected_occurrenceDateTime = covert_to_expected_date_format(context.create_object.occurrenceDateTime)
+    expected_recorded = covert_to_expected_date_format(context.create_object.recorded)   
 
     fields_to_compare = [
-        ("FullUrl", expected_fullUrl, context.created_event.fullUrl),
+        ("fullUrl", expected_fullUrl, context.created_event.fullUrl),
 
         ("resourceType", create_obj.resourceType, created_event.resourceType),
-        # ("extension", create_obj.extension, created_event.extension),
-        # ("identifier", create_obj.identifier, created_event.identifier),
+        ("extension", create_obj.extension, created_event.extension),
+        ("identifier.system", create_obj.identifier[0].system, created_event.identifier[0].system),
+        ("identifier.value", create_obj.identifier[0].value, created_event.identifier[0].value),
         ("status", create_obj.status, created_event.status),
         ("vaccineCode", create_obj.vaccineCode, created_event.vaccineCode),
-        # ("patient.type", create_obj.patient.type, created_event.patient.type),
-
-
+        ("patient.reference", bool(re.match(referencePattern, response_patient.reference)),True),
+        ("patient.type", create_obj.patient.type, created_event.patient.type),
+        ("patient.identifier.system", request_patient.identifier[0].system, response_patient.identifier.system),
+        ("patient.identifier.value", request_patient.identifier[0].value, response_patient.identifier.value),
+        ("occurrenceDateTime", expected_occurrenceDateTime, created_event.occurrenceDateTime),
         ("Recorded", expected_recorded, created_event.recorded),
+        ("primarySource", create_obj.primarySource, created_event.primarySource),
+        ("location", create_obj.location, created_event.location),
+        ("manufacturer", create_obj.manufacturer, created_event.manufacturer),
         ("lotNumber", create_obj.lotNumber, created_event.lotNumber),
         ("expirationDate", create_obj.expirationDate, created_event.expirationDate),
-        ("primarySource", create_obj.primarySource, created_event.primarySource),
-        ("doseQuantity", create_obj.doseQuantity, created_event.doseQuantity),
         ("site", create_obj.site, created_event.site),
-        ("manufacturer", create_obj.manufacturer, created_event.manufacturer),
-        
+        ("route", create_obj.route, created_event.route),
+        ("doseQuantity", create_obj.doseQuantity, created_event.doseQuantity),      
         ("reasonCode", create_obj.reasonCode, created_event.reasonCode),
         ("protocolApplied", create_obj.protocolApplied, created_event.protocolApplied),
-        ("extension", create_obj.protocolApplied, created_event.extension),
     ]
-
-
-
-
-
-
-
 
     NumberOfFailures = 0
     for name, expected, actual in fields_to_compare:
         if not check.is_true(
-            expected == actual,
-            f"Expected {name}: {expected}, Actual {actual}"
-        ):
-            NumberOfFailures += 1
+                expected == actual,
+                f"Expected {name}: {expected}, Actual {actual}"
+            ):
+                NumberOfFailures += 1
 
     if NumberOfFailures > 0:
         raise AssertionError(f"Validation failed for {NumberOfFailures} fields in the Immunization resource.")
 
-    #Validation missing
-    # Extension
-    # Identifier.system
-    # Identifier.value
-    # patient.identifier.system
-    # occurrenceDateTime
-    # location
-    # route
-    # search.mode
 
 
 @then('The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient')
 def validateJsonPat(context):        
     response_patient_entry =  find_patient_by_fullurl(context.parsed_search_object)
     assert response_patient_entry is not None, f"No Patient found with fullUrl {context.Patient_fullUrl}"
-    # print(f"Patient entry is :{response_patient_entry}")
     
     response_patient = response_patient_entry.resource
-    check.is_true(context.Patient_fullUrl == response_patient_entry.fullUrl, f"Expected Patient ful, got {response_patient_entry.fullUrl}")
-    expected_nhs_number = context.create_object.contained[1].identifier[0].value     
-
-    check.is_true(response_patient.resourceType == "Patient", f"Expected Patient resource, got {response_patient.resourceType}")
-    check.is_true(response_patient.id == expected_nhs_number, f"Expected Patient ID {expected_nhs_number}, got {response_patient.id}")
-    
+    expected_nhs_number = context.create_object.contained[1].identifier[0].value
     actual_nhs_number = response_patient.identifier[0].value
-    check.is_true(actual_nhs_number == expected_nhs_number, f"Expected Patient Identifier value {expected_nhs_number}, got {actual_nhs_number}")
-
+    expected_system = context.create_object.contained[1].identifier[0].system    
     actual_system = response_patient.identifier[0].system
-    expected_system = context.create_object.contained[1].identifier[0].system
-    check.is_true(actual_system == expected_system, f"Expected Patient Identifier system {expected_system}, got {actual_system}")
+
+    fields_to_compare = [
+        ("fullUrl", context.Patient_fullUrl, response_patient_entry.fullUrl),
+
+        ("resourceType", "Patient", response_patient.resourceType),
+        ("id", expected_nhs_number, response_patient.id),
+        ("identifier.system", expected_system, actual_system),
+        ("identifier.value", expected_nhs_number, actual_nhs_number),
+    ]
+
+    for name, expected, actual in fields_to_compare:
+            check.is_true(
+                expected == actual,
+                f"Expected {name}: {expected}, Actual {actual}"
+            )
