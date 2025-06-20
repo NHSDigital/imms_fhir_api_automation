@@ -32,7 +32,14 @@ scenarios("search.feature")
 def validVaccinationRecordIsCreated(context):
     valid_json_payload_is_created(context)
     Trigger_the_post_create_request(context)
-    The_request_will_be_successful_with_the_status_code(context, 201)
+    The_request_will_have_status_code(context, 201)
+    validateCreateLocation(context)
+
+@given(parsers.parse("Valid vaccination record is created with Patient '{Patient}' and vaccine_type '{vaccine_type}'"))
+def validVaccinationRecordIsCreatedWithPatient(context, Patient, vaccine_type):
+    The_Immunization_object_is_created_with_patient_for_vaccine_type(context, Patient, vaccine_type)
+    Trigger_the_post_create_request(context)
+    The_request_will_have_status_code(context, 201)
     validateCreateLocation(context)
 
 @when("Send a search request with GET method for Immunization event created")
@@ -53,14 +60,15 @@ def TiggerSearchPostRequest(context):
     
     print(f"\n Search Post Response - \n {context.response.json()}")    
     
-@when(parsers.parse("Send a search request with POST method With the invalid '{NHSNumber}'"))
-def send_invalid_post_request(context, NHSNumber):
+@when(parsers.parse("Send a search request with POST method for invalid NHS Number '{NHSNumber}'"))
+def send_search_post_request(context, NHSNumber):
     get_search_postURLHeader(context)
     if NHSNumber.lower() in ["none", "null", ""]:
         NHSNumber = ""
     context.request = convert_to_form_data(set_request_data(NHSNumber, context.vaccine_type, datetime.today().strftime("%Y-%m-%d")))
     print(f"\n Search Post request {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
+
 
 @when(parsers.parse("Send a search request with POST method With the '{NHSNumber}' and invalid '{DiseaseType}'"))
 def send_invalid_disease_type_post_request(context, NHSNumber, DiseaseType):
@@ -69,19 +77,6 @@ def send_invalid_disease_type_post_request(context, NHSNumber, DiseaseType):
     print(f"\n Search Post request {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
 
-    
-# @given('After passing all the valid parameters except an invalid nhsnumber')
-# def invalidNHSNoSearch(context):
-#     context.getUrl = searchGETURL()
-#     context.params = searchContextParam(context)
-#     context.headersGet = searchGETHeaders(context.token)
-
-# @then('The search will throw error with the status code 400')
-# def errorCode4xx(context):
-#     context.statusCode = context.response.status_code
-#     context.resText = context.response.text
-#     assert context.statusCode == 400, f"Failed to get the status code 400. Status code Received: {context.statusCode}. Response: {context.resText}"
-#     # context.soft_assertions.assert_condition(result['MAKE'] == MAKE, f"Make match: {result['MAKE']} = {MAKE}")
 
 @then('The Search Response JSONs should contain the error message for invalid NHS Number')    
 def operationOutcomeInvalidNHSNo(context):
