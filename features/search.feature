@@ -2,175 +2,44 @@
 Feature: Search the immunization of a patient
 
 # Positive Scenarios
-# Scenarios for RSV vaccine type
-
-@vaccine_type_RSV @patient_id_Random
-Scenario: Verify that the GET method of Search API will be successful with all the valid parameters for RSV and valid NHS Number
-    Given I have created a valid vaccination record
+Scenario Outline: Verify that the GET method of Search API will be successful with all the valid parameters
+    Given Valid vaccination record is created with Patient '<Patient>' and vaccine_type '<Vaccine_type>'
     When Send a search request with GET method for Immunization event created
     Then The request will be successful with the status code '200'
     And The Search Response JSONs should contain the detail of the immunization events created above
     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
+    Examples: 
+      |Patient       | Vaccine_type|
+      |Random        | RSV         |
+      |SFlag         | RSV         |
+      |SupersedeNhsNo| RSV         |
+      |Random        | FLU         |
+      |SFlag         | FLU         |
+      |SupersedeNhsNo| FLU         |
+      |Random        | COVID19     |
+      |SFlag         | COVID19     |
+      |SupersedeNhsNo| COVID19     |
 
-@vaccine_type_RSV @patient_id_Random
-Scenario: Verify that the POST method of Search API will be successful with all the valid parameters for RSV and valid NHS Number
-    Given I have created a valid vaccination record
+
+Scenario Outline: Verify that the POST method of Search API will be successful with all the valid parameters 
+    Given Valid vaccination record is created with Patient '<Patient>' and vaccine_type '<Vaccine_type>'
     When Send a search request with POST method for Immunization event created
     Then The request will be successful with the status code '200'
     And The Search Response JSONs should contain the detail of the immunization events created above
     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
-
-@vaccine_type_RSV @patient_id_SFlag
-Scenario: Verify that the GET method of Search API will be successful with all the valid parameters for RSV and valid SFlag
-    Given I have created a valid vaccination record
-    When Send a search request with GET method for Immunization event created
-    Then The request will be successful with the status code '200'
-    And The Search Response JSONs should contain the detail of the immunization events created above
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
-
-@vaccine_type_RSV @patient_id_SFlag
-Scenario: Verify that the POST method of Search API will be successful with all the valid parameters for RSV and valid SFlag
-    Given I have created a valid vaccination record
-    When Send a search request with POST method for Immunization event created
-    Then The request will be successful with the status code '200'
-    And The Search Response JSONs should contain the detail of the immunization events created above
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
-
-@vaccine_type_RSV @patient_id_SupersedeNhsNo
-Scenario: Verify that the GET method of Search API will be successful with all the valid parameters for RSV and valid Supersede NHS Number
-    Given I have created a valid vaccination record
-    When Send a search request with GET method for Immunization event created
-    Then The request will be successful with the status code '200'
-    And The Search Response JSONs should contain the detail of the immunization events created above
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
-
-@vaccine_type_RSV @patient_id_SupersedeNhsNo
-Scenario: Verify that the POST method of Search API will be successful with all the valid parameters for RSV and valid Supersede NHS Number
-    Given I have created a valid vaccination record
-    When Send a search request with POST method for Immunization event created
-    Then The request will be successful with the status code '200'
-    And The Search Response JSONs should contain the detail of the immunization events created above
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient    
-
-
-# Next set of scenarios for COVID19 vaccine type
-
-@vaccine_type_COVID19 @patient_id_Random
-Scenario: Verify that the GET method of Search API will be successful with all the valid parameters for COVID19 and valid NHS Number
-    Given I have created a valid vaccination record
-    When Send a search request with GET method for Immunization event created
-    Then The request will be successful with the status code '200'
-    And The Search Response JSONs should contain the detail of the immunization events created above
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
-
-@vaccine_type_COVID19 @patient_id_Random
-Scenario: Verify that the POST method of Search API will be successful with all the valid parameters for COVID19 and valid NHS Number
-    Given I have created a valid vaccination record
-    When Send a search request with POST method for Immunization event created
-    Then The request will be successful with the status code '200'
-    And The Search Response JSONs should contain the detail of the immunization events created above
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
-
-@vaccine_type_COVID19 @patient_id_SFlag
-Scenario: Verify that the GET method of Search API will be successful with all the valid parameters for COVID19 and valid SFlag
-    Given I have created a valid vaccination record
-    When Send a search request with GET method for Immunization event created
-    Then The request will be successful with the status code '200'
-    And The Search Response JSONs should contain the detail of the immunization events created above
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
-
-@vaccine_type_COVID19 @patient_id_SFlag
-Scenario: Verify that the POST method of Search API will be successful with all the valid parameters for COVID19 and valid SFlag
-    Given I have created a valid vaccination record
-    When Send a search request with POST method for Immunization event created
-    Then The request will be successful with the status code '200'
-    And The Search Response JSONs should contain the detail of the immunization events created above
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
-
-@vaccine_type_COVID19 @patient_id_SupersedeNhsNo
-Scenario: Verify that the GET method of Search API will be successful with all the valid parameters for COVID19 and valid Supersede NHS Number
-    Given I have created a valid vaccination record
-    When Send a search request with GET method for Immunization event created
-    Then The request will be successful with the status code '200'
-    And The Search Response JSONs should contain the detail of the immunization events created above
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
-
-@vaccine_type_COVID19 @patient_id_SupersedeNhsNo
-Scenario: Verify that the POST method of Search API will be successful with all the valid parameters for COVID19 and valid Supersede NHS Number
-    Given I have created a valid vaccination record
-    When Send a search request with POST method for Immunization event created
-    Then The request will be successful with the status code '200'
-    And The Search Response JSONs should contain the detail of the immunization events created above
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient    
-
-
-# Next set of scenarios for FLU vaccine type
-
-@vaccine_type_FLU @patient_id_Random
-Scenario: Verify that the GET method of Search API will be successful with all the valid parameters for FLU and valid NHS Number
-    Given I have created a valid vaccination record
-    When Send a search request with GET method for Immunization event created
-    Then The request will be successful with the status code '200'
-    And The Search Response JSONs should contain the detail of the immunization events created above
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
-
-@vaccine_type_FLU @patient_id_Random
-Scenario: Verify that the POST method of Search API will be successful with all the valid parameters for FLU and valid NHS Number
-    Given I have created a valid vaccination record
-    When Send a search request with POST method for Immunization event created
-    Then The request will be successful with the status code '200'
-    And The Search Response JSONs should contain the detail of the immunization events created above
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
-
-@vaccine_type_FLU @patient_id_SFlag
-Scenario: Verify that the GET method of Search API will be successful with all the valid parameters for FLU and valid SFlag
-    Given I have created a valid vaccination record
-    When Send a search request with GET method for Immunization event created
-    Then The request will be successful with the status code '200'
-    And The Search Response JSONs should contain the detail of the immunization events created above
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
-
-@vaccine_type_FLU @patient_id_SFlag
-Scenario: Verify that the POST method of Search API will be successful with all the valid parameters for FLU and valid SFlag
-    Given I have created a valid vaccination record
-    When Send a search request with POST method for Immunization event created
-    Then The request will be successful with the status code '200'
-    And The Search Response JSONs should contain the detail of the immunization events created above
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
-
-@vaccine_type_FLU @patient_id_SupersedeNhsNo
-Scenario: Verify that the GET method of Search API will be successful with all the valid parameters for FLU and valid Supersede NHS Number
-    Given I have created a valid vaccination record
-    When Send a search request with GET method for Immunization event created
-    Then The request will be successful with the status code '200'
-    And The Search Response JSONs should contain the detail of the immunization events created above
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
-
-@vaccine_type_FLU @patient_id_SupersedeNhsNo
-Scenario: Verify that the POST method of Search API will be successful with all the valid parameters for FLU and valid Supersede NHS Number
-    Given I have created a valid vaccination record
-    When Send a search request with POST method for Immunization event created
-    Then The request will be successful with the status code '200'
-    And The Search Response JSONs should contain the detail of the immunization events created above
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
-    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient    
+    Examples: 
+      |Patient       | Vaccine_type|
+      |Random        | RSV         |
+      |SFlag         | RSV         |
+      |SupersedeNhsNo| RSV         |
+      |Random        | FLU         |
+      |SFlag         | FLU         |
+      |SupersedeNhsNo| FLU         |
+      |Random        | COVID19     |
+      |SFlag         | COVID19     |
+      |SupersedeNhsNo| COVID19     | 
 
 
 # Negative Scenarios
@@ -178,7 +47,7 @@ Scenario: Verify that the POST method of Search API will be successful with all 
 
 @vaccine_type_RSV
 Scenario Outline: Verify that the POST method of Search API will throw error for an invalid patient NHS Number
-    When Send a search request with POST method With the invalid '<NHSNumber>'
+    When Send a search request with POST method for invalid NHS Number '<NHSNumber>'
     Then The request will be unsuccessful with the status code '400'
     And The Search Response JSONs should contain the error message for invalid NHS Number
 
