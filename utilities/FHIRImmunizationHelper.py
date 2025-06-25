@@ -1,4 +1,5 @@
 from dataclasses import fields, is_dataclass
+from datetime import datetime
 from logging import config
 import re
 from typing import Type, Dict
@@ -56,6 +57,34 @@ def parse_entry(entry_data: dict) -> Entry:
         resource=parsed_resource,
         search=parsed_search
     )
+
+
+def is_valid_date(date_str: str) -> bool:
+    try:
+        datetime.strptime(date_str, "%Y-%m-%d")
+        return True
+    except ValueError:
+        return False
+
+def is_valid_disease_type(disease_type: str) -> bool:
+    valid_types = {"COVID19", "FLU", "HPV", "MMR", "RSV"}
+    return disease_type in valid_types
+
+def is_valid_nhs_number(nhs_number: str) -> bool:
+    nhs_number = nhs_number.replace(" ", "")
+    if not nhs_number.isdigit() or len(nhs_number) != 10:
+        return False
+
+    digits = [int(d) for d in nhs_number]
+    total = sum((10 - i) * digits[i] for i in range(9))
+    remainder = total % 11
+    check_digit = 11 - remainder
+    if check_digit == 11:
+        check_digit = 0
+    if check_digit == 10:
+        return False
+    return check_digit == digits[9]
+
 
 def validateErrorResponse(error_response, errorName: str):
     uuid_obj = uuid.UUID(error_response.id, version=4)

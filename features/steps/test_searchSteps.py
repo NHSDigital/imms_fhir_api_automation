@@ -59,141 +59,126 @@ def TiggerSearchPostRequest(context):
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
     
     print(f"\n Search Post Response - \n {context.response.json()}")    
-    
-@when(parsers.parse("Send a search request with POST method for invalid NHS Number '{NHSNumber}'"))
-def send_search_post_request(context, NHSNumber):
-    get_search_postURLHeader(context)
+
+
+@when(parsers.parse("Send a search request with GET method with invalid NHS Number '{NHSNumber}' and valid Disease Type '{DiseaseType}'"))
+@when(parsers.parse("Send a search request with GET method with valid NHS Number '{NHSNumber}' and invalid Disease Type '{DiseaseType}'"))
+@when(parsers.parse("Send a search request with GET method with invalid NHS Number '{NHSNumber}' and invalid Disease Type '{DiseaseType}'"))
+def send_invalid_param_get_request(context, NHSNumber, DiseaseType):
+    get_search_getURLHeader(context)
+
     if NHSNumber.lower() in ["none", "null", ""]:
         NHSNumber = ""
-    context.request = convert_to_form_data(set_request_data(NHSNumber, context.vaccine_type, datetime.today().strftime("%Y-%m-%d")))
-    print(f"\n Search Post request {context.request}")
-    context.response = requests.post(context.url, headers=context.headers, data=context.request)
+    if DiseaseType.lower() in ["none", "null", ""]:
+        DiseaseType = ""        
+
+    context.NHSNumber = NHSNumber
+    context.DiseaseType = DiseaseType
+    context.params = convert_to_form_data(set_request_data(NHSNumber, DiseaseType, datetime.today().strftime("%Y-%m-%d")))
+    print(f"\n Search Get parameters - \n {context.params}")
+    context.response = requests.get(context.url, params = context.params, headers = context.headers)
 
 
-@when(parsers.parse("Send a search request with POST method With the '{NHSNumber}' and invalid '{DiseaseType}'"))
-def send_invalid_disease_type_post_request(context, NHSNumber, DiseaseType):
+@when(parsers.parse("Send a search request with POST method with invalid NHS Number '{NHSNumber}' and valid Disease Type '{DiseaseType}'"))
+@when(parsers.parse("Send a search request with POST method with valid NHS Number '{NHSNumber}' and invalid Disease Type '{DiseaseType}'"))
+@when(parsers.parse("Send a search request with POST method with invalid NHS Number '{NHSNumber}' and invalid Disease Type '{DiseaseType}'"))
+def send_invalid_param_post_request(context, NHSNumber, DiseaseType):
     get_search_postURLHeader(context)
+
+    if NHSNumber.lower() in ["none", "null", ""]:
+        NHSNumber = ""
+    if DiseaseType.lower() in ["none", "null", ""]:
+        DiseaseType = ""        
+
+    context.NHSNumber = NHSNumber
+    context.DiseaseType = DiseaseType
     context.request = convert_to_form_data(set_request_data(NHSNumber, DiseaseType, datetime.today().strftime("%Y-%m-%d")))
-    print(f"\n Search Post request {context.request}")
+    print(f"\n Search Post request - \n {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
 
 
-@then('The Search Response JSONs should contain the error message for invalid NHS Number')    
-def operationOutcomeInvalidNHSNo(context):
-    error_response = parse_errorResponse(context.response.json())
-    errorName= "invalid_NHSNumber"
-    validateErrorResponse(error_response, errorName)
-    print(f"\n Error Response - \n {error_response}")
-    
-@then('The Search Response JSONs should contain the error message for invalid Disease Type')    
-def operationOutcomeInvalidNHSNo(context):
-    error_response = parse_errorResponse(context.response.json())
-    errorName= "invalid_DiseaseType"
-    validateErrorResponse(error_response, errorName)
-    print(f"\n Error Response - \n {error_response}")
+@when(parsers.parse("Send a search request with GET method with invalid Date From '{DateFrom}' and valid Date To '{DateTo}'"))
+@when(parsers.parse("Send a search request with GET method with valid Date From '{DateFrom}' and invalid Date To '{DateTo}'"))
+@when(parsers.parse("Send a search request with GET method with invalid Date From '{DateFrom}' and invalid Date To '{DateTo}'"))
+def send_invalid_date_get_request(context, DateFrom, DateTo):
+    get_search_getURLHeader(context)
 
-#     # code = config['OPERATIONOUTCOME']['codeInvalid']
-#     # diagnostics = config['OPERATIONOUTCOME']['diagnosticsInvalid']
-#     code = config['OPERATIONOUTCOME']['codeInvariant']
-#     diagnostics = config['OPERATIONOUTCOME']['diagnosticsInvariant']    
-#     resourceType = config['OPERATIONOUTCOME']['resourceType']
+    if DateFrom.lower() in ["none", "null", ""]:
+        DateFrom = ""
+    if DateTo.lower() in ["none", "null", ""]:
+        DateTo = ""        
 
-#     resActual = json.loads(context.resText)
-#     resExpected = json.loads(operationOutcomeResJson(code, diagnostics))
-
-#     idPattern = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
-
-#     with allure.step(f"Validating Operation Outcome fields for the NHS Number: {context.NHSNumber}"):
-#         validate_json_fields(resourceType, resActual['resourceType'], path="resourceType")
-#         validate_json_fields(idPattern, resActual['id'], path="id")
-#         validate_json_fields(resExpected['meta'], resActual['meta'], path="meta")
-#         validate_json_fields(resExpected['issue'], resActual['issue'], path="issue")
-
-#         soft_assertions.assert_all()
-
-# @then('The Search Response JSONs should contain the valid error message for mandatory query parameters') 
-# def operationOutcomeNullParam(context):
-#     if context.NHSNumber.lower() in ["none", "null", ""]:
-#         code = config['OPERATIONOUTCOME']['codeInvalid']
-#         diagnostics = config['OPERATIONOUTCOME']['diagnosticsNHSNoInvalid']
-#     if context.DiseaseType.lower() in ["none", "null", ""]:
-#         code = config['OPERATIONOUTCOME']['codeInvalid']
-#         diagnostics = config['OPERATIONOUTCOME']['diagnosticsDiseaseTypeInvalid']
-#     resourceType = config['OPERATIONOUTCOME']['resourceType']
-
-#     resActual = json.loads(context.resText)
-#     resExpected = json.loads(operationOutcomeResJson(code, diagnostics))
-
-#     idPattern = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
-
-#     with allure.step(f"Validating Operation Outcome fields for the NHS Number: {context.NHSNumber}"):
-#         validate_json_fields(resourceType, resActual['resourceType'], path="resourceType")
-#         validate_json_fields(idPattern, resActual['id'], path="id")
-#         validate_json_fields(resExpected['meta'], resActual['meta'], path="meta")
-#         validate_json_fields(resExpected['issue'], resActual['issue'], path="issue")
-
-#         soft_assertions.assert_all()        
+    context.DateFrom = DateFrom
+    context.DateTo = DateTo
+    context.DiseaseType = "RSV"
+    context.NHSNumber = load_patient_by_id("Random").identifier[0].value
+    context.params = convert_to_form_data(set_request_data(context.NHSNumber, context.DiseaseType, DateFrom, DateTo))
+    print(f"\n Search Get parameters - \n {context.params}")
+    context.response = requests.get(context.url, params = context.params, headers = context.headers)
 
 
-# @then('The Search Response JSONs should contain the valid error message for invalid format of patient identifier') 
-# def operationOutcomeInvalidPatIdParam(context):
-#     code = config['OPERATIONOUTCOME']['codeInvalid']
-#     diagnostics = config['OPERATIONOUTCOME']['diagnosticsFormatInvalid']
+@when(parsers.parse("Send a search request with POST method with invalid Date From '{DateFrom}' and valid Date To '{DateTo}'"))
+@when(parsers.parse("Send a search request with POST method with valid Date From '{DateFrom}' and invalid Date To '{DateTo}'"))
+@when(parsers.parse("Send a search request with POST method with invalid Date From '{DateFrom}' and invalid Date To '{DateTo}'"))
+def send_invalid_param_post_request(context, DateFrom, DateTo):
+    get_search_postURLHeader(context)
 
-#     resourceType = config['OPERATIONOUTCOME']['resourceType']
+    if DateFrom.lower() in ["none", "null", ""]:
+        DateFrom = ""
+    if DateTo.lower() in ["none", "null", ""]:
+        DateTo = ""        
 
-#     resActual = json.loads(context.resText)
-#     resExpected = json.loads(operationOutcomeResJson(code, diagnostics))
-
-#     idPattern = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
-
-#     with allure.step(f"Validating Operation Outcome fields for the Patient Identifier: {context.PatientIdentifier}"):
-#         validate_json_fields(resourceType, resActual['resourceType'], path="resourceType")
-#         validate_json_fields(idPattern, resActual['id'], path="id")
-#         validate_json_fields(resExpected['meta'], resActual['meta'], path="meta")
-#         validate_json_fields(resExpected['issue'], resActual['issue'], path="issue")
-
-#         soft_assertions.assert_all()   
-
+    context.DateFrom = DateFrom
+    context.DateTo = DateTo
+    context.DiseaseType = "COVID19"
+    context.NHSNumber = load_patient_by_id("Random").identifier[0].value
+    context.request = convert_to_form_data(set_request_data(context.NHSNumber, context.DiseaseType, DateFrom, DateTo))
+    print(f"\n Search Post request - \n {context.request}")
+    context.response = requests.post(context.url, headers=context.headers, data=context.request)
 
 
-# @given('With invalid format of the patient identifier "{PatientIdentifier}" and valid "{NHSNumber}", "{DiseaseType}", "{Include}", "{DateFrom}" & "{DateTo}" parameters')
-# def invalidPatIdSearch(context,PatientIdentifier,NHSNumber,DiseaseType,Include,DateFrom,DateTo):    
-#     context.getUrl = searchGETURL()
-#     context.postUrl = searchPOSTURL()
-#     context.params = searchPaylodPatIdParam(PatientIdentifier,NHSNumber,DiseaseType,Include,DateFrom,DateTo)
-#     context.headersGet = searchGETHeaders(context.token)  
-#     context.headersPost = searchPOSTHeaders(context.token)  
-#     context.PatientIdentifier = PatientIdentifier + NHSNumber 
+@when(parsers.parse("Send a search request with GET method with valid NHS Number '{NHSNumber}' and Disease Type '{vaccine_type}' and Date From '{DateFrom}' and Date To '{DateTo}'"))
+def send_valid_param_get_request(context, NHSNumber, vaccine_type, DateFrom, DateTo):
+    get_search_getURLHeader(context)
 
-# @given('With any of the mandatory parameters "{NHSNumber}" or "{DiseaseType}" are null and "{Include}", "{DateFrom}" & "{DateTo}" parameters havning valid value')
-# def nullNHSNoParamSearch(context,NHSNumber,DiseaseType,Include,DateFrom,DateTo):
-#     context.getUrl = searchGETURL()
-#     context.postUrl = searchPOSTURL()
-#     context.params = searchPaylodParam(NHSNumber,DiseaseType,Include,DateFrom,DateTo)
-#     context.headersGet = searchGETHeaders(context.token)  
-#     context.headersPost = searchPOSTHeaders(context.token)  
-#     context.NHSNumber = NHSNumber 
-#     context.DiseaseType = DiseaseType 
+    context.DateFrom = DateFrom
+    context.DateTo = DateTo
+    context.params = convert_to_form_data(set_request_data(NHSNumber, vaccine_type, DateFrom, DateTo))
+    print(f"\n Search Get parameters - \n {context.params}")
+    context.response = requests.get(context.url, params = context.params, headers = context.headers)
 
-# @given(u'With the invalid "{NHSNumber}" and valid "{DiseaseType}", "{Include}", "{DateFrom}" & "{DateTo}" parameters')
-# def invalidNHSNoParamSearch(context,NHSNumber,DiseaseType,Include,DateFrom,DateTo):
-#     context.getUrl = searchGETURL()
-#     context.postUrl = searchPOSTURL()
-#     context.params = searchPaylodParam(NHSNumber,DiseaseType,Include,DateFrom,DateTo)
-#     context.headersGet = searchGETHeaders(context.token)  
-#     context.headersPost = searchPOSTHeaders(context.token)  
-#     context.NHSNumber = NHSNumber 
+@when(parsers.parse("Send a search request with POST method with valid NHS Number '{NHSNumber}' and Disease Type '{vaccine_type}' and Date From '{DateFrom}' and Date To '{DateTo}'"))
+def send_valid_param_post_request(context, NHSNumber, vaccine_type, DateFrom, DateTo):
+    get_search_postURLHeader(context)
 
-  
-# @given('With the valid "{NHSNumber}", "{DiseaseType}", "{Include}", "{DateFrom}" & "{DateTo}" parameters')
-# def validParamSearch(context,NHSNumber,DiseaseType,Include,DateFrom,DateTo):
-#     context.getUrl = searchGETURL()
-#     context.postUrl = searchPOSTURL()
-#     context.params = searchPaylodParam(NHSNumber,DiseaseType,Include,DateFrom,DateTo)
-#     context.headersGet = searchGETHeaders(context.token) 
-#     context.headersPost = searchPOSTHeaders(context.token)   
-#     context.NHSNumber = NHSNumber
+    context.DateFrom = DateFrom
+    context.DateTo = DateTo
+    context.request = convert_to_form_data(set_request_data(NHSNumber, vaccine_type, DateFrom, DateTo))
+    print(f"\n Search Get parameters - \n {context.request}") 
+    context.response = requests.post(context.url, headers=context.headers, data=context.request)  
+
+
+# @then("The occurrenceDateTime of the immunization events should be within the Date From and Date To range")
+# def validateDateRange(context):
+#     data = context.response.json()
+#     context.parsed_search_object = parse_FHIRImmunizationResponse(data)
+
+#     for entry in context.parsed_search_object.entry:
+#         if entry.resource.resourceType == "Immunization":
+#             occurrence_date = entry.resource.occurrenceDateTime
+#             id = entry.resource.id
+#             if occurrence_date:
+#                 # Handle Zulu time (Z) and timezone offsets
+#                 if occurrence_date.endswith("Z"):
+#                     occurrence_date = occurrence_date.replace("Z", "+00:00")
+#                 occurrence_date = datetime.fromisoformat(occurrence_date)
+#                 if context.DateFrom and context.DateTo:
+#                     date_from = datetime.strptime(context.DateFrom, "%Y-%m-%d")
+#                     date_to = datetime.strptime(context.DateTo, "%Y-%m-%d")
+#                     if not (date_from <= occurrence_date <= date_to):
+#                         raise AssertionError(
+#                             f"Occurrence date {occurrence_date} is not within the range Date From {context.DateFrom} and Date To {context.DateTo} for Immunisation Event {id}."
+#                         )       
 
 @then('The Search Response JSONs should contain the detail of the immunization events created above')
 def validateImmsID(context):
@@ -201,11 +186,7 @@ def validateImmsID(context):
     context.parsed_search_object = parse_FHIRImmunizationResponse(data)
 
     context.created_event = find_entry_by_Imms_id(context.parsed_search_object, context.ImmsID)
-
-    # print(f"{data}\n")
-    # print(f"{context.parsed_search_object}\n")
-    # print(f"{context.created_event}\n")
-    
+   
     if context.created_event is None:
         raise AssertionError(f"No object found with Immunisation ID {context.ImmsID} in the search response.")
     
