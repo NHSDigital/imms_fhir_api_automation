@@ -72,8 +72,12 @@ def context(request) -> ScenarioContext:
         ctx.token_gen_time = current_time_global
         scenario_counter += 1
 
+    
     if "Create_Feature" in tags:
-        set_aws_session_token()
+        ctx.aws_profile_name = os.getenv("aws_profile_name")
+        refresh_sso_token(ctx.aws_profile_name) if os.getenv("aws_token_refresh", "false").strip().lower() == "true" else set_aws_session_token()
+        
+
 
     for tag in tags:
         if tag.startswith('vaccine_type_'):

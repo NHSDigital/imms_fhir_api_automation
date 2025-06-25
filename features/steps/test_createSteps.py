@@ -34,7 +34,7 @@ def validateCreateHeader(context):
 @then('The imms event table will be populated with the correct data for created event')
 def validate_imms_event_table(context):
     create_obj = context.create_object
-    table_query_response = fetch_immunization_events_detail(context.ImmsID)
+    table_query_response = fetch_immunization_events_detail(context.aws_profile_name, context.ImmsID)
     assert "Item" in table_query_response, f"Item not found in response for ImmsID: {context.ImmsID}"
     item = table_query_response["Item"]
 
@@ -69,16 +69,13 @@ def validate_imms_event_table(context):
 @then('The delta table will be populated with the correct data for created event')
 def validate_imms_delta_table_by_ImmsID(context):
     create_obj = context.create_object
-    table_query_response = fetch_immunization_int_delta_detail_by_immsID(context.ImmsID)
-    assert "Items" in table_query_response, f"Item not found in response for ImmsID: {context.ImmsID}"
-
-    item = table_query_response.get("Items", [])
-    assert len(item) > 0, f"No items found for ImmsID: {context.ImmsID}"
+    item = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID)
+    assert item, f"Item not found in response for ImmsID: {context.ImmsID}"
 
     fields_to_compare = [
         ("Operation", "CREATE", item[0].get("Operation")),
         ("SupplierSystem", "Postman_Auth", item[0].get("SupplierSystem")),
-        ("VaccineType", f"{context.vaccine_type}", item[0].get("VaccineType")),
+        ("VaccineType", f"{context.vaccine_type.lower()}", item[0].get("VaccineType")),
         ("Source", "IEDS", item[0].get("Source")),
     ]
 
@@ -100,21 +97,21 @@ def validate_imms_delta_table_by_ImmsID(context):
         ("PERSON_POSTCODE", create_obj.contained[1].address[0].postalCode, event.get("PERSON_POSTCODE")),
         ("PERSON_GENDER_CODE", gender_map.get(create_obj.contained[1].gender), event.get("PERSON_GENDER_CODE")),
         ("VACCINATION_PROCEDURE_CODE", create_obj.extension[0].valueCodeableConcept.coding[0].code, event.get("VACCINATION_PROCEDURE_CODE")),        
-        ("VACCINATION_PROCEDURE_TERM", create_obj.extension[0].valueCodeableConcept.coding[0].display, event.get("VACCINATION_PROCEDURE_TERM")),
-        ("VACCINE_PRODUCT_TERM", create_obj.vaccineCode.coding[0].display, event.get("VACCINE_PRODUCT_TERM")),
+        ("VACCINATION_PROCEDURE_TERM", create_obj.extension[0].valueCodeableConcept.coding[0].extension[0].valueString, event.get("VACCINATION_PROCEDURE_TERM")),
+        ("VACCINE_PRODUCT_TERM", create_obj.vaccineCode.coding[0].extension[0].valueString, event.get("VACCINE_PRODUCT_TERM")),
         ("VACCINE_PRODUCT_CODE", create_obj.vaccineCode.coding[0].code, event.get("VACCINE_PRODUCT_CODE")),
         ("VACCINE_MANUFACTURER", create_obj.manufacturer["display"] , event.get("VACCINE_MANUFACTURER")),
         ("BATCH_NUMBER", create_obj.lotNumber, event.get("BATCH_NUMBER")),
-        ("RECORDED_DATE", create_obj.recorded, event.get("RECORDED_DATE")),
-        ("EXPIRY_DATE", create_obj.expirationDate, event.get("EXPIRY_DATE")),
+        ("RECORDED_DATE", create_obj.recorded[:10].replace("-", ""), event.get("RECORDED_DATE")),
+        ("EXPIRY_DATE", create_obj.expirationDate.replace("-", ""), event.get("EXPIRY_DATE")),
         ("DOSE_SEQUENCE", "1", event.get("DOSE_SEQUENCE")),
         ("DOSE_UNIT_TERM", create_obj.doseQuantity.unit , event.get("DOSE_UNIT_TERM")),
         ("DOSE_UNIT_CODE", create_obj.doseQuantity.code, event.get("DOSE_UNIT_CODE")),         
-        ("SITE_OF_VACCINATION_TERM", create_obj.site.coding[0].display, event.get("SITE_OF_VACCINATION_TERM")),
+        ("SITE_OF_VACCINATION_TERM", create_obj.site.coding[0].extension[0].valueString, event.get("SITE_OF_VACCINATION_TERM")),
         ("SITE_OF_VACCINATION_CODE", create_obj.site.coding[0].code, event.get("SITE_OF_VACCINATION_CODE")),        
-        ("DOSE_AMOUNT", create_obj.doseQuantity.value , event.get("DOSE_AMOUNT") ),
+        ("DOSE_AMOUNT", create_obj.doseQuantity.value , float(event.get("DOSE_AMOUNT")) ),
         ("PRIMARY_SOURCE", create_obj.primarySource, event.get("PRIMARY_SOURCE")),
-        ("ROUTE_OF_VACCINATION_TERM", create_obj.route.coding[0].display, event.get("ROUTE_OF_VACCINATION_TERM")),
+        ("ROUTE_OF_VACCINATION_TERM", create_obj.route.coding[0].extension[0].valueString, event.get("ROUTE_OF_VACCINATION_TERM")),
         ("ROUTE_OF_VACCINATION_CODE", create_obj.route.coding[0].code, event.get("ROUTE_OF_VACCINATION_CODE")),
         ("ACTION_FLAG", "NEW", event.get("ACTION_FLAG")),
         ("DATE_AND_TIME", iso_to_compact(create_obj.occurrenceDateTime), event.get("DATE_AND_TIME")),
@@ -126,7 +123,7 @@ def validate_imms_delta_table_by_ImmsID(context):
         ("LOCATION_CODE_TYPE_URI", create_obj.location.identifier.system, event.get("LOCATION_CODE_TYPE_URI")),
         ("SITE_CODE_TYPE_URI", create_obj.location.identifier.system, event.get("SITE_CODE_TYPE_URI")),
         ("SITE_CODE", create_obj.performer[1].actor.identifier.value, event.get("SITE_CODE")),
-        #("INDICATION_CODE", create_obj.indication.coding[0].code , event.get("INDICATION_CODE")),  
+        ("INDICATION_CODE", create_obj.reasonCode[0].coding[0].code , event.get("INDICATION_CODE")),  
     ]
 
     for name, expected, actual in fields_to_compare:
