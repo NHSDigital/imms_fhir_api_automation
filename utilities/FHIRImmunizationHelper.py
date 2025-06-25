@@ -89,30 +89,40 @@ def parse_FHIRImmunizationResponse(json_data: dict) -> FHIRImmunizationResponse:
 def parse_errorResponse(json_data: dict) -> OperationOutcome:
     return OperationOutcome.parse_obj(json_data) 
 
-def validateToCompareRequestAndResponse(context, create_obj, created_event):
+def validateToCompareRequestAndResponse(context, create_obj, created_event, table_validation: bool =False):
     request_patient = create_obj.contained[1]
     response_patient = created_event.patient
 
-    expected_fullUrl = config['SEARCH']['fullUrlRes'] + context.ImmsID
+    expected_fullUrl = f"{config['SEARCH']['fullUrlRes']}{context.ImmsID}" # type: ignore
+    
     referencePattern = r"^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"   
-    expected_occurrenceDateTime = covert_to_expected_date_format(context.create_object.occurrenceDateTime)
-    expected_recorded = covert_to_expected_date_format(context.create_object.recorded)   
+    expected_occurrenceDateTime = covert_to_expected_date_format(create_obj.occurrenceDateTime)
+    expected_recorded = covert_to_expected_date_format(create_obj.recorded)  
+    actual_occurrenceDateTime = covert_to_expected_date_format(created_event.occurrenceDateTime)
+    actual_recorded = covert_to_expected_date_format(created_event.recorded)
 
-    fields_to_compare = [
-        ("fullUrl", expected_fullUrl, context.created_event.fullUrl),
+    fields_to_compare = []
 
+    if not table_validation:
+        fields_to_compare.append(("fullUrl", expected_fullUrl, context.created_event.fullUrl))
+        fields_to_compare.append(("patient.identifier.system", request_patient.identifier[0].system, response_patient.identifier.system))
+        fields_to_compare.append(("patient.identifier.value", request_patient.identifier[0].value, response_patient.identifier.value))
+        fields_to_compare.append(("patient.reference", bool(re.match(referencePattern, response_patient.reference)), True))
+    
+    if table_validation:
+        fields_to_compare.append(("Contained", create_obj.contained, created_event.contained))
+        fields_to_compare.append(("Id", context.ImmsID, created_event.id))
+        
+    fields_to_compare.extend([
         ("resourceType", create_obj.resourceType, created_event.resourceType),
         ("extension", create_obj.extension, created_event.extension),
         ("identifier.system", create_obj.identifier[0].system, created_event.identifier[0].system),
         ("identifier.value", create_obj.identifier[0].value, created_event.identifier[0].value),
         ("status", create_obj.status, created_event.status),
-        ("vaccineCode", create_obj.vaccineCode, created_event.vaccineCode),
-        ("patient.reference", bool(re.match(referencePattern, response_patient.reference)),True),
-        ("patient.type", create_obj.patient.type, created_event.patient.type),
-        ("patient.identifier.system", request_patient.identifier[0].system, response_patient.identifier.system),
-        ("patient.identifier.value", request_patient.identifier[0].value, response_patient.identifier.value),
-        ("occurrenceDateTime", expected_occurrenceDateTime, created_event.occurrenceDateTime),
-        ("Recorded", expected_recorded, created_event.recorded),
+        ("vaccineCode", create_obj.vaccineCode, created_event.vaccineCode),       
+        ("patient.type", create_obj.patient.type, created_event.patient.type),        
+        ("occurrenceDateTime", expected_occurrenceDateTime, actual_occurrenceDateTime),
+        ("Recorded", expected_recorded, actual_recorded),
         ("primarySource", create_obj.primarySource, created_event.primarySource),
         ("location", create_obj.location, created_event.location),
         ("manufacturer", create_obj.manufacturer, created_event.manufacturer),
@@ -123,11 +133,10 @@ def validateToCompareRequestAndResponse(context, create_obj, created_event):
         ("doseQuantity", create_obj.doseQuantity, created_event.doseQuantity),      
         ("reasonCode", create_obj.reasonCode, created_event.reasonCode),
         ("protocolApplied", create_obj.protocolApplied, created_event.protocolApplied),
-    ]
+    ])
 
     for name, expected, actual in fields_to_compare:
         check.is_true(
                 expected == actual,
                 f"Expected {name}: {expected}, Actual {actual}"
             )
- 

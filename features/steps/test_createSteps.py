@@ -7,7 +7,6 @@ from utilities.FHIRImmunizationHelper import *
 from utilities.payloadSearch import *
 from utilities.payloadCreate import *
 from utilities.config import *
-from utilities.dynamodbHelper import *
 from src.delta.dateValidation import *
 from src.delta.deltaHelper import *
 import logging
@@ -24,46 +23,6 @@ logger = logging.getLogger(__name__)
 
 scenarios("create.feature")
 
-# @given('Prepare create paylod with "{NHSNumber}", "{birthDate}", "{occurrenceDateTime}", "{recorded}", "{expirationDate}"')
-# def createData(context,NHSNumber,birthDate,occurrenceDateTime,recorded,expirationDate):
-#     context.createUrl = createURL()
-#     context.createPayload = createPayload("NHSNumber,birthDate,occurrenceDateTime,recorded,expirationDate",f"{NHSNumber},{birthDate},{occurrenceDateTime},{recorded},{expirationDate}","create")
-#     context.createHeaders = createPOSTHeaders(context.token)
-#     context.corrID = context.createHeaders['X-Correlation-ID']
-#     context.reqID = context.createHeaders['X-Request-ID']
-#     context.requestJSON = context.createPayload[0]
-#     context.requestFileName = context.createPayload[1]
-#     context.requestTotalFiles = context.createPayload[2]
-#     context.NHSNumber = NHSNumber
-#     context.birthDate = birthDate
-#     context.occurrenceDateTime = occurrenceDateTime
-#     context.recorded = recorded
-#     context.expirationDate = expirationDate
-    
-
-
-# @when('Send a create request with POST method for the input JSONs available')
-# def createImmsEvent(context):
-#     context.createResponse = {}
-#     for fileName in context.requestFileName:
-#         response = requests.post(context.createUrl, json=context.requestJSON[fileName], headers=context.createHeaders)
-#         context.createResponse[fileName] = response
-
-
-# @then('The create will be successful with the status code 201')
-# def validateCreateStatus(context):
-#     for fileName in context.requestFileName:
-#         statusCode = context.createResponse[fileName].status_code
-#         assert statusCode == 201, f"Failed to create immunization event for {fileName}. Status code: {statusCode}. Response: {context.createResponse[fileName].text}"
-
-
-    # context.responseImmsID = {}
-    # for fileName in context.requestFileName:
-    #     statusCode = context.createResponse[fileName].status_code
-    #     location = context.createResponse[fileName].headers['location']
-    #     assert "location" in context.createResponse[fileName].headers, f"Location header is missing in the response for {fileName}. Status code: {statusCode}. Response: {context.createResponse[fileName].text}"
-    #     context.responseImmsID[fileName] = location.split("/")[-1] 
-
 @then('The X-Request-ID and X-Correlation-ID keys in header will populate correctly')
 def validateCreateHeader(context):
     assert "X-Request-ID" in context.response.request.headers, "X-Request-ID missing in headers"
@@ -72,33 +31,115 @@ def validateCreateHeader(context):
     assert context.response.request.headers["X-Correlation-ID"] == context.corrID, "X-Correlation-ID incorrect"
     
 
-@then('The imms event table will be populated with the correct data for the above fields')
-def validateImmsEventTable(context):
+@then('The imms event table will be populated with the correct data for created event')
+def validate_imms_event_table(context):
     create_obj = context.create_object
-    created_event= fetchImmsIntImmsEventTable(context.location)
-    validateToCompareRequestAndResponse(context, create_obj, created_event)
+    table_query_response = fetch_immunization_events_detail(context.ImmsID)
+    assert "Item" in table_query_response, f"Item not found in response for ImmsID: {context.ImmsID}"
+    item = table_query_response["Item"]
+
+    resource_json_str = item.get("Resource")
+    assert resource_json_str, "Resource field missing in item."
+
+    try:
+        resource = json.loads(resource_json_str)
+    except (TypeError, json.JSONDecodeError) as e:
+        logger.error(f"Failed to parse Resource from item: {e}")
+        raise AssertionError("Failed to parse Resource from response item.")
+
+    assert resource is not None, "Resource is None in the response"
+    created_event = parse_imms_int_imms_event_response(resource)
+
+    fields_to_compare = [
+        ("Operation", "CREATE", item.get("Operation")),
+        ("SupplierSystem", "Postman_Auth", item.get("SupplierSystem")),
+        ("PatientPK", f"Patient#{context.patient.identifier[0].value}", item.get("PatientPK")),
+        ("PatientSK", f"{context.vaccine_type}#{context.ImmsID}", item.get("PatientSK")),
+        ("Version", 1, item.get("Version")),
+    ]
+    
+    for name, expected, actual in fields_to_compare:
+        check.is_true(
+                expected == actual,
+                f"Expected {name}: {expected}, Actual {actual}"
+            )
         
-    #     if 'Item' in response:
-    #         item = response['Item']
-            
-    #         identifierPKExpected = context.requestJSON[fileName]['identifier'][0]['system'] + '#' + context.requestJSON[fileName]['identifier'][0]['value']
-    #         diseaseType = diseaseTypeMapping(context.requestJSON[fileName])
-    #         patientSKExpected = f"{diseaseType}#{context.responseImmsID[fileName]}"
-    #         context.requestJSON[fileName]["id"] = context.responseImmsID[fileName]            
+    validateToCompareRequestAndResponse(context, create_obj, created_event, True)
+    
+@then('The delta table will be populated with the correct data for created event')
+def validate_imms_delta_table_by_ImmsID(context):
+    create_obj = context.create_object
+    table_query_response = fetch_immunization_int_delta_detail_by_immsID(context.ImmsID)
+    assert "Items" in table_query_response, f"Item not found in response for ImmsID: {context.ImmsID}"
 
-    #         with allure.step(f"Validating JSON fields for {fileName} and the immunization event {context.responseImmsID[fileName]}"):
-    #             soft_assertions.assert_condition((identifierPKExpected == item['IdentifierPK']), f"Expected IdentifierPK: {identifierPKExpected}, Found: {item['IdentifierPK']}")
-    #             soft_assertions.assert_condition(('CREATE'== item['Operation']), f"Expected Operation: CREATE, Found: {item['Operation']}")
-    #             soft_assertions.assert_condition((f"Patient#{context.NHSNumber}" == item['PatientPK']), f"Expected Operation: Patient#{context.NHSNumber}, Found: {item['PatientPK']}")
-    #             soft_assertions.assert_condition((patientSKExpected == item['PatientSK']), f"Expected IdentifierPK: {patientSKExpected}, Found: {item['PatientSK']}")
+    item = table_query_response.get("Items", [])
+    assert len(item) > 0, f"No items found for ImmsID: {context.ImmsID}"
 
-    #             if isinstance(item['Resource'], str):
-    #                 item['Resource'] = json.loads(item['Resource'])
-    #             if isinstance(context.requestJSON[fileName], str):
-    #                 context.requestJSON[fileName] = json.loads(context.requestJSON[fileName])  
+    fields_to_compare = [
+        ("Operation", "CREATE", item[0].get("Operation")),
+        ("SupplierSystem", "Postman_Auth", item[0].get("SupplierSystem")),
+        ("VaccineType", f"{context.vaccine_type}", item[0].get("VaccineType")),
+        ("Source", "IEDS", item[0].get("Source")),
+    ]
 
-    #             validate_json_fields(context.requestJSON[fileName], item['Resource'], path="Resource")          
-    #     else:
-    #         assert False, f"Immunization Event not found in DynamoDB Immunization Event table for {fileName}. Immunization ID: {context.responseImmsID[fileName]}"
+    for name, expected, actual in fields_to_compare:
+        check.is_true(
+                expected == actual,
+                f"Expected {name}: {expected}, Actual {actual}"
+            )
+        
+    event = item[0].get("Imms")
+    assert event, "Imms field missing in items."
+    
+    fields_to_compare = [
+        ("CONVERSION_ERRORS", [], event.get("CONVERSION_ERRORS")),
+        ("PERSON_FORENAME", create_obj.contained[1].name[0].given[0], event.get("PERSON_FORENAME")),
+        ("PERSON_SURNAME", create_obj.contained[1].name[0].family, event.get("PERSON_SURNAME")),
+        ("NHS_NUMBER", create_obj.contained[1].identifier[0].value, event.get("NHS_NUMBER")),
+        ("PERSON_DOB", create_obj.contained[1].birthDate.replace("-", ""), event.get("PERSON_DOB")),
+        ("PERSON_POSTCODE", create_obj.contained[1].address[0].postalCode, event.get("PERSON_POSTCODE")),
+        ("PERSON_GENDER_CODE", gender_map.get(create_obj.contained[1].gender), event.get("PERSON_GENDER_CODE")),
+        ("VACCINATION_PROCEDURE_CODE", create_obj.extension[0].valueCodeableConcept.coding[0].code, event.get("VACCINATION_PROCEDURE_CODE")),        
+        ("VACCINATION_PROCEDURE_TERM", create_obj.extension[0].valueCodeableConcept.coding[0].display, event.get("VACCINATION_PROCEDURE_TERM")),
+        ("VACCINE_PRODUCT_TERM", create_obj.vaccineCode.coding[0].display, event.get("VACCINE_PRODUCT_TERM")),
+        ("VACCINE_PRODUCT_CODE", create_obj.vaccineCode.coding[0].code, event.get("VACCINE_PRODUCT_CODE")),
+        ("VACCINE_MANUFACTURER", create_obj.manufacturer["display"] , event.get("VACCINE_MANUFACTURER")),
+        ("BATCH_NUMBER", create_obj.lotNumber, event.get("BATCH_NUMBER")),
+        ("RECORDED_DATE", create_obj.recorded, event.get("RECORDED_DATE")),
+        ("EXPIRY_DATE", create_obj.expirationDate, event.get("EXPIRY_DATE")),
+        ("DOSE_SEQUENCE", "1", event.get("DOSE_SEQUENCE")),
+        ("DOSE_UNIT_TERM", create_obj.doseQuantity.unit , event.get("DOSE_UNIT_TERM")),
+        ("DOSE_UNIT_CODE", create_obj.doseQuantity.code, event.get("DOSE_UNIT_CODE")),         
+        ("SITE_OF_VACCINATION_TERM", create_obj.site.coding[0].display, event.get("SITE_OF_VACCINATION_TERM")),
+        ("SITE_OF_VACCINATION_CODE", create_obj.site.coding[0].code, event.get("SITE_OF_VACCINATION_CODE")),        
+        ("DOSE_AMOUNT", create_obj.doseQuantity.value , event.get("DOSE_AMOUNT") ),
+        ("PRIMARY_SOURCE", create_obj.primarySource, event.get("PRIMARY_SOURCE")),
+        ("ROUTE_OF_VACCINATION_TERM", create_obj.route.coding[0].display, event.get("ROUTE_OF_VACCINATION_TERM")),
+        ("ROUTE_OF_VACCINATION_CODE", create_obj.route.coding[0].code, event.get("ROUTE_OF_VACCINATION_CODE")),
+        ("ACTION_FLAG", "NEW", event.get("ACTION_FLAG")),
+        ("DATE_AND_TIME", iso_to_compact(create_obj.occurrenceDateTime), event.get("DATE_AND_TIME")),
+        ("UNIQUE_ID", create_obj.identifier[0].value, event.get("UNIQUE_ID")),
+        ("UNIQUE_ID_URI", create_obj.identifier[0].system, event.get("UNIQUE_ID_URI")),
+        ("PERFORMING_PROFESSIONAL_SURNAME", create_obj.contained[0].name[0].family, event.get("PERFORMING_PROFESSIONAL_SURNAME")),  
+        ("PERFORMING_PROFESSIONAL_FORENAME", create_obj.contained[0].name[0].given[0], event.get("PERFORMING_PROFESSIONAL_FORENAME")),
+        ("LOCATION_CODE", create_obj.location.identifier.value, event.get("LOCATION_CODE")),
+        ("LOCATION_CODE_TYPE_URI", create_obj.location.identifier.system, event.get("LOCATION_CODE_TYPE_URI")),
+        ("SITE_CODE_TYPE_URI", create_obj.location.identifier.system, event.get("SITE_CODE_TYPE_URI")),
+        ("SITE_CODE", create_obj.performer[1].actor.identifier.value, event.get("SITE_CODE")),
+        #("INDICATION_CODE", create_obj.indication.coding[0].code , event.get("INDICATION_CODE")),  
+    ]
 
-    # soft_assertions.assert_all()
+    for name, expected, actual in fields_to_compare:
+        check.is_true(
+                expected == actual,
+                f"Expected {name}: {expected}, Actual {actual}"
+            )    
+
+
+gender_map = {
+    "male": "1",
+    "female": "2",
+    "unknown": "0",
+    "other": "9"
+}
+

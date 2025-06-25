@@ -1,6 +1,8 @@
 {
   "cSpell.words": [
-    "csvfile"
+    "Codeable",
+    "csvfile",
+    "Imms"
   ],
   "python.testing.testExplorer.testFrameworks": ["pytest"],
   "python.testing.unittestEnabled": false,

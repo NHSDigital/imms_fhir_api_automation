@@ -11,7 +11,7 @@ def create_extension(url: str, stringValue: bool = False, idValue: bool = False)
         valueString=f"Test Value string {random.randint(1, 999999)}" if stringValue else None,
         valueId=str(random.randint(100000000,9999999999)) if idValue else None)
 
-def build_vaccine_procedure_extension(vaccine_type: str, text: str = None) -> Extension:
+def build_vaccine_procedure_extension(vaccine_type: str, text: str = None) -> Extension: # type: ignore
     try:
         selected_vaccine_procedure = random.choice(VACCINATION_PROCEDURE_MAP[vaccine_type.upper()])
     except KeyError:
