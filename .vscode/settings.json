@@ -2,7 +2,10 @@
   "cSpell.words": [
     "Codeable",
     "csvfile",
-    "Imms"
+    "Imms",
+    "Pract",
+    "timespec",
+    "vacc"
   ],
   "python.testing.testExplorer.testFrameworks": ["pytest"],
   "python.testing.unittestEnabled": false,

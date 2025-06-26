@@ -116,22 +116,22 @@ def validate_imms_delta_table_by_ImmsID(context):
 @then('The procedure term is mapped to text field in imms delta table')
 def validate_procedure_term_text_in_delta_table(context):
      actual_procedure_term = get_procedure_term_text(context)
-     assert actual_procedure_term == context.create_object.extension[0].valueCodeableConcept.text, f"Expected procedure term text '{context.create_object.extension[0].valueCodeableConcept.text}', but got '{procedure_term}'"
+     assert actual_procedure_term == context.create_object.extension[0].valueCodeableConcept.text, f"Expected procedure term text '{context.create_object.extension[0].valueCodeableConcept.text}', but got '{actual_procedure_term}'"
 
 @then('The procedure term is mapped to correct instance of coding display text field in imms delta table')
 def validate_procedure_term_first_display_in_delta_table(context):
     actual_procedure_term = get_procedure_term_text(context)
-    assert actual_procedure_term == context.create_object.extension[0].valueCodeableConcept.coding[0].display, f"Expected procedure term text '{context.create_object.extension[0].valueCodeableConcept.text}', but got '{procedure_term}'"
+    assert actual_procedure_term == context.create_object.extension[0].valueCodeableConcept.coding[0].display, f"Expected procedure term text '{context.create_object.extension[0].valueCodeableConcept.text}', but got '{actual_procedure_term}'"
     
 @then('The procedure term is mapped to correct coding system value and display text field in imms delta table')
 def validate_procedure_term_correct_coding_in_delta_table(context):
     actual_procedure_term = get_procedure_term_text(context)  
-    assert actual_procedure_term == context.create_object.extension[0].valueCodeableConcept.coding[1].display, f"Expected procedure term text '{context.create_object.extension[0].valueCodeableConcept.text}', but got '{procedure_term}'"
+    assert actual_procedure_term == context.create_object.extension[0].valueCodeableConcept.coding[1].display, f"Expected procedure term text '{context.create_object.extension[0].valueCodeableConcept.text}', but got '{actual_procedure_term}'"
     
 @then('The procedure term is mapped to correct coding display text field in imms delta table')
 def validate_procedure_term_second_display_in_delta_table(context):
     actual_procedure_term = get_procedure_term_text(context)
-    assert actual_procedure_term == context.create_object.extension[0].valueCodeableConcept.coding[0].display, f"Expected procedure term text '{context.create_object.extension[0].valueCodeableConcept.text}', but got '{procedure_term}'"
+    assert actual_procedure_term == context.create_object.extension[0].valueCodeableConcept.coding[0].display, f"Expected procedure term text '{context.create_object.extension[0].valueCodeableConcept.text}', but got '{actual_procedure_term}'"
 
 def get_procedure_term_text(context):
     item = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID)
