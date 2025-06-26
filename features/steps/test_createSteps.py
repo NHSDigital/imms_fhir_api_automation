@@ -23,14 +23,14 @@ logger = logging.getLogger(__name__)
 
 scenarios("create.feature")
 
-@given('Valid json payload is created where vaccination procedure term has text filed populated')
+@given('Valid json payload is created where vaccination procedure term has text field populated')
 def createValidJsonPayloadWithProcedureText(context):
     valid_json_payload_is_created(context)
     context.immunization_object.extension = [
         build_vaccine_procedure_extension(context.vaccine_type.upper(), "testing procedure term text")
     ]
     
-@given('Valid json payload is created where vaccination procedure term multiple instance of procedure code')
+@given('Valid json payload is created where vaccination procedure  has multiple instance of procedure code')
 def createValidJsonPayloadWithProcedureMultipleCodings(context):
     valid_json_payload_is_created(context)
     procedures_list = VACCINATION_PROCEDURE_MAP[context.vaccine_type.upper()]

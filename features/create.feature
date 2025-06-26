@@ -17,7 +17,7 @@ Scenario Outline:  Verify that the POST Create API for different vaccine types
 
 @vaccine_type_RSV @patient_id_Random
 Scenario: verify that procedure term is mapped to text field in imms delta table
-    Given Valid json payload is created where vaccination procedure term has text filed populated
+    Given Valid json payload is created where vaccination procedure term has text field populated
     When Trigger the post create request
     Then The request will be successful with the status code '201'
     And The location key in header will contain the Immunization Id
@@ -25,7 +25,7 @@ Scenario: verify that procedure term is mapped to text field in imms delta table
 
 @vaccine_type_RSV @patient_id_Random
 Scenario: verify that procedure term is mapped to first instance of procedure code in imms delta table
-    Given Valid json payload is created where vaccination procedure term multiple instance of procedure code
+    Given Valid json payload is created where vaccination procedure  has multiple instance of procedure code
     When Trigger the post create request
     Then The request will be successful with the status code '201'
     And The location key in header will contain the Immunization Id
