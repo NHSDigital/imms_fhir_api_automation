@@ -5,34 +5,39 @@ import uuid
 from src.objectModels.dataObjects import *
 from src.objectModels.vaccination_constants import *
 
-def create_extension(url: str, stringValue: bool = False, idValue: bool = False) -> ExtensionItem:
+def create_extension(url: str, stringValue: str = None, idValue: str = None) -> ExtensionItem:
     return ExtensionItem(
         url=url,
-        valueString=f"Test Value string {random.randint(1, 999999)}" if stringValue else None,
-        valueId=str(random.randint(100000000,9999999999)) if idValue else None)
-
-def build_vaccine_procedure_extension(vaccine_type: str, text: str = None) -> Extension: # type: ignore
+        valueString= stringValue ,
+        valueId=idValue )
+    
+def build_vaccine_procedure_code(vaccine_type: str, text: str = None, add_extensions: bool = True) -> CodeableConcept:
     try:
         selected_vaccine_procedure = random.choice(VACCINATION_PROCEDURE_MAP[vaccine_type.upper()])
     except KeyError:
         raise ValueError(f"Unsupported vaccine type: {vaccine_type}")
     
-    procedure = Coding(
-        system=selected_vaccine_procedure.system,
-        code=selected_vaccine_procedure.code,
-        display=selected_vaccine_procedure.display,
-        extension=[
-            create_extension("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-CodingSCTDescDisplay", stringValue=True),
-            create_extension("http://hl7.org/fhir/StructureDefinition/coding-sctdescid", idValue=True)
+    extensions = None
+    if add_extensions:
+        extensions = [
+            create_extension("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-CodingSCTDescDisplay", stringValue=selected_vaccine_procedure["stringValue"]),
+            create_extension("http://hl7.org/fhir/StructureDefinition/coding-sctdescid", idValue=selected_vaccine_procedure["idValue"])
         ]
+
+    return CodeableConcept(
+        coding=[Coding(
+            system=selected_vaccine_procedure["system"],
+            code=selected_vaccine_procedure["code"],
+            display=selected_vaccine_procedure["display"],
+            extension=extensions
+        )],
+        text=text
     )
 
+def build_vaccine_procedure_extension(vaccine_type: str, text: str = None) -> Extension: # type: ignore
     return Extension(
         url="https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-VaccinationProcedure",
-        valueCodeableConcept=CodeableConcept(
-            coding=[procedure],
-            text=text
-        )
+        valueCodeableConcept=build_vaccine_procedure_code(vaccine_type, text)  # type: ignore       
     )
 
 def build_location_identifier() -> Location:
@@ -52,8 +57,8 @@ def get_vaccine_details(vaccine_type: str, vacc_text: str = None, lot_number: st
             code=selected_vaccine["code"], 
             display=selected_vaccine["display"],
             extension=[
-                create_extension("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-CodingSCTDescDisplay", stringValue=True),
-                create_extension("http://hl7.org/fhir/StructureDefinition/coding-sctdescid", idValue=True)
+                create_extension("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-CodingSCTDescDisplay", stringValue=selected_vaccine["stringValue"]),
+                create_extension("http://hl7.org/fhir/StructureDefinition/coding-sctdescid", idValue=selected_vaccine["idValue"])
             ]
         )],
         text=vacc_text
@@ -120,14 +125,16 @@ def build_site_route(obj: Coding, text: str = None) -> CodeableConcept:
     
     return CodeableConcept(
         coding=[Coding(
-        system=obj.system,
-        code=obj.code,
-        display=obj.display,
+        system=obj["system"],
+        code=obj["code"],
+        display=obj["display"],
         extension=[
-            create_extension("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-CodingSCTDescDisplay", stringValue=True),
-            create_extension("http://hl7.org/fhir/StructureDefinition/coding-sctdescid", idValue=True)
+            create_extension("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-CodingSCTDescDisplay", stringValue=obj["stringValue"]),
+            create_extension("http://hl7.org/fhir/StructureDefinition/coding-sctdescid", idValue=obj["idValue"])
         ]
-    )])
+    )],
+        text=text
+    )
 
 def create_immunization_object(patient, vaccine_type: str) -> Immunization:
     practitioner = Practitioner(
@@ -155,9 +162,7 @@ def create_immunization_object(patient, vaccine_type: str) -> Immunization:
         primarySource= True,
         expirationDate=vaccine_details["expiryDate"],
         site=build_site_route(random.choice(SITE_MAP)),
-        # CodeableConcept(coding=[random.choice(SITE_MAP)]),
         route=build_site_route(random.choice(ROUTE_MAP)),
-        # route=CodeableConcept(coding=[random.choice(ROUTE_MAP)]),
         doseQuantity=DoseQuantity(**random.choice(DOSE_QUANTITY_MAP)),
         performer=build_performer(),
         reasonCode=[CodeableConcept(coding=[random.choice(REASON_CODE_MAP)])],

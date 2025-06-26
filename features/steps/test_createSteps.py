@@ -23,13 +23,51 @@ logger = logging.getLogger(__name__)
 
 scenarios("create.feature")
 
+@given('Valid json payload is created where vaccination procedure term has text filed populated')
+def createValidJsonPayloadWithProcedureText(context):
+    valid_json_payload_is_created(context)
+    context.immunization_object.extension = [
+        build_vaccine_procedure_extension(context.vaccine_type.upper(), "testing procedure term text")
+    ]
+    
+@given('Valid json payload is created where vaccination procedure term multiple instance of procedure code')
+def createValidJsonPayloadWithProcedureMultipleCodings(context):
+    valid_json_payload_is_created(context)
+    procedures_list = VACCINATION_PROCEDURE_MAP[context.vaccine_type.upper()]
+    
+    if len(procedures_list) < 2:
+        procedures = procedures_list  # Use all available procedures
+    else:
+        procedures = random.sample(procedures_list, k=2)
+        
+    codings = [
+        Coding(
+            system=proc["system"],
+            code=proc["code"],
+            display=proc["display"],
+            extension=None
+        )
+        for proc in procedures
+    ]
+    context.immunization_object.extension[0].valueCodeableConcept.coding = codings
+    
+@given('Valid json payload is created where vaccination procedure term multiple instance of procedure code with different coding system')
+def createValidJsonPayloadWithProcedureMultipleCodingsDifferentSystem(context):
+    createValidJsonPayloadWithProcedureMultipleCodings(context)
+    context.immunization_object.extension[0].valueCodeableConcept.coding[0].system = "http://example.com/different-system"
+    
+@given('Valid json payload is created where vaccination procedure term has one instance of procedure code with no text or value string field')
+def createValidJsonPayloadWithProcedureNoTextValue(context):
+    valid_json_payload_is_created(context)
+    context.immunization_object.extension[0].valueCodeableConcept= build_vaccine_procedure_code(context.vaccine_type.upper(), add_extensions=False)
+    
+
 @then('The X-Request-ID and X-Correlation-ID keys in header will populate correctly')
 def validateCreateHeader(context):
     assert "X-Request-ID" in context.response.request.headers, "X-Request-ID missing in headers"
     assert "X-Correlation-ID" in context.response.request.headers, "X-Correlation-ID missing in headers"
     assert context.response.request.headers["X-Request-ID"] == context.reqID, "X-Request-ID incorrect"
-    assert context.response.request.headers["X-Correlation-ID"] == context.corrID, "X-Correlation-ID incorrect"
-    
+    assert context.response.request.headers["X-Correlation-ID"] == context.corrID, "X-Correlation-ID incorrect"    
 
 @then('The imms event table will be populated with the correct data for created event')
 def validate_imms_event_table(context):
@@ -71,72 +109,38 @@ def validate_imms_delta_table_by_ImmsID(context):
     create_obj = context.create_object
     item = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID)
     assert item, f"Item not found in response for ImmsID: {context.ImmsID}"
+     
+    validate_imms_delta_record_with_created_event(context, create_obj, item, "CREATE")    
+  
 
-    fields_to_compare = [
-        ("Operation", "CREATE", item[0].get("Operation")),
-        ("SupplierSystem", "Postman_Auth", item[0].get("SupplierSystem")),
-        ("VaccineType", f"{context.vaccine_type.lower()}", item[0].get("VaccineType")),
-        ("Source", "IEDS", item[0].get("Source")),
-    ]
+@then('The procedure term is mapped to text field in imms delta table')
+def validate_procedure_term_text_in_delta_table(context):
+     actual_procedure_term = get_procedure_term_text(context)
+     assert actual_procedure_term == context.create_object.extension[0].valueCodeableConcept.text, f"Expected procedure term text '{context.create_object.extension[0].valueCodeableConcept.text}', but got '{procedure_term}'"
 
-    for name, expected, actual in fields_to_compare:
-        check.is_true(
-                expected == actual,
-                f"Expected {name}: {expected}, Actual {actual}"
-            )
-        
+@then('The procedure term is mapped to correct instance of coding display text field in imms delta table')
+def validate_procedure_term_first_display_in_delta_table(context):
+    actual_procedure_term = get_procedure_term_text(context)
+    assert actual_procedure_term == context.create_object.extension[0].valueCodeableConcept.coding[0].display, f"Expected procedure term text '{context.create_object.extension[0].valueCodeableConcept.text}', but got '{procedure_term}'"
+    
+@then('The procedure term is mapped to correct coding system value and display text field in imms delta table')
+def validate_procedure_term_correct_coding_in_delta_table(context):
+    actual_procedure_term = get_procedure_term_text(context)  
+    assert actual_procedure_term == context.create_object.extension[0].valueCodeableConcept.coding[1].display, f"Expected procedure term text '{context.create_object.extension[0].valueCodeableConcept.text}', but got '{procedure_term}'"
+    
+@then('The procedure term is mapped to correct coding display text field in imms delta table')
+def validate_procedure_term_second_display_in_delta_table(context):
+    actual_procedure_term = get_procedure_term_text(context)
+    assert actual_procedure_term == context.create_object.extension[0].valueCodeableConcept.coding[0].display, f"Expected procedure term text '{context.create_object.extension[0].valueCodeableConcept.text}', but got '{procedure_term}'"
+
+def get_procedure_term_text(context):
+    item = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID)
+    assert item, f"Item not found in response for ImmsID: {context.ImmsID}"
+    
     event = item[0].get("Imms")
     assert event, "Imms field missing in items."
+
+    procedure_term = event.get("VACCINATION_PROCEDURE_TERM")
+    assert procedure_term, "Procedure term text field is missing in the delta table item." 
     
-    fields_to_compare = [
-        ("CONVERSION_ERRORS", [], event.get("CONVERSION_ERRORS")),
-        ("PERSON_FORENAME", create_obj.contained[1].name[0].given[0], event.get("PERSON_FORENAME")),
-        ("PERSON_SURNAME", create_obj.contained[1].name[0].family, event.get("PERSON_SURNAME")),
-        ("NHS_NUMBER", create_obj.contained[1].identifier[0].value, event.get("NHS_NUMBER")),
-        ("PERSON_DOB", create_obj.contained[1].birthDate.replace("-", ""), event.get("PERSON_DOB")),
-        ("PERSON_POSTCODE", create_obj.contained[1].address[0].postalCode, event.get("PERSON_POSTCODE")),
-        ("PERSON_GENDER_CODE", gender_map.get(create_obj.contained[1].gender), event.get("PERSON_GENDER_CODE")),
-        ("VACCINATION_PROCEDURE_CODE", create_obj.extension[0].valueCodeableConcept.coding[0].code, event.get("VACCINATION_PROCEDURE_CODE")),        
-        ("VACCINATION_PROCEDURE_TERM", create_obj.extension[0].valueCodeableConcept.coding[0].extension[0].valueString, event.get("VACCINATION_PROCEDURE_TERM")),
-        ("VACCINE_PRODUCT_TERM", create_obj.vaccineCode.coding[0].extension[0].valueString, event.get("VACCINE_PRODUCT_TERM")),
-        ("VACCINE_PRODUCT_CODE", create_obj.vaccineCode.coding[0].code, event.get("VACCINE_PRODUCT_CODE")),
-        ("VACCINE_MANUFACTURER", create_obj.manufacturer["display"] , event.get("VACCINE_MANUFACTURER")),
-        ("BATCH_NUMBER", create_obj.lotNumber, event.get("BATCH_NUMBER")),
-        ("RECORDED_DATE", create_obj.recorded[:10].replace("-", ""), event.get("RECORDED_DATE")),
-        ("EXPIRY_DATE", create_obj.expirationDate.replace("-", ""), event.get("EXPIRY_DATE")),
-        ("DOSE_SEQUENCE", "1", event.get("DOSE_SEQUENCE")),
-        ("DOSE_UNIT_TERM", create_obj.doseQuantity.unit , event.get("DOSE_UNIT_TERM")),
-        ("DOSE_UNIT_CODE", create_obj.doseQuantity.code, event.get("DOSE_UNIT_CODE")),         
-        ("SITE_OF_VACCINATION_TERM", create_obj.site.coding[0].extension[0].valueString, event.get("SITE_OF_VACCINATION_TERM")),
-        ("SITE_OF_VACCINATION_CODE", create_obj.site.coding[0].code, event.get("SITE_OF_VACCINATION_CODE")),        
-        ("DOSE_AMOUNT", create_obj.doseQuantity.value , float(event.get("DOSE_AMOUNT")) ),
-        ("PRIMARY_SOURCE", create_obj.primarySource, event.get("PRIMARY_SOURCE")),
-        ("ROUTE_OF_VACCINATION_TERM", create_obj.route.coding[0].extension[0].valueString, event.get("ROUTE_OF_VACCINATION_TERM")),
-        ("ROUTE_OF_VACCINATION_CODE", create_obj.route.coding[0].code, event.get("ROUTE_OF_VACCINATION_CODE")),
-        ("ACTION_FLAG", "NEW", event.get("ACTION_FLAG")),
-        ("DATE_AND_TIME", iso_to_compact(create_obj.occurrenceDateTime), event.get("DATE_AND_TIME")),
-        ("UNIQUE_ID", create_obj.identifier[0].value, event.get("UNIQUE_ID")),
-        ("UNIQUE_ID_URI", create_obj.identifier[0].system, event.get("UNIQUE_ID_URI")),
-        ("PERFORMING_PROFESSIONAL_SURNAME", create_obj.contained[0].name[0].family, event.get("PERFORMING_PROFESSIONAL_SURNAME")),  
-        ("PERFORMING_PROFESSIONAL_FORENAME", create_obj.contained[0].name[0].given[0], event.get("PERFORMING_PROFESSIONAL_FORENAME")),
-        ("LOCATION_CODE", create_obj.location.identifier.value, event.get("LOCATION_CODE")),
-        ("LOCATION_CODE_TYPE_URI", create_obj.location.identifier.system, event.get("LOCATION_CODE_TYPE_URI")),
-        ("SITE_CODE_TYPE_URI", create_obj.location.identifier.system, event.get("SITE_CODE_TYPE_URI")),
-        ("SITE_CODE", create_obj.performer[1].actor.identifier.value, event.get("SITE_CODE")),
-        ("INDICATION_CODE", create_obj.reasonCode[0].coding[0].code , event.get("INDICATION_CODE")),  
-    ]
-
-    for name, expected, actual in fields_to_compare:
-        check.is_true(
-                expected == actual,
-                f"Expected {name}: {expected}, Actual {actual}"
-            )    
-
-
-gender_map = {
-    "male": "1",
-    "female": "2",
-    "unknown": "0",
-    "other": "9"
-}
-
+    return procedure_term
