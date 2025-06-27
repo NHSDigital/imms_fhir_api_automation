@@ -170,9 +170,9 @@ def validateDateRange(context):
             id = entry.resource.id
             if occurrence_date:
                 if context.DateFrom and context.DateTo:
-                    occurrence_date = covert_to_expected_date_format(occurrence_date)
-                    date_from = covert_to_expected_date_format(context.DateFrom)
-                    date_to = covert_to_expected_date_format(context.DateTo)
+                    occurrence_date = iso_to_compact(occurrence_date)
+                    date_from = iso_to_compact(context.DateFrom)
+                    date_to = iso_to_compact(context.DateTo)
 
                     assert date_from <= occurrence_date <= date_to, (
                         f"Occurrence date {occurrence_date} is not within the range Date From {context.DateFrom} and Date To {context.DateTo}. Imms ID: {id}"
