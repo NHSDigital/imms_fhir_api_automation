@@ -3,7 +3,7 @@ from utilities.soft_assertions import SoftAssertions
 # from behave import before_scenario
 from utilities.genToken import *
 from utilities.awsToken import *
-from utilities.helper import *
+from utilities.FHIRImmunizationHelper import *
 
 # import logging
 # logging.basicConfig(filename='debugLog.log', level=logging.INFO)

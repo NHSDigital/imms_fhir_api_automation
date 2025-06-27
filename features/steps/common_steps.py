@@ -32,6 +32,8 @@ def Trigger_the_post_create_request(context):
 @then(parsers.parse("The request will be unsuccessful with the status code '{statusCode}'"))
 @then(parsers.parse("The request will be successful with the status code '{statusCode}'"))
 def The_request_will_have_status_code(context, statusCode):
+    print(context.response.status_code)
+    print(int(statusCode))
     assert context.response.status_code == int(statusCode)
 
 
@@ -52,11 +54,11 @@ def validateCreateLocation(context):
 @then('The Search Response JSONs should contain correct error message for invalid Date To') 
 def operationOutcomeInvalidParams(context):
     error_response = parse_errorResponse(context.response.json())
-    
+
     error_checks = [
         (not is_valid_disease_type(context.DiseaseType), "invalid_DiseaseType"),
-        (not is_valid_date(context.DateFrom), "invalid_DateFrom"),
-        (not is_valid_date(context.DateTo), "invalid_DateTo"),
+        (not is_valid_date(context.DateFrom), "invalid_DateFrom") if getattr(context, "DateFrom", None) else (False, None),
+        (not is_valid_date(context.DateTo), "invalid_DateTo") if getattr(context, "DateTo", None) else (False, None),
         (not is_valid_nhs_number(context.NHSNumber), "invalid_NHSNumber"),
     ]
 
@@ -64,7 +66,8 @@ def operationOutcomeInvalidParams(context):
         if failed:
             break
     else:
-        raise ValueError("Both parameters are valid, no error expected.")
-    
-    validateErrorResponse(error_response, errorName)
-    print(f"\n Error Response - \n {error_response}")    
+        raise ValueError("All parameters are valid, no error expected.")
+
+    if errorName:
+        validateErrorResponse(error_response, errorName)
+        print(f"\n Error Response - \n {error_response}")    

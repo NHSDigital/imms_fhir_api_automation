@@ -158,27 +158,27 @@ def send_valid_param_post_request(context, NHSNumber, vaccine_type, DateFrom, Da
     context.response = requests.post(context.url, headers=context.headers, data=context.request)  
 
 
-# @then("The occurrenceDateTime of the immunization events should be within the Date From and Date To range")
-# def validateDateRange(context):
-#     data = context.response.json()
-#     context.parsed_search_object = parse_FHIRImmunizationResponse(data)
+@then("The occurrenceDateTime of the immunization events should be within the Date From and Date To range")
+def validateDateRange(context):
+    data = context.response.json()
+    context.parsed_search_object = parse_FHIRImmunizationResponse(data)
 
-#     for entry in context.parsed_search_object.entry:
-#         if entry.resource.resourceType == "Immunization":
-#             occurrence_date = entry.resource.occurrenceDateTime
-#             id = entry.resource.id
-#             if occurrence_date:
-#                 # Handle Zulu time (Z) and timezone offsets
-#                 if occurrence_date.endswith("Z"):
-#                     occurrence_date = occurrence_date.replace("Z", "+00:00")
-#                 occurrence_date = datetime.fromisoformat(occurrence_date)
-#                 if context.DateFrom and context.DateTo:
-#                     date_from = datetime.strptime(context.DateFrom, "%Y-%m-%d")
-#                     date_to = datetime.strptime(context.DateTo, "%Y-%m-%d")
-#                     if not (date_from <= occurrence_date <= date_to):
-#                         raise AssertionError(
-#                             f"Occurrence date {occurrence_date} is not within the range Date From {context.DateFrom} and Date To {context.DateTo} for Immunisation Event {id}."
-#                         )       
+    assert context.parsed_search_object.entry, "No entries found in the search response."
+    
+    for entry in context.parsed_search_object.entry:
+        if entry.resource.resourceType == "Immunization":
+            occurrence_date = entry.resource.occurrenceDateTime
+            id = entry.resource.id
+            if occurrence_date:
+                if context.DateFrom and context.DateTo:
+                    occurrence_date = covert_to_expected_date_format(occurrence_date)
+                    date_from = covert_to_expected_date_format(context.DateFrom)
+                    date_to = covert_to_expected_date_format(context.DateTo)
+
+                    assert date_from <= occurrence_date <= date_to, (
+                        f"Occurrence date {occurrence_date} is not within the range Date From {context.DateFrom} and Date To {context.DateTo}. Imms ID: {id}"
+                    )   
+
 
 @then('The Search Response JSONs should contain the detail of the immunization events created above')
 def validateImmsID(context):

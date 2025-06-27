@@ -1,5 +1,5 @@
 from utilities.config import *
-from utilities.helper import *
+from utilities.FHIRImmunizationHelper import *
 from utilities.resources import apiResources
 import uuid
 import json

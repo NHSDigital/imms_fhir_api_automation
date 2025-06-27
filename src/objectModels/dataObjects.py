@@ -162,7 +162,7 @@ class ImmunizationResponse(BaseModel):
     site: CodeableConcept
     route: CodeableConcept
     doseQuantity: DoseQuantity
-    performer: List[ResponsePerformer]
+    performer: Optional[List[ResponsePerformer]]
     reasonCode: List[ReasonCode]
     protocolApplied: List[ProtocolApplied]
 

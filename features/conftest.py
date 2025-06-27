@@ -4,7 +4,7 @@ import allure
 from pytest_bdd import given, when, then
 from utilities.genToken import get_access_token, is_token_valid
 from utilities.awsToken import *
-from utilities.helper import deleteCreate
+from utilities.FHIRImmunizationHelper import *
 from utilities.context import ScenarioContext
 from dotenv import load_dotenv
 
