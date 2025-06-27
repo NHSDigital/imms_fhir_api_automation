@@ -8,7 +8,7 @@ from utilities.FHIRImmunizationHelper import *
 from utilities.context import ScenarioContext
 from dotenv import load_dotenv
 
-from utilities.helper import empty_folder
+from utilities.FHIRImmunizationHelper import empty_folder
 
 access_token_global = None
 expires_in_global = None

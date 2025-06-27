@@ -1,7 +1,7 @@
 import boto3
 from boto3.dynamodb.conditions import Attr
 from botocore.config import Config
-from utilities.helper import *
+from utilities.FHIRImmunizationHelper import *
 import pytest_check as check
 
 from src.objectModels.dataObjects import ImmunizationIntTable
