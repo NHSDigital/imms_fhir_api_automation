@@ -7,7 +7,6 @@ from src.objectModels.SearchObject import *
 from utilities.payloadSearch import *
 from utilities.payloadCreate import *
 from utilities.config import *
-from utilities.dynamodbHelper import *
 from src.delta.dateValidation import *
 from src.delta.deltaHelper import *
 import logging
@@ -79,7 +78,7 @@ def send_invalid_disease_type_post_request(context, NHSNumber, DiseaseType):
 
 
 @then('The Search Response JSONs should contain the error message for invalid NHS Number')    
-def operationOutcomeInvalidNHSNo(context):
+def operationOutcomeInvalidNHSNo(context): # type: ignore
     error_response = parse_errorResponse(context.response.json())
     errorName= "invalid_NHSNumber"
     validateErrorResponse(error_response, errorName)
@@ -250,3 +249,4 @@ def validateJsonPat(context):
                 expected == actual,
                 f"Expected {name}: {expected}, Actual {actual}"
             )
+

@@ -187,12 +187,12 @@ class FHIRImmunizationResponse(BaseModel):
 
 class ImmunizationIntTable(BaseModel):
     resourceType: str
-    contained: List[Any]
+    contained: List[Union[Patient, Practitioner]]
     extension: List[Extension]
     identifier: List[Identifier]
     status: str 
-    vaccineCode: CodeableConcept  # Fixed type
-    patient: Reference  # Fixed type
+    vaccineCode: CodeableConcept
+    patient: Reference
     manufacturer: Dict[str, str]
     id: str
     location: Location  

@@ -26,7 +26,6 @@ def Trigger_the_post_create_request(context):
     context.request = context.create_object.dict(exclude_none=True, exclude_unset=True)
     context.response = requests.post(context.url, json=context.request, headers=context.headers)
     print(f"Create Request is {json.dumps(context.request)}" )
-    # print(f"Create Response is {context.response}" )
 
 @then(parsers.parse("The request will be unsuccessful with the status code '{statusCode}'"))
 @then(parsers.parse("The request will be successful with the status code '{statusCode}'"))

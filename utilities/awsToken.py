@@ -1,7 +1,7 @@
-import json
 import os
 import boto3
-import botocore
+import subprocess
+from boto3.dynamodb.conditions import Attr
 
 import logging
 logging.basicConfig(filename='debugLog.log', level=logging.INFO)
@@ -29,3 +29,13 @@ def set_aws_session_token():
 
     except Exception as e:
         print(f"Error setting AWS session token: {e}")
+        
+
+def refresh_sso_token(profile_name):
+    try:
+        subprocess.run(['aws', 'sso', 'login', '--profile', profile_name], check=True)
+        print(f"SSO token refreshed for profile: {profile_name}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error refreshing SSO token: {e}")
+
+
