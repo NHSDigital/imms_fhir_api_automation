@@ -2,6 +2,7 @@ import requests
 from pytest_bdd import given, when, then, parsers
 from src.objectModels.patient_loader import load_patient_by_id
 from src.objectModels.immunization_builder import *
+from utilities.FHIRImmunizationHelper import *
 from utilities.payloadSearch import *
 from utilities.payloadCreate import *
 from utilities.config import *
@@ -30,6 +31,8 @@ def Trigger_the_post_create_request(context):
 @then(parsers.parse("The request will be unsuccessful with the status code '{statusCode}'"))
 @then(parsers.parse("The request will be successful with the status code '{statusCode}'"))
 def The_request_will_have_status_code(context, statusCode):
+    print(context.response.status_code)
+    print(int(statusCode))
     assert context.response.status_code == int(statusCode)
 
 
@@ -43,3 +46,27 @@ def validateCreateLocation(context):
         context.ImmsID is not None, 
         f"Expected IdentifierPK: {context.patient.identifier[0].value}, Found: {context.ImmsID}"
     )
+
+@then('The Search Response JSONs should contain correct error message for invalid NHS Number')   
+@then('The Search Response JSONs should contain correct error message for invalid Disease Type')   
+@then('The Search Response JSONs should contain correct error message for invalid Date From')
+@then('The Search Response JSONs should contain correct error message for invalid Date To') 
+def operationOutcomeInvalidParams(context):
+    error_response = parse_errorResponse(context.response.json())
+
+    error_checks = [
+        (not is_valid_disease_type(context.DiseaseType), "invalid_DiseaseType"),
+        (not is_valid_date(context.DateFrom), "invalid_DateFrom") if getattr(context, "DateFrom", None) else (False, None),
+        (not is_valid_date(context.DateTo), "invalid_DateTo") if getattr(context, "DateTo", None) else (False, None),
+        (not is_valid_nhs_number(context.NHSNumber), "invalid_NHSNumber"),
+    ]
+
+    for failed, errorName in error_checks:
+        if failed:
+            break
+    else:
+        raise ValueError("All parameters are valid, no error expected.")
+
+    if errorName:
+        validateErrorResponse(error_response, errorName)
+        print(f"\n Error Response - \n {error_response}")    

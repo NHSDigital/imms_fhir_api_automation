@@ -218,5 +218,17 @@ ERROR_MAP = {
         "code": "INVALID",
         "diagnostics": "immunization-target must be one or more of the following: COVID19,FLU,HPV,MMR,RSV"
     },
+    "invalid_DateFrom": {
+        "issue_code": "invalid",
+        "severity": "error",
+        "code": "INVALID",
+        "diagnostics": "Search parameter -date.from must be in format: YYYY-MM-DD"
+    }, 
+    "invalid_DateTo": {
+        "issue_code": "invalid",
+        "severity": "error",
+        "code": "INVALID",
+        "diagnostics": "Search parameter -date.to must be in format: YYYY-MM-DD"
+    },        
 }
 

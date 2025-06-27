@@ -1,21 +1,60 @@
+import csv
 from dataclasses import fields, is_dataclass
+from datetime import datetime, timezone
+import json
 from logging import config
+import os
 import re
+import shutil
 from typing import Type, Dict
 import uuid
 from pydantic import BaseModel
 import pytest_check as check
 from utilities.config import configparser, getConfigParser
-import uuid
 from src.objectModels.dataObjects import *
 from src.objectModels.operation_outcome import OperationOutcome
 from src.objectModels.vaccination_constants import ERROR_MAP
-from utilities.helper import covert_to_expected_date_format
 import allure
 from allure_commons.lifecycle import AllureLifecycle
 from allure_commons.model2 import Status
 
+from utilities.soft_assertions import SoftAssertions
+
+soft_assertions = SoftAssertions()
 config = getConfigParser()
+
+
+def empty_folder(path):
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.makedirs(path)
+
+def format_timestamp(timestamp):
+    parts = timestamp.split(".")
+
+    if len(parts) == 2:
+        milliseconds, timezone = parts[1].split("+")
+        milliseconds = milliseconds.ljust(6, "0")
+        
+        return f"{parts[0]}.{milliseconds}+{timezone}"
+
+
+def covert_to_expected_date_format(date_string):
+    try:
+        return datetime.fromisoformat(date_string.replace("Z", "+00:00"))
+    except ValueError:
+        return "Invalid format"
+    
+def iso_to_compact(dt_str):
+    dt = datetime.fromisoformat(dt_str.replace("Z", "+00:00"))
+    return dt.strftime("%Y%m%dT%H%M%S00")
+
+gender_map = {
+    "male": "1",
+    "female": "2",
+    "unknown": "0",
+    "other": "9"
+}
 
 
 def find_entry_by_Imms_id(parsed_data, imms_id) -> Optional[object]:
@@ -57,6 +96,34 @@ def parse_entry(entry_data: dict) -> Entry:
         search=parsed_search
     )
 
+
+def is_valid_date(date_str: str) -> bool:
+    try:
+        datetime.strptime(date_str, "%Y-%m-%d")
+        return True
+    except ValueError:
+        return False
+
+def is_valid_disease_type(disease_type: str) -> bool:
+    valid_types = {"COVID19", "FLU", "HPV", "MMR", "RSV"}
+    return disease_type in valid_types
+
+def is_valid_nhs_number(nhs_number: str) -> bool:
+    nhs_number = nhs_number.replace(" ", "")
+    if not nhs_number.isdigit() or len(nhs_number) != 10:
+        return False
+
+    digits = [int(d) for d in nhs_number]
+    total = sum((10 - i) * digits[i] for i in range(9))
+    remainder = total % 11
+    check_digit = 11 - remainder
+    if check_digit == 11:
+        check_digit = 0
+    if check_digit == 10:
+        return False
+    return check_digit == digits[9]
+
+
 def validateErrorResponse(error_response, errorName: str):
     uuid_obj = uuid.UUID(error_response.id, version=4)
     check.is_true(isinstance(uuid_obj, uuid.UUID), f"Id is not UUID {error_response.id}")
@@ -75,12 +142,7 @@ def validateErrorResponse(error_response, errorName: str):
         check.is_true(
             expected == actual,
             f"Expected {name}: {expected}, got {actual}"
-        )
-    
-    #            AllureLifecycle().update_step(lambda step: step.status == Status.FAILED)
-
-    # Ensure all soft assertions are checked before failing the test
-    
+        )  
 
 
 def parse_FHIRImmunizationResponse(json_data: dict) -> FHIRImmunizationResponse:
@@ -131,6 +193,7 @@ def validateToCompareRequestAndResponse(context, create_obj, created_event, tabl
         ("site", create_obj.site, created_event.site),
         ("route", create_obj.route, created_event.route),
         ("doseQuantity", create_obj.doseQuantity, created_event.doseQuantity),      
+        # ("performer", create_obj.performer, created_event.performer),
         ("reasonCode", create_obj.reasonCode, created_event.reasonCode),
         ("protocolApplied", create_obj.protocolApplied, created_event.protocolApplied),
     ])
