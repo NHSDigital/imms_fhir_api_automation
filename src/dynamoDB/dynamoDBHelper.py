@@ -1,11 +1,112 @@
 import boto3
+from boto3.dynamodb.conditions import Attr
+from botocore.config import Config
+from utilities.helper import *
+import pytest_check as check
 
-def fetchImmsIntImmsEventTable(ImmsID:str):    
-        dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
-        tableImmsEvent = dynamodb.Table('imms-int-imms-events')
+from src.objectModels.dataObjects import ImmunizationIntTable
 
-        queryFetch = f"Immunization#{ImmsID}"
+my_config = Config(
+    region_name='eu-west-2',
+    connect_timeout=10,  # seconds to wait for connection
+    read_timeout=500     # seconds to wait for a response
+)
 
-        response = tableImmsEvent.get_item(Key={'PK': queryFetch})
-        print(f"response is {response}")
+
+def fetch_immunization_events_detail(aws_profile_name:str, ImmsID: str):
+    if aws_profile_name and aws_profile_name.strip():
+        session = boto3.Session(profile_name=aws_profile_name)        
+        dynamodb = session.resource('dynamodb', config=my_config)
+    else:
+        dynamodb = boto3.resource('dynamodb', config=my_config) 
+   
+
+    tableImmsEvent = dynamodb.Table('imms-int-imms-events') # type: ignore
+
+    queryFetch = f"Immunization#{ImmsID}"
+
+    response = tableImmsEvent.get_item(Key={'PK': queryFetch})
+    print(f"\n Imms Event response is {response} \n")
+
+    return response
     
+def parse_imms_int_imms_event_response(json_data: dict) -> ImmunizationIntTable:
+    return ImmunizationIntTable.parse_obj(json_data)  
+
+
+def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name:str, ImmsID: str):
+    if aws_profile_name and aws_profile_name.strip():
+        session = boto3.Session(profile_name=aws_profile_name)        
+        dynamodb = session.resource('dynamodb', config=my_config)
+    else:
+        dynamodb = boto3.resource('dynamodb', config=my_config)
+        
+    tableImmsDelta = dynamodb.Table('imms-int-delta') # type: ignore
+
+    response = tableImmsDelta.scan(
+        FilterExpression=Attr('ImmsID').eq(ImmsID)
+    )
+
+    items = response.get('Items', [])
+    while 'LastEvaluatedKey' in response:
+        response = tableImmsDelta.scan(
+            FilterExpression=Attr('ImmsID').eq(ImmsID),
+            ExclusiveStartKey=response['LastEvaluatedKey']
+        )
+        items.extend(response.get('Items', []))
+
+    print(f"\n Delta table response is {items} \n")
+
+    return items
+
+def validate_imms_delta_record_with_created_event(context, create_obj, item, event_type):
+    event = item[0].get("Imms")
+    assert event, "Imms field missing in items."
+    
+    fields_to_compare = [
+        ("Operation", event_type.upper(), item[0].get("Operation")),
+        ("SupplierSystem", "Postman_Auth", item[0].get("SupplierSystem")),
+        ("VaccineType", f"{context.vaccine_type.lower()}", item[0].get("VaccineType")),
+        ("Source", "IEDS", item[0].get("Source")),
+        ("CONVERSION_ERRORS", [], event.get("CONVERSION_ERRORS")),
+        ("PERSON_FORENAME", create_obj.contained[1].name[0].given[0], event.get("PERSON_FORENAME")),
+        ("PERSON_SURNAME", create_obj.contained[1].name[0].family, event.get("PERSON_SURNAME")),
+        ("NHS_NUMBER", create_obj.contained[1].identifier[0].value, event.get("NHS_NUMBER")),
+        ("PERSON_DOB", create_obj.contained[1].birthDate.replace("-", ""), event.get("PERSON_DOB")),
+        ("PERSON_POSTCODE", create_obj.contained[1].address[0].postalCode, event.get("PERSON_POSTCODE")),
+        ("PERSON_GENDER_CODE", gender_map.get(create_obj.contained[1].gender), event.get("PERSON_GENDER_CODE")),
+        ("VACCINATION_PROCEDURE_CODE", create_obj.extension[0].valueCodeableConcept.coding[0].code, event.get("VACCINATION_PROCEDURE_CODE")),        
+        ("VACCINATION_PROCEDURE_TERM", create_obj.extension[0].valueCodeableConcept.coding[0].extension[0].valueString, event.get("VACCINATION_PROCEDURE_TERM")),
+        ("VACCINE_PRODUCT_TERM", create_obj.vaccineCode.coding[0].extension[0].valueString, event.get("VACCINE_PRODUCT_TERM")),
+        ("VACCINE_PRODUCT_CODE", create_obj.vaccineCode.coding[0].code, event.get("VACCINE_PRODUCT_CODE")),
+        ("VACCINE_MANUFACTURER", create_obj.manufacturer["display"] , event.get("VACCINE_MANUFACTURER")),
+        ("BATCH_NUMBER", create_obj.lotNumber, event.get("BATCH_NUMBER")),
+        ("RECORDED_DATE", create_obj.recorded[:10].replace("-", ""), event.get("RECORDED_DATE")),
+        ("EXPIRY_DATE", create_obj.expirationDate.replace("-", ""), event.get("EXPIRY_DATE")),
+        ("DOSE_SEQUENCE", "1", event.get("DOSE_SEQUENCE")),
+        ("DOSE_UNIT_TERM", create_obj.doseQuantity.unit , event.get("DOSE_UNIT_TERM")),
+        ("DOSE_UNIT_CODE", create_obj.doseQuantity.code, event.get("DOSE_UNIT_CODE")),         
+        ("SITE_OF_VACCINATION_TERM", create_obj.site.coding[0].extension[0].valueString, event.get("SITE_OF_VACCINATION_TERM")),
+        ("SITE_OF_VACCINATION_CODE", create_obj.site.coding[0].code, event.get("SITE_OF_VACCINATION_CODE")),        
+        ("DOSE_AMOUNT", create_obj.doseQuantity.value , float(event.get("DOSE_AMOUNT")) ),
+        ("PRIMARY_SOURCE", create_obj.primarySource, event.get("PRIMARY_SOURCE")),
+        ("ROUTE_OF_VACCINATION_TERM", create_obj.route.coding[0].extension[0].valueString, event.get("ROUTE_OF_VACCINATION_TERM")),
+        ("ROUTE_OF_VACCINATION_CODE", create_obj.route.coding[0].code, event.get("ROUTE_OF_VACCINATION_CODE")),
+        ("ACTION_FLAG", "NEW", event.get("ACTION_FLAG")),
+        ("DATE_AND_TIME", iso_to_compact(create_obj.occurrenceDateTime), event.get("DATE_AND_TIME")),
+        ("UNIQUE_ID", create_obj.identifier[0].value, event.get("UNIQUE_ID")),
+        ("UNIQUE_ID_URI", create_obj.identifier[0].system, event.get("UNIQUE_ID_URI")),
+        ("PERFORMING_PROFESSIONAL_SURNAME", create_obj.contained[0].name[0].family, event.get("PERFORMING_PROFESSIONAL_SURNAME")),  
+        ("PERFORMING_PROFESSIONAL_FORENAME", create_obj.contained[0].name[0].given[0], event.get("PERFORMING_PROFESSIONAL_FORENAME")),
+        ("LOCATION_CODE", create_obj.location.identifier.value, event.get("LOCATION_CODE")),
+        ("LOCATION_CODE_TYPE_URI", create_obj.location.identifier.system, event.get("LOCATION_CODE_TYPE_URI")),
+        ("SITE_CODE_TYPE_URI", create_obj.location.identifier.system, event.get("SITE_CODE_TYPE_URI")),
+        ("SITE_CODE", create_obj.performer[1].actor.identifier.value, event.get("SITE_CODE")),
+        ("INDICATION_CODE", create_obj.reasonCode[0].coding[0].code , event.get("INDICATION_CODE")),  
+    ]
+
+    for name, expected, actual in fields_to_compare:
+        check.is_true(
+                expected == actual,
+                f"Expected {name}: {expected}, Actual {actual}"
+            )  

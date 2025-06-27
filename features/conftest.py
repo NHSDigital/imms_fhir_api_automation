@@ -8,6 +8,8 @@ from utilities.FHIRImmunizationHelper import *
 from utilities.context import ScenarioContext
 from dotenv import load_dotenv
 
+from utilities.helper import empty_folder
+
 access_token_global = None
 expires_in_global = None
 current_time_global = None
@@ -39,8 +41,8 @@ def pytest_bdd_before_scenario(request, feature, scenario):
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_environment():
-    deleteCreate("output/allure-results")
-    deleteCreate("output/allure-report")
+    empty_folder("output/allure-results")
+    empty_folder("output/allure-report")
     load_dotenv()
 
 @pytest.fixture
@@ -72,8 +74,12 @@ def context(request) -> ScenarioContext:
         ctx.token_gen_time = current_time_global
         scenario_counter += 1
 
+    
     if "Create_Feature" in tags:
-        set_aws_session_token()
+        ctx.aws_profile_name = os.getenv("aws_profile_name")
+        refresh_sso_token(ctx.aws_profile_name) if os.getenv("aws_token_refresh", "false").strip().lower() == "true" else set_aws_session_token()
+        
+
 
     for tag in tags:
         if tag.startswith('vaccine_type_'):

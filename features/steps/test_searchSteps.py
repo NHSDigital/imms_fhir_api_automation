@@ -7,7 +7,6 @@ from src.objectModels.SearchObject import *
 from utilities.payloadSearch import *
 from utilities.payloadCreate import *
 from utilities.config import *
-from utilities.dynamodbHelper import *
 from src.delta.dateValidation import *
 from src.delta.deltaHelper import *
 import logging
@@ -231,3 +230,4 @@ def validateJsonPat(context):
                 expected == actual,
                 f"Expected {name}: {expected}, Actual {actual}"
             )
+

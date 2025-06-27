@@ -1,6 +1,11 @@
 {
   "cSpell.words": [
-    "csvfile"
+    "Codeable",
+    "csvfile",
+    "Imms",
+    "Pract",
+    "timespec",
+    "vacc"
   ],
   "python.testing.testExplorer.testFrameworks": ["pytest"],
   "python.testing.unittestEnabled": false,

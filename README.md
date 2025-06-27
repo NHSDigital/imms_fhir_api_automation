@@ -1,6 +1,6 @@
 # imms_fhir_api_automation
 
-Behave Automation for Immunisation FHIR API
+pytest-bdd Automation for Immunisation FHIR API
 
 ## Need to check in case any other libraries to be added
 
@@ -23,18 +23,15 @@ To execute the tests from your system, please follow the 4 easy steps below:
     # pip install -r .\requirements.txt
     ```
 
-4. in git bash terminal
-
-    ```console
-    source .venv/Scripts/activate
-    ```
-
-5. in Terminal
-
-    ```console
-        .venv\Scripts\Activate.ps1
-
-    ```
+4. To activate env 
+    a. in git bash terminal
+        ```console
+        source .venv/Scripts/activate
+        ```
+    b. in Terminal
+        ```console
+            .venv\Scripts\Activate.ps1
+        ```
 
 6. Need to create .env file, please get in touch with Imms FHIR API Test team to get the content of the file
 
@@ -47,6 +44,11 @@ To execute the tests from your system, please follow the 4 easy steps below:
 8. install and configure Aws CLI using following commands:
    1. pip install awscli
    2. aws configure
+   3. if you want to use aws configure sso then install aws cli 2 and follow the instructions on AWS access key page.
+
+9. to update the python packages run command 1 and to update requirement file run command 2. 
+    1. python -m pip install --upgrade <package name>
+    2. python -m pip freeze > requirements.txt
 
 ----DO NOT USE BELOW---------------------------------------------
 
