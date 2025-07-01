@@ -5,7 +5,6 @@ import uuid
 from lxml import html
 # import datetime
 from datetime import datetime, timezone, timedelta
-import dotenv
 
 config = getConfigParser()
 

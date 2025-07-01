@@ -59,7 +59,7 @@ def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name:str, ImmsID: 
 
     return items
 
-def validate_imms_delta_record_with_created_event(context, create_obj, item, event_type):
+def validate_imms_delta_record_with_created_event(context, create_obj, item, event_type, action_flag):
     event = item[0].get("Imms")
     assert event, "Imms field missing in items."
     
@@ -92,7 +92,7 @@ def validate_imms_delta_record_with_created_event(context, create_obj, item, eve
         ("PRIMARY_SOURCE", create_obj.primarySource, event.get("PRIMARY_SOURCE")),
         ("ROUTE_OF_VACCINATION_TERM", create_obj.route.coding[0].extension[0].valueString, event.get("ROUTE_OF_VACCINATION_TERM")),
         ("ROUTE_OF_VACCINATION_CODE", create_obj.route.coding[0].code, event.get("ROUTE_OF_VACCINATION_CODE")),
-        ("ACTION_FLAG", "NEW", event.get("ACTION_FLAG")),
+        ("ACTION_FLAG", action_flag, event.get("ACTION_FLAG")),
         ("DATE_AND_TIME", iso_to_compact(create_obj.occurrenceDateTime), event.get("DATE_AND_TIME")),
         ("UNIQUE_ID", create_obj.identifier[0].value, event.get("UNIQUE_ID")),
         ("UNIQUE_ID_URI", create_obj.identifier[0].system, event.get("UNIQUE_ID_URI")),

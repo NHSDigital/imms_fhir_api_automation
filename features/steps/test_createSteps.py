@@ -1,11 +1,8 @@
-import boto3
-import requests
 from src.dynamoDB.dynamoDBHelper import *
 from src.objectModels.immunization_builder import *
 from src.objectModels.patient_loader import load_patient_by_id
 from utilities.FHIRImmunizationHelper import *
-from utilities.payloadSearch import *
-from utilities.payloadCreate import *
+from utilities.getHeader import *
 from utilities.config import *
 from src.delta.dateValidation import *
 from src.delta.deltaHelper import *
@@ -62,13 +59,6 @@ def createValidJsonPayloadWithProcedureNoTextValue(context):
     context.immunization_object.extension[0].valueCodeableConcept= build_vaccine_procedure_code(context.vaccine_type.upper(), add_extensions=False)
     
 
-@then('The X-Request-ID and X-Correlation-ID keys in header will populate correctly')
-def validateCreateHeader(context):
-    assert "X-Request-ID" in context.response.request.headers, "X-Request-ID missing in headers"
-    assert "X-Correlation-ID" in context.response.request.headers, "X-Correlation-ID missing in headers"
-    assert context.response.request.headers["X-Request-ID"] == context.reqID, "X-Request-ID incorrect"
-    assert context.response.request.headers["X-Correlation-ID"] == context.corrID, "X-Correlation-ID incorrect"    
-
 @then('The imms event table will be populated with the correct data for created event')
 def validate_imms_event_table(context):
     create_obj = context.create_object
@@ -110,7 +100,7 @@ def validate_imms_delta_table_by_ImmsID(context):
     item = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID)
     assert item, f"Item not found in response for ImmsID: {context.ImmsID}"
      
-    validate_imms_delta_record_with_created_event(context, create_obj, item, "CREATE")    
+    validate_imms_delta_record_with_created_event(context, create_obj, item, Operation.created.value, "NEW")    
   
 
 @then('The procedure term is mapped to text field in imms delta table')

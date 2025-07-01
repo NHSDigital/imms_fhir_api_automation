@@ -4,8 +4,7 @@ import requests
 from src.objectModels.immunization_builder import *
 from src.objectModels.patient_loader import load_patient_by_id
 from src.objectModels.SearchObject import *
-from utilities.payloadSearch import *
-from utilities.payloadCreate import *
+from utilities.getHeader import *
 from utilities.config import *
 from src.delta.dateValidation import *
 from src.delta.deltaHelper import *
@@ -27,13 +26,6 @@ logger = logging.getLogger(__name__)
 
 scenarios("search.feature")
 
-@given("I have created a valid vaccination record")
-def validVaccinationRecordIsCreated(context):
-    valid_json_payload_is_created(context)
-    Trigger_the_post_create_request(context)
-    The_request_will_have_status_code(context, 201)
-    validateCreateLocation(context)
-
 @given(parsers.parse("Valid vaccination record is created with Patient '{Patient}' and vaccine_type '{vaccine_type}'"))
 def validVaccinationRecordIsCreatedWithPatient(context, Patient, vaccine_type):
     The_Immunization_object_is_created_with_patient_for_vaccine_type(context, Patient, vaccine_type)
@@ -42,7 +34,7 @@ def validVaccinationRecordIsCreatedWithPatient(context, Patient, vaccine_type):
     validateCreateLocation(context)
 
 @when("Send a search request with GET method for Immunization event created")
-def TiggerSearchGetRequest(context):
+def TriggerSearchGetRequest(context):
     get_search_getURLHeader(context)
     context.params = convert_to_form_data(set_request_data(context.patient.identifier[0].value, context.vaccine_type, datetime.today().strftime("%Y-%m-%d")))
     print(f"\n Search Get Parameters - \n {context.params}")
@@ -51,14 +43,13 @@ def TiggerSearchGetRequest(context):
     print(f"\n Search Get Response - \n {context.response.json()}")
 
 @when("Send a search request with POST method for Immunization event created")
-def TiggerSearchPostRequest(context):
+def TriggerSearchPostRequest(context):
     get_search_postURLHeader(context)
     context.request = convert_to_form_data(set_request_data(context.patient.identifier[0].value, context.vaccine_type, datetime.today().strftime("%Y-%m-%d")))
     print(f"\n Search Post Request - \n {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
     
-    print(f"\n Search Post Response - \n {context.response.json()}")    
-
+    print(f"\n Search Post Response - \n {context.response.json()}")
 
 @when(parsers.parse("Send a search request with GET method with invalid NHS Number '{NHSNumber}' and valid Disease Type '{DiseaseType}'"))
 @when(parsers.parse("Send a search request with GET method with valid NHS Number '{NHSNumber}' and invalid Disease Type '{DiseaseType}'"))
