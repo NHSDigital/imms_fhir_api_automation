@@ -8,20 +8,28 @@ from src.objectModels.dataObjects import ImmunizationIntTable
 
 my_config = Config(
     region_name='eu-west-2',
-    connect_timeout=10,  # seconds to wait for connection
-    read_timeout=500     # seconds to wait for a response
+    connect_timeout=10,  
+    read_timeout=500 
 )
+
+class DynamoDBHelper:
+    def __init__(self, aws_profile_name: str = None):
+        if aws_profile_name and aws_profile_name.strip():
+            session = boto3.Session(profile_name=aws_profile_name)
+            self.dynamodb = session.resource('dynamodb', config=my_config)
+        else:
+            self.dynamodb = boto3.resource('dynamodb', config=my_config)
+
+    def get_events_table(self):
+        return self.dynamodb.Table('imms-int-imms-events')
+
+    def get_delta_table(self):
+        return self.dynamodb.Table('imms-int-delta')
 
 
 def fetch_immunization_events_detail(aws_profile_name:str, ImmsID: str):
-    if aws_profile_name and aws_profile_name.strip():
-        session = boto3.Session(profile_name=aws_profile_name)        
-        dynamodb = session.resource('dynamodb', config=my_config)
-    else:
-        dynamodb = boto3.resource('dynamodb', config=my_config) 
-   
-
-    tableImmsEvent = dynamodb.Table('imms-int-imms-events') # type: ignore
+    db = DynamoDBHelper(aws_profile_name)
+    tableImmsEvent = db.get_events_table()
 
     queryFetch = f"Immunization#{ImmsID}"
 
@@ -35,13 +43,8 @@ def parse_imms_int_imms_event_response(json_data: dict) -> ImmunizationIntTable:
 
 
 def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name:str, ImmsID: str):
-    if aws_profile_name and aws_profile_name.strip():
-        session = boto3.Session(profile_name=aws_profile_name)        
-        dynamodb = session.resource('dynamodb', config=my_config)
-    else:
-        dynamodb = boto3.resource('dynamodb', config=my_config)
-        
-    tableImmsDelta = dynamodb.Table('imms-int-delta') # type: ignore
+    db = DynamoDBHelper(aws_profile_name)
+    tableImmsDelta = db.get_delta_table()
 
     response = tableImmsDelta.scan(
         FilterExpression=Attr('ImmsID').eq(ImmsID)
