@@ -49,7 +49,7 @@ def setup_environment():
 
 @pytest.fixture
 def context(request) -> ScenarioContext:
-    global access_token_global, expires_in_global, current_time_global, scenario_counter
+    global access_token_global, expires_in_global, current_time_global, scenario_counter, aws_token_setup
     
     ctx = ScenarioContext()
     
@@ -67,6 +67,7 @@ def context(request) -> ScenarioContext:
     
     if scenario_counter == 0:
         access_token_global = expires_in_global = current_time_global = None
+        aws_token_setup = False
 
     if not is_token_valid(expires_in_global, current_time_global):
         access_token_global, expires_in_global, current_time_global = get_access_token(ctx)
@@ -76,8 +77,10 @@ def context(request) -> ScenarioContext:
     ctx.token_gen_time = current_time_global
     scenario_counter += 1    
  
-    ctx.aws_profile_name = os.getenv("aws_profile_name")
-    refresh_sso_token(ctx.aws_profile_name) if os.getenv("aws_token_refresh", "false").strip().lower() == "true" else set_aws_session_token()
+    if not aws_token_setup:
+        aws_token_setup = True        
+        ctx.aws_profile_name = os.getenv("aws_profile_name")
+        refresh_sso_token(ctx.aws_profile_name) if os.getenv("aws_token_refresh", "false").strip().lower() == "true" else set_aws_session_token()
        
         
     for tag in tags:

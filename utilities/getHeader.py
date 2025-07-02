@@ -22,7 +22,7 @@ def get_search_postURLHeader(context):
         'X-Correlation-ID': str(uuid.uuid4()),
         'X-Request-ID': str(uuid.uuid4()),
         'Accept': 'application/fhir+json',
-        'Content-Type': 'application/fhir+json',
+        'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer ' + context.token
         }
     context.corrID = context.headers['X-Correlation-ID']
