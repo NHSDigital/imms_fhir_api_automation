@@ -42,7 +42,7 @@ Scenario Outline: Verify that the POST method of Search API will be successful w
       |SFlag         | COVID19     |
       |SupersedeNhsNo| COVID19     | 
 
-@supplier_name_MAVIS
+@supplier_name_Postman_Auth
 Scenario Outline: Verify that the immunisation events retrieved in the response of Search API should be within Date From and Date To range
     When Send a search request with GET method with valid NHS Number '<NHSNumber>' and Disease Type '<vaccine_type>' and Date From '<DateFrom>' and Date To '<DateTo>'
     Then The request will be successful with the status code '200'
