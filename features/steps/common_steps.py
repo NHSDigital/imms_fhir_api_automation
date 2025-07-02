@@ -7,10 +7,16 @@ from src.objectModels.patient_loader import load_patient_by_id
 from src.objectModels.immunization_builder import *
 from utilities.FHIRImmunizationHelper import *
 from utilities.enums import Operation
+from utilities.genToken import get_tokens
 from utilities.getHeader import *
 from utilities.config import *
 import pytest_check as check
 
+@given(parsers.parse("valid token is generated for the '{Supplier}'"))
+def valid_token_is_generated(context, Supplier):
+    context.supplier_name = Supplier
+    get_tokens(context, Supplier)
+    
 @given("Valid json payload is created")
 def valid_json_payload_is_created(context):
     context.patient = load_patient_by_id(context.patient_id)
@@ -109,7 +115,7 @@ def validate_imms_event_table_by_operation(context, operation: Operation):
 
     fields_to_compare = [
         ("Operation", Operation[operation].value, item.get("Operation")),
-        ("SupplierSystem", "Postman_Auth", item.get("SupplierSystem")),
+        ("SupplierSystem", context.supplier_name, item.get("SupplierSystem")),
         ("PatientPK", f"Patient#{context.patient.identifier[0].value}", item.get("PatientPK")),
         ("PatientSK", f"{context.vaccine_type}#{context.ImmsID}", item.get("PatientSK")),
         ("Version", 1, item.get("Version")),

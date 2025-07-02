@@ -1,6 +1,7 @@
 from features.steps.test_searchSteps import TriggerSearchGetRequest, TriggerSearchPostRequest
 from src.dynamoDB.dynamoDBHelper import *
 from src.objectModels.immunization_builder import *
+from utilities.enums import ActionFlag
 from utilities.getHeader import *
 from utilities.config import *
 import logging
@@ -35,7 +36,7 @@ def validate_imms_delta_table_by_ImmsID(context):
     # Assuming each item has a 'timestamp' field to determine the latest
     item = [max(deleted_items, key=lambda x: x.get('timestamp', 0))]
      
-    validate_imms_delta_record_with_created_event(context, create_obj, item, Operation.deleted.value, Operation.deleted.value) 
+    validate_imms_delta_record_with_created_event(context, create_obj, item, Operation.deleted.value, ActionFlag.deleted.value) 
     
 @then('Deleted Immunization event will not be present in Get method Search API response')
 def validate_deleted_immunization_event_not_present(context):

@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 import random
 import uuid
 from src.objectModels.dataObjects import *
-from src.objectModels.vaccination_constants import *
+from utilities.vaccination_constants import *
 
 def create_extension(url: str, stringValue: str = None, idValue: str = None) -> ExtensionItem:
     return ExtensionItem(

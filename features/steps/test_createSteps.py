@@ -2,6 +2,7 @@ from src.dynamoDB.dynamoDBHelper import *
 from src.objectModels.immunization_builder import *
 from src.objectModels.patient_loader import load_patient_by_id
 from utilities.FHIRImmunizationHelper import *
+from utilities.enums import ActionFlag
 from utilities.getHeader import *
 from utilities.config import *
 from src.delta.dateValidation import *
@@ -79,10 +80,11 @@ def validate_imms_event_table(context):
     created_event = parse_imms_int_imms_event_response(resource)
 
     fields_to_compare = [
-        ("Operation", "CREATE", item.get("Operation")),
-        ("SupplierSystem", "Postman_Auth", item.get("SupplierSystem")),
+        ("IdentifierPK", f"{create_obj.identifier[0].system}#{create_obj.identifier[0].value}", item.get("IdentifierPK")),
+        ("Operation", Operation.created.value, item.get("Operation")),
         ("PatientPK", f"Patient#{context.patient.identifier[0].value}", item.get("PatientPK")),
         ("PatientSK", f"{context.vaccine_type}#{context.ImmsID}", item.get("PatientSK")),
+        ("SupplierSystem", context.supplier_name.lower(), item.get("SupplierSystem").lower()),        
         ("Version", 1, item.get("Version")),
     ]
     
@@ -100,7 +102,7 @@ def validate_imms_delta_table_by_ImmsID(context):
     item = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID)
     assert item, f"Item not found in response for ImmsID: {context.ImmsID}"
      
-    validate_imms_delta_record_with_created_event(context, create_obj, item, Operation.created.value, "NEW")    
+    validate_imms_delta_record_with_created_event(context, create_obj, item, Operation.created.value, ActionFlag.created.value)    
   
 
 @then('The procedure term is mapped to text field in imms delta table')
@@ -123,6 +125,7 @@ def validate_procedure_term_second_display_in_delta_table(context):
     actual_procedure_term = get_procedure_term_text(context)
     assert actual_procedure_term == context.create_object.extension[0].valueCodeableConcept.coding[0].display, f"Expected procedure term text '{context.create_object.extension[0].valueCodeableConcept.text}', but got '{actual_procedure_term}'"
 
+
 def get_procedure_term_text(context):
     item = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID)
     assert item, f"Item not found in response for ImmsID: {context.ImmsID}"
@@ -134,3 +137,4 @@ def get_procedure_term_text(context):
     assert procedure_term, "Procedure term text field is missing in the delta table item." 
     
     return procedure_term
+
