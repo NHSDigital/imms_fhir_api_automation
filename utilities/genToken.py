@@ -66,7 +66,8 @@ def get_access_token(context):
 
     current_time = datetime.now(timezone.utc)
 
-    return token_resp.json()["access_token"], token_resp.json()["expires_in"], current_time
+    #return token_resp.json()["access_token"], token_resp.json()["expires_in"], current_time
+    return token_resp.json()["access_token"]
     
 
 def is_token_valid(token_expires_in_time, token_generated_time):
@@ -76,13 +77,7 @@ def is_token_valid(token_expires_in_time, token_generated_time):
     return datetime.now(timezone.utc) < expiration_time
 
 
-def get_tokens(context, supplier_name):
-    
-    if context.scenario_counter == 0:
-        context.aws_profile_name = os.getenv("aws_profile_name")
-        refresh_sso_token(context.aws_profile_name) if os.getenv("aws_token_refresh", "false").strip().lower() == "true" else set_aws_session_token()
-       
-    
+def get_tokens(context, supplier_name):    
     env_vars_map = {
         "auth_client_Secret" :f"{supplier_name}_client_Secret", 
         "auth_client_Id": f"{supplier_name}_client_Id", 
@@ -91,7 +86,9 @@ def get_tokens(context, supplier_name):
     for attr, env_var in env_vars_map.items():
         setattr(context, attr, os.getenv(env_var))
     
-    if not is_token_valid(context.token_expires_in, context.token_gen_time):
-        context.token, context.token_expires_in, context.token_gen_time = get_access_token(context)   
+    # if not is_token_valid(context.token_expires_in, context.token_gen_time):
+    #     context.token, context.token_expires_in, context.token_gen_time = get_access_token(context) 
+    
+    context.token = get_access_token(context)   
       
         

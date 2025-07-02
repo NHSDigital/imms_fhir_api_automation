@@ -1,6 +1,5 @@
 class ScenarioContext:
     def __init__(self):
-        self.scenario_counter = 0
         self.supplier_name = None
         self.token = None
         self.token_expires_in = None

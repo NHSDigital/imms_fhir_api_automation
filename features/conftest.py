@@ -39,14 +39,15 @@ def setup_environment():
     
 @pytest.fixture(scope="session")
 def global_context():
-    return {"counter": 0}   # Set at start of session
+        aws_profile_name = os.getenv("aws_profile_name")
+        refresh_sso_token(aws_profile_name) if os.getenv("aws_token_refresh", "false").strip().lower() == "true" else set_aws_session_token()        
 
 
 @pytest.fixture
 def context(request, global_context) -> ScenarioContext:
     ctx = ScenarioContext()
-    ctx.scenario_counter = global_context["counter"]
-
+    ctx.aws_profile_name = os.getenv("aws_profile_name")
+    
     node = request.node
     tags = [marker.name for marker in node.own_markers]
 
@@ -61,12 +62,9 @@ def context(request, global_context) -> ScenarioContext:
         if tag.startswith('patient_id_'):
             ctx.patient_id = tag.split('patient_id_')[1]
         if tag.startswith('supplier_name_'):
-            ctx.supplier_name = tag.split('supplier_name_')[1]
-           
+            ctx.supplier_name = tag.split('supplier_name_')[1]           
             get_tokens(ctx, ctx.supplier_name)
-
-    global_context["counter"] += 1 
-    
+  
     return ctx
 
 def pytest_bdd_after_scenario(request, feature, scenario):
