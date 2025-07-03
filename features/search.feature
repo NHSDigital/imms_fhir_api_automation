@@ -2,6 +2,7 @@
 Feature: Search the immunization of a patient
 
 # Positive Scenarios
+@supplier_name_RAVS
 Scenario Outline: Verify that the GET method of Search API will be successful with all the valid parameters
     Given Valid vaccination record is created with Patient '<Patient>' and vaccine_type '<Vaccine_type>'
     When Send a search request with GET method for Immunization event created
@@ -21,7 +22,7 @@ Scenario Outline: Verify that the GET method of Search API will be successful wi
       |SFlag         | COVID19     |
       |SupersedeNhsNo| COVID19     |
 
-
+@supplier_name_Postman_Auth
 Scenario Outline: Verify that the POST method of Search API will be successful with all the valid parameters 
     Given Valid vaccination record is created with Patient '<Patient>' and vaccine_type '<Vaccine_type>'
     When Send a search request with POST method for Immunization event created
@@ -41,7 +42,7 @@ Scenario Outline: Verify that the POST method of Search API will be successful w
       |SFlag         | COVID19     |
       |SupersedeNhsNo| COVID19     | 
 
-
+@supplier_name_Postman_Auth
 Scenario Outline: Verify that the immunisation events retrieved in the response of Search API should be within Date From and Date To range
     When Send a search request with GET method with valid NHS Number '<NHSNumber>' and Disease Type '<vaccine_type>' and Date From '<DateFrom>' and Date To '<DateTo>'
     Then The request will be successful with the status code '200'
@@ -55,7 +56,7 @@ Scenario Outline: Verify that the immunisation events retrieved in the response 
       |9728403348       | COVID19      | 2025-06-18 | 2025-06-25 |
 
 # Negative Scenarios
-
+@supplier_name_RAVS
 Scenario Outline: Verify that Search API will throw error if NHS Number is invalid
     When Send a search request with GET method with invalid NHS Number '<NHSNumber>' and valid Disease Type '<DiseaseType>'
     Then The request will be unsuccessful with the status code '400'
@@ -71,7 +72,7 @@ Scenario Outline: Verify that Search API will throw error if NHS Number is inval
       | 1          |        COVID19           |
       | 10000000000 00001 | COVID19           |
 
-
+@supplier_name_RAVS
 Scenario Outline: Verify that Search API will throw error if Disease Type is invalid
     When Send a search request with GET method with valid NHS Number '<NHSNumber>' and invalid Disease Type '<DiseaseType>'
     Then The request will be unsuccessful with the status code '400'
@@ -86,7 +87,7 @@ Scenario Outline: Verify that Search API will throw error if Disease Type is inv
       | 9449304424 |        FLu               |
       | 9449304424 |        ABC               |   
 
-
+@supplier_name_MAVIS
 Scenario Outline: Verify that Search API will throw error if both NHS Number and Disease Type are invalid
     When Send a search request with GET method with invalid NHS Number '<NHSNumber>' and invalid Disease Type '<DiseaseType>'
     Then The request will be unsuccessful with the status code '400'
@@ -100,7 +101,7 @@ Scenario Outline: Verify that Search API will throw error if both NHS Number and
       | 1234567890 |        ABC               |
       |   ""       |        ""                |
 
-
+@supplier_name_MAVIS
 Scenario Outline: Verify that Search API will throw error if date from is invalid
     When Send a search request with GET method with invalid Date From '<DateFrom>' and valid Date To '<DateTo>'
     Then The request will be unsuccessful with the status code '400'
@@ -115,7 +116,7 @@ Scenario Outline: Verify that Search API will throw error if date from is invali
       | 2025-13-01    |        2025-06-01   |    
       | 2025-05-32    |        2025-06-01   |    
 
-
+@supplier_name_RAVS
 Scenario Outline: Verify that Search API will throw error if date to is invalid
     When Send a search request with GET method with valid Date From '<DateFrom>' and invalid Date To '<DateTo>'
     Then The request will be unsuccessful with the status code '400'
@@ -130,7 +131,7 @@ Scenario Outline: Verify that Search API will throw error if date to is invalid
       | 2025-05-01    |        2025-13-01   |    
       | 2025-05-01    |        2025-05-32   |  
 
-
+@supplier_name_MAVIS
 Scenario Outline: Verify that Search API will throw error if both date from and date to are invalid
     When Send a search request with GET method with invalid Date From '<DateFrom>' and invalid Date To '<DateTo>'
     Then The request will be unsuccessful with the status code '400'

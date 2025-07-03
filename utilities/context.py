@@ -1,6 +1,6 @@
 class ScenarioContext:
     def __init__(self):
-        self.soft_assertions = None
+        self.supplier_name = None
         self.token = None
         self.token_expires_in = None
         self.token_gen_time = None

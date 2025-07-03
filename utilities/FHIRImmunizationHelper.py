@@ -1,7 +1,5 @@
-import csv
 from dataclasses import fields, is_dataclass
 from datetime import datetime, timezone
-import json
 from logging import config
 import os
 import re
@@ -13,14 +11,8 @@ import pytest_check as check
 from utilities.config import configparser, getConfigParser
 from src.objectModels.dataObjects import *
 from src.objectModels.operation_outcome import OperationOutcome
-from src.objectModels.vaccination_constants import ERROR_MAP
-import allure
-from allure_commons.lifecycle import AllureLifecycle
-from allure_commons.model2 import Status
+from utilities.vaccination_constants import ERROR_MAP
 
-from utilities.soft_assertions import SoftAssertions
-
-soft_assertions = SoftAssertions()
 config = getConfigParser()
 
 

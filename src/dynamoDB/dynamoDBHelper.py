@@ -8,20 +8,28 @@ from src.objectModels.dataObjects import ImmunizationIntTable
 
 my_config = Config(
     region_name='eu-west-2',
-    connect_timeout=10,  # seconds to wait for connection
-    read_timeout=500     # seconds to wait for a response
+    connect_timeout=10,  
+    read_timeout=500 
 )
+
+class DynamoDBHelper:
+    def __init__(self, aws_profile_name: str = None):
+        if aws_profile_name and aws_profile_name.strip():
+            session = boto3.Session(profile_name=aws_profile_name)
+            self.dynamodb = session.resource('dynamodb', config=my_config)
+        else:
+            self.dynamodb = boto3.resource('dynamodb', config=my_config)
+
+    def get_events_table(self):
+        return self.dynamodb.Table('imms-int-imms-events')
+
+    def get_delta_table(self):
+        return self.dynamodb.Table('imms-int-delta')
 
 
 def fetch_immunization_events_detail(aws_profile_name:str, ImmsID: str):
-    if aws_profile_name and aws_profile_name.strip():
-        session = boto3.Session(profile_name=aws_profile_name)        
-        dynamodb = session.resource('dynamodb', config=my_config)
-    else:
-        dynamodb = boto3.resource('dynamodb', config=my_config) 
-   
-
-    tableImmsEvent = dynamodb.Table('imms-int-imms-events') # type: ignore
+    db = DynamoDBHelper(aws_profile_name)
+    tableImmsEvent = db.get_events_table()
 
     queryFetch = f"Immunization#{ImmsID}"
 
@@ -35,13 +43,8 @@ def parse_imms_int_imms_event_response(json_data: dict) -> ImmunizationIntTable:
 
 
 def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name:str, ImmsID: str):
-    if aws_profile_name and aws_profile_name.strip():
-        session = boto3.Session(profile_name=aws_profile_name)        
-        dynamodb = session.resource('dynamodb', config=my_config)
-    else:
-        dynamodb = boto3.resource('dynamodb', config=my_config)
-        
-    tableImmsDelta = dynamodb.Table('imms-int-delta') # type: ignore
+    db = DynamoDBHelper(aws_profile_name)
+    tableImmsDelta = db.get_delta_table()
 
     response = tableImmsDelta.scan(
         FilterExpression=Attr('ImmsID').eq(ImmsID)
@@ -59,13 +62,13 @@ def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name:str, ImmsID: 
 
     return items
 
-def validate_imms_delta_record_with_created_event(context, create_obj, item, event_type):
+def validate_imms_delta_record_with_created_event(context, create_obj, item, event_type, action_flag):
     event = item[0].get("Imms")
     assert event, "Imms field missing in items."
     
     fields_to_compare = [
         ("Operation", event_type.upper(), item[0].get("Operation")),
-        ("SupplierSystem", "Postman_Auth", item[0].get("SupplierSystem")),
+        ("SupplierSystem", context.supplier_name.lower(), item[0].get("SupplierSystem").lower()),
         ("VaccineType", f"{context.vaccine_type.lower()}", item[0].get("VaccineType")),
         ("Source", "IEDS", item[0].get("Source")),
         ("CONVERSION_ERRORS", [], event.get("CONVERSION_ERRORS")),
@@ -92,7 +95,7 @@ def validate_imms_delta_record_with_created_event(context, create_obj, item, eve
         ("PRIMARY_SOURCE", create_obj.primarySource, event.get("PRIMARY_SOURCE")),
         ("ROUTE_OF_VACCINATION_TERM", create_obj.route.coding[0].extension[0].valueString, event.get("ROUTE_OF_VACCINATION_TERM")),
         ("ROUTE_OF_VACCINATION_CODE", create_obj.route.coding[0].code, event.get("ROUTE_OF_VACCINATION_CODE")),
-        ("ACTION_FLAG", "NEW", event.get("ACTION_FLAG")),
+        ("ACTION_FLAG", action_flag, event.get("ACTION_FLAG")),
         ("DATE_AND_TIME", iso_to_compact(create_obj.occurrenceDateTime), event.get("DATE_AND_TIME")),
         ("UNIQUE_ID", create_obj.identifier[0].value, event.get("UNIQUE_ID")),
         ("UNIQUE_ID_URI", create_obj.identifier[0].system, event.get("UNIQUE_ID_URI")),

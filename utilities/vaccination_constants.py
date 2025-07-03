@@ -62,6 +62,69 @@ VACCINE_CODE_MAP = {
             "idValue": "4260581100001109",
             "manufacturer": "Pfizer Ltd"
         }
+    ],
+    "HPV": [
+        {
+            "system": "http://snomed.info/sct",
+            "code": "12238911000001100",
+            "display": "Cervarix vaccine suspension for injection 0.5ml pre-filled syringes (GlaxoSmithKline) (product)",
+            "stringValue": "Gardasil 9 suspension for injection 0.5ml pre-filled syringes",
+            "idValue": "12238911000001100",  
+            "manufacturer": "GlaxoSmithKline"    
+        },
+        {
+            "system": "http://snomed.info/sct",
+            "code": "33493111000001108",
+            "display": "Gardasil 9 vaccine suspension for injection 0.5ml pre-filled syringes (Merck Sharp & Dohme (UK) Ltd) (product)",
+            "stringValue": "Gardasil 9 suspension for injection 0.5ml pre-filled syringes",
+            "idValue": "33493111000001108",  
+            "manufacturer": "Merck Sharp & Dohme (UK) Ltd"    
+        },
+        {
+            "system": "http://snomed.info/sct",
+            "code": "10880211000001104",
+            "display": "Gardasil vaccine suspension for injection 0.5ml pre-filled syringes (Merck Sharp & Dohme (UK) Ltd) (product)",
+            "stringValue": "Gardasil 9 suspension for injection 0.5ml pre-filled syringes",
+            "idValue": "10880211000001104",  
+            "manufacturer": "Merck Sharp & Dohme (UK) Ltd"    
+        }
+    ] ,
+    "MenACWY":[
+        {
+        "system": "http://snomed.info/sct",
+        "code": "39779611000001104",    
+        "display": "MenQuadfi vaccine solution for injection 0.5ml vials (Sanofi) (product)",
+        "stringValue": "MenQuadfi vaccine solution for injection 0.5ml vials",
+        "idValue": "3977961100001104",
+        "manufacturer": "Sanofi"
+        },
+        {
+        "system": "http://snomed.info/sct",
+        "code": "20517811000001104",    
+        "display": "Nimenrix vaccine powder and solvent for solution for injection 0.5ml pre-filled syringes (GlaxoSmithKline UK Ltd) (product)",
+        "stringValue": "Nimenrix vaccine powder and solvent for solution for injection 0.5ml pre-filled syringes",
+        "idValue": "20517811000001104",
+        "manufacturer": "GlaxoSmithKline UK Ltd"
+        }
+        ,
+        {
+        "system": "http://snomed.info/sct",
+        "code": "17188711000001105",    
+        "display": "Menveo vaccine powder and solvent for solution for injection 0.5ml vials (Novartis Vaccines and Diagnostics Ltd) (product)",
+        "stringValue": "Menveo vaccine powder and solvent for solution for injection 0.5ml vials",
+        "idValue": "17188711000001105",
+        "manufacturer": "Novartis Vaccines and Diagnostics Ltd"
+        }
+    ],
+    "3-in-1":[
+        {   
+        "system": "http://snomed.info/sct",
+        "code": "7374511000001107",
+        "display": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes (Sanofi) 1 pre-filled disposable injection (product)",
+        "stringValue": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes ",
+        "idValue": "7374511000001107",
+        "manufacturer": "Sanofi"
+        },
     ]
 }
 
@@ -114,6 +177,47 @@ VACCINATION_PROCEDURE_MAP = {
             "display": "Administration of respiratory syncytial virus vaccine",
             "stringValue": "Administration of vaccine product containing only Human orthopneumovirus antigen",
             "idValue": "1303503001"
+        }
+    ],
+    "HPV": [
+        {
+            "system": "http://snomed.info/sct",
+            "code": "761841000",
+            "display": "Administration of vaccine product containing only Human papillomavirus antigen (procedure)",
+            "stringValue": "Administration of vaccine product containing only Human papillomavirus antigen",
+            "idValue": "761841000"
+        },
+        {
+            "system": "http://snomed.info/sct",
+            "code": "761841000",
+            "display": "Administration of vaccine product containing only Human papillomavirus antigen (procedure)",
+            "stringValue": "Administration of vaccine product containing only Human papillomavirus antigen",
+            "idValue": "761841000"
+        }
+    ],
+    "MenACWY": [ 
+        {
+            "system": "http://snomed.info/sct",
+            "code": "871874000",
+            "display": "Administration of vaccine product containing only Neisseria meningitidis serogroup A, C, W135 and Y antigens (procedure)",
+            "stringValue": "Administration of vaccine product containing only Neisseria meningitidis serogroup ",
+            "idValue": "871874000"
+        },
+        {
+            "system": "http://snomed.info/sct",
+            "code": "871874000",
+            "display": "Administration of vaccine product containing only Neisseria meningitidis serogroup A, C, W135 and Y antigens (procedure)",
+            "stringValue": "Administration of vaccine product containing only Neisseria meningitidis serogroup ",
+            "idValue": "871874000"
+        }
+    ],
+    "3-in-1": [     
+        {
+            "system": "http://snomed.info/sct",
+            "code": "866186002",
+            "display": "Administration of vaccine product containing only Clostridium tetani and Corynebacterium diphtheriae and Human poliovirus antigens (procedure)",
+            "stringValue": "Administration of vaccine product containing only Clostridium tetani and Corynebacterium diphtheriae and Human poliovirus antigens",
+            "idValue": "866186002"
         }
     ]
 }
@@ -196,6 +300,13 @@ PROTOCOL_DISEASE_MAP = {
             "system": "http://snomed.info/sct",
             "code": "55735004",
             "display": "Respiratory syncytial virus infection (disorder)"
+        }
+    ],
+    "HPV": [
+        {
+            "system": "http://snomed.info/sct",
+            "code": "240532009",
+            "display": "Human papillomavirus infection"
         }
     ]
 }

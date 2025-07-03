@@ -1,13 +1,22 @@
+import json
+from venv import logger
 import requests
 from pytest_bdd import given, when, then, parsers
+from src.dynamoDB.dynamoDBHelper import *
 from src.objectModels.patient_loader import load_patient_by_id
 from src.objectModels.immunization_builder import *
 from utilities.FHIRImmunizationHelper import *
-from utilities.payloadSearch import *
-from utilities.payloadCreate import *
+from utilities.enums import Operation
+from utilities.genToken import get_tokens
+from utilities.getHeader import *
 from utilities.config import *
 import pytest_check as check
 
+@given(parsers.parse("valid token is generated for the '{Supplier}'"))
+def valid_token_is_generated(context, Supplier):
+    context.supplier_name = Supplier
+    get_tokens(context, Supplier)
+    
 @given("Valid json payload is created")
 def valid_json_payload_is_created(context):
     context.patient = load_patient_by_id(context.patient_id)
@@ -19,7 +28,14 @@ def The_Immunization_object_is_created_with_patient_for_vaccine_type(context, Pa
     context.patient_id = Patient
     context.patient = load_patient_by_id(context.patient_id)
     context.immunization_object = create_immunization_object(context.patient, context.vaccine_type)
-
+    
+@given("I have created a valid vaccination record")
+def validVaccinationRecordIsCreated(context):
+    valid_json_payload_is_created(context)
+    Trigger_the_post_create_request(context)
+    The_request_will_have_status_code(context, 201)
+    validateCreateLocation(context)
+    
 @when("Trigger the post create request")
 def Trigger_the_post_create_request(context):
     get_create_postURLHeader(context)
@@ -33,7 +49,7 @@ def Trigger_the_post_create_request(context):
 def The_request_will_have_status_code(context, statusCode):
     print(context.response.status_code)
     print(int(statusCode))
-    assert context.response.status_code == int(statusCode)
+    assert context.response.status_code == int(statusCode), f"\n Expected status code: {statusCode}, but got: {context.response.status_code}. Response: {context.response.json()} \n"
 
 
 @then('The location key in header will contain the Immunization Id')
@@ -70,3 +86,46 @@ def operationOutcomeInvalidParams(context):
     if errorName:
         validateErrorResponse(error_response, errorName)
         print(f"\n Error Response - \n {error_response}")    
+        
+@then('The X-Request-ID and X-Correlation-ID keys in header will populate correctly')
+def validateCreateHeader(context):
+    assert "X-Request-ID" in context.response.request.headers, "X-Request-ID missing in headers"
+    assert "X-Correlation-ID" in context.response.request.headers, "X-Correlation-ID missing in headers"
+    assert context.response.request.headers["X-Request-ID"] == context.reqID, "X-Request-ID incorrect"
+    assert context.response.request.headers["X-Correlation-ID"] == context.corrID, "X-Correlation-ID incorrect"   
+    
+@then(parsers.parse("The imms event table will be populated with the correct data for '{operation}' event"))
+def validate_imms_event_table_by_operation(context, operation: Operation):
+    create_obj = context.create_object
+    table_query_response = fetch_immunization_events_detail(context.aws_profile_name, context.ImmsID)
+    assert "Item" in table_query_response, f"Item not found in response for ImmsID: {context.ImmsID}"
+    item = table_query_response["Item"]
+
+    resource_json_str = item.get("Resource")
+    assert resource_json_str, "Resource field missing in item."
+
+    try:
+        resource = json.loads(resource_json_str)
+    except (TypeError, json.JSONDecodeError) as e:
+        logger.error(f"Failed to parse Resource from item: {e}")
+        raise AssertionError("Failed to parse Resource from response item.")
+
+    assert resource is not None, "Resource is None in the response"
+    created_event = parse_imms_int_imms_event_response(resource)
+
+    fields_to_compare = [
+        ("Operation", Operation[operation].value, item.get("Operation")),
+        ("SupplierSystem", context.supplier_name, item.get("SupplierSystem")),
+        ("PatientPK", f"Patient#{context.patient.identifier[0].value}", item.get("PatientPK")),
+        ("PatientSK", f"{context.vaccine_type}#{context.ImmsID}", item.get("PatientSK")),
+        ("Version", 1, item.get("Version")),
+    ]
+    
+    for name, expected, actual in fields_to_compare:
+        check.is_true(
+                expected == actual,
+                f"Expected {name}: {expected}, Actual {actual}"
+            )
+        
+    validateToCompareRequestAndResponse(context, create_obj, created_event, True)
+      
