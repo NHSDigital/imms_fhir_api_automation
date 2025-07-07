@@ -165,6 +165,8 @@ def validateToCompareRequestAndResponse(context, create_obj, created_event, tabl
     
     if table_validation:
         fields_to_compare.append(("Contained", create_obj.contained, created_event.contained))
+        fields_to_compare.append(("patient.reference", create_obj.patient.reference, created_event.patient.reference))
+        fields_to_compare.append(("performer", create_obj.performer, created_event.performer))
         fields_to_compare.append(("Id", context.ImmsID, created_event.id))
         
     fields_to_compare.extend([
