@@ -340,6 +340,18 @@ ERROR_MAP = {
         "severity": "error",
         "code": "INVALID",
         "diagnostics": "Search parameter -date.to must be in format: YYYY-MM-DD"
-    },        
+    },  
+    "unauthorized_access": {
+        "issue_code": "forbidden",  
+        "severity": "error",
+        "code": "FORBIDDEN",
+        "diagnostics": "Unauthorized request for vaccine type"
+    },  
+    "not_found": {
+        "issue_code": "not-found",  
+        "severity": "error",
+        "code": "NOT-FOUND",
+        "diagnostics": f"Immunization resource does not exist."
+    }
 }
 

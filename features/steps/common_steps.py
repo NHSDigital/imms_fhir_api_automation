@@ -128,4 +128,15 @@ def validate_imms_event_table_by_operation(context, operation: Operation):
             )
         
     validateToCompareRequestAndResponse(context, create_obj, created_event, True)
-      
+    
+@then('The Response JSONs should contain correct error message for Unauthorized supplier access')
+def validateUnauthorizedAccess(context):
+    error_response = parse_errorResponse(context.response.json())
+    validateErrorResponse(error_response, "unauthorized_access")
+    print(f"\n Error Response - \n {error_response}")   
+  
+@then('The Response JSONs should contain correct error message for Imms_id not found')
+def validateImmsIdNotFound(context):
+    error_response = parse_errorResponse(context.response.json())
+    validateErrorResponse(error_response, "not_found", context.ImmsID)
+    print(f"\n Error Response - \n {error_response}")

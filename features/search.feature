@@ -146,3 +146,16 @@ Scenario Outline: Verify that Search API will throw error if both date from and 
       | 2025-13-01    |        2025-13-01   |    
       | 2025-05-32    |        2025-05-32   |  
 
+
+@supplier_name_SONAR
+Scenario Outline: Verify that Search API will throw error supplier is not authorized to make Search 
+    When Send a search request with GET method with invalid NHS Number '<NHSNumber>' and valid Disease Type '<DiseaseType>'
+    Then The request will be unsuccessful with the status code '403'
+    And The Response JSONs should contain correct error message for Unauthorized supplier access
+    When Send a search request with POST method with invalid NHS Number '<NHSNumber>' and valid Disease Type '<DiseaseType>'
+    Then The request will be unsuccessful with the status code '403'
+    And The Response JSONs should contain correct error message for Unauthorized supplier access
+
+    Examples:
+      | NHSNumber   | DiseaseType |
+      |  9449304424 | COVID19     |

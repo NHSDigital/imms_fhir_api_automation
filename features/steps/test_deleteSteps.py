@@ -17,6 +17,13 @@ logger = logging.getLogger(__name__)
 
 scenarios("delete.feature")
 
+@when('Send a delete for Immunization event created with invalid Imms Id')
+def send_delete_for_immunization_event_created(context):
+    get_deleteURLHeader(context)
+    context.ImmsID = str(uuid.uuid4())
+    print(f"\n Delete Request is {context.url}/{context.ImmsID}")
+    context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
+
 @when('Send a delete for Immunization event created')
 def send_delete_for_immunization_event_created(context):
     get_deleteURLHeader(context)

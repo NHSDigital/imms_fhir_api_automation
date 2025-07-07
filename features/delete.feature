@@ -23,3 +23,15 @@ Scenario: Verify that the Delete event is not coming in Post Search API response
     When Send a delete for Immunization event created
     Then The request will be successful with the status code '204'
     And Deleted Immunization event will not be present in Post method Search API response
+
+@vaccine_type_RSV @patient_id_Random @supplier_name_OPTUM
+Scenario: Verify that the Delete event request will fail with unauthorized access for OPTUM supplier
+    When Send a delete for Immunization event created with invalid Imms Id
+    Then The request will be successful with the status code '403'
+    And The Response JSONs should contain correct error message for Unauthorized supplier access
+
+@vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
+Scenario: Verify that the Delete event request will fail with Not found error
+    When Send a delete for Immunization event created with invalid Imms Id 
+    Then The request will be successful with the status code '404'
+    And The Response JSONs should contain correct error message for Imms_id not found
