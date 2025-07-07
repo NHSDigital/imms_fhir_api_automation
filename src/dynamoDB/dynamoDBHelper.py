@@ -1,3 +1,4 @@
+import time
 import boto3
 from boto3.dynamodb.conditions import Attr
 from botocore.config import Config
@@ -42,21 +43,26 @@ def parse_imms_int_imms_event_response(json_data: dict) -> ImmunizationIntTable:
     return ImmunizationIntTable.parse_obj(json_data)  
 
 
-def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name:str, ImmsID: str):
+def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name:str, ImmsID: str, max_retries: int = 3, wait_seconds: int = 3):
     db = DynamoDBHelper(aws_profile_name)
     tableImmsDelta = db.get_delta_table()
 
-    response = tableImmsDelta.scan(
-        FilterExpression=Attr('ImmsID').eq(ImmsID)
-    )
-
-    items = response.get('Items', [])
-    while 'LastEvaluatedKey' in response:
+    for attempt in range(max_retries):
         response = tableImmsDelta.scan(
-            FilterExpression=Attr('ImmsID').eq(ImmsID),
-            ExclusiveStartKey=response['LastEvaluatedKey']
+            FilterExpression=Attr('ImmsID').eq(ImmsID)
         )
-        items.extend(response.get('Items', []))
+
+        items = response.get('Items', [])
+        while 'LastEvaluatedKey' in response:
+            response = tableImmsDelta.scan(
+                FilterExpression=Attr('ImmsID').eq(ImmsID),
+                ExclusiveStartKey=response['LastEvaluatedKey']
+            )
+            items.extend(response.get('Items', []))
+
+        if not items and attempt < max_retries - 1:
+            time.sleep(wait_seconds)   
+            print("\n Waiting for DynamoDB Delta table to update...")         
 
     print(f"\n Delta table response is {items} \n")
 
@@ -86,7 +92,7 @@ def validate_imms_delta_record_with_created_event(context, create_obj, item, eve
         ("BATCH_NUMBER", create_obj.lotNumber, event.get("BATCH_NUMBER")),
         ("RECORDED_DATE", create_obj.recorded[:10].replace("-", ""), event.get("RECORDED_DATE")),
         ("EXPIRY_DATE", create_obj.expirationDate.replace("-", ""), event.get("EXPIRY_DATE")),
-        ("DOSE_SEQUENCE", "1", event.get("DOSE_SEQUENCE")),
+        ("DOSE_SEQUENCE", str(create_obj.protocolApplied[0].doseNumberPositiveInt), event.get("DOSE_SEQUENCE")),
         ("DOSE_UNIT_TERM", create_obj.doseQuantity.unit , event.get("DOSE_UNIT_TERM")),
         ("DOSE_UNIT_CODE", create_obj.doseQuantity.code, event.get("DOSE_UNIT_CODE")),         
         ("SITE_OF_VACCINATION_TERM", create_obj.site.coding[0].extension[0].valueString, event.get("SITE_OF_VACCINATION_TERM")),
@@ -113,3 +119,41 @@ def validate_imms_delta_record_with_created_event(context, create_obj, item, eve
                 expected == actual,
                 f"Expected {name}: {expected}, Actual {actual}"
             )  
+
+
+def get_all_term_text(context):
+    item = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID)
+    assert item, f"Item not found in response for ImmsID: {context.ImmsID}"
+    
+    event = item[0].get("Imms")
+    assert event, "Imms field missing in items."
+
+    assert "VACCINATION_PROCEDURE_TERM" in event, "Procedure term text field is missing in the delta table item."
+    procedure_term = event.get("VACCINATION_PROCEDURE_TERM")
+
+    assert "VACCINE_PRODUCT_TERM" in event, "Product term text field is missing in the delta table item."
+    product_term = event.get("VACCINE_PRODUCT_TERM")
+
+    assert "SITE_OF_VACCINATION_TERM" in event, "Site of vaccination term text field is missing in the delta table item."
+    site_term = event.get("SITE_OF_VACCINATION_TERM")
+
+    assert "ROUTE_OF_VACCINATION_TERM" in event, "Route of vaccination term text field is missing in the delta table item."
+    route_term = event.get("ROUTE_OF_VACCINATION_TERM")      
+    
+    return {
+        "procedure_term" : procedure_term ,
+        "product_term" : product_term,
+        "site_term" : site_term,
+        "route_term" : route_term
+         }
+
+def get_all_the_vaccination_codes(list_items):
+    return [
+        Coding(
+            system=item["system"],
+            code=item["code"],
+            display=item["display"],
+            extension=None
+        )
+        for item in list_items
+    ]

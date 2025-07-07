@@ -48,18 +48,22 @@ def build_location_identifier() -> Location:
         )
     )
 
-def get_vaccine_details(vaccine_type: str, vacc_text: str = None, lot_number: str = "", expiry_date: str = "") -> Dict[str, Any]:
+def get_vaccine_details(vaccine_type: str, vacc_text: str = None, lot_number: str = "", expiry_date: str = "", add_extensions: bool = True) -> Dict[str, Any]:
     selected_vaccine = random.choice(VACCINE_CODE_MAP[vaccine_type.upper()])  
+
+    extensions = None
+    if add_extensions:
+        extensions=[
+            create_extension("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-CodingSCTDescDisplay", stringValue=selected_vaccine["stringValue"]),
+            create_extension("http://hl7.org/fhir/StructureDefinition/coding-sctdescid", idValue=selected_vaccine["idValue"])
+        ]
 
     vaccine_code = CodeableConcept(
         coding=[Coding(
             system=selected_vaccine["system"],  
             code=selected_vaccine["code"], 
             display=selected_vaccine["display"],
-            extension=[
-                create_extension("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-CodingSCTDescDisplay", stringValue=selected_vaccine["stringValue"]),
-                create_extension("http://hl7.org/fhir/StructureDefinition/coding-sctdescid", idValue=selected_vaccine["idValue"])
-            ]
+            extension=extensions
         )],
         text=vacc_text
     )
@@ -121,17 +125,21 @@ def remove_empty_fields(data):
     else:
         return data
 
-def build_site_route(obj: Coding, text: str = None) -> CodeableConcept:
+def build_site_route(obj: Coding, text: str = None, add_extensions: bool = True) -> CodeableConcept:
     
+    extensions = None
+    if add_extensions:
+        extensions=[
+            create_extension("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-CodingSCTDescDisplay", stringValue=obj["stringValue"]),
+            create_extension("http://hl7.org/fhir/StructureDefinition/coding-sctdescid", idValue=obj["idValue"])
+        ]
+
     return CodeableConcept(
         coding=[Coding(
         system=obj["system"],
         code=obj["code"],
         display=obj["display"],
-        extension=[
-            create_extension("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-CodingSCTDescDisplay", stringValue=obj["stringValue"]),
-            create_extension("http://hl7.org/fhir/StructureDefinition/coding-sctdescid", idValue=obj["idValue"])
-        ]
+        extension=extensions
     )],
         text=text
     )

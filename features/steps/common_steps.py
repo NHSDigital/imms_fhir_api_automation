@@ -12,7 +12,7 @@ from utilities.getHeader import *
 from utilities.config import *
 import pytest_check as check
 
-@given(parsers.parse("valid token is generated for the '{Supplier}'"))
+@given(parsers.parse("Valid token is generated for the '{Supplier}'"))
 def valid_token_is_generated(context, Supplier):
     context.supplier_name = Supplier
     get_tokens(context, Supplier)
