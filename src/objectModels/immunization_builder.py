@@ -143,6 +143,25 @@ def build_site_route(obj: Coding, text: str = None, add_extensions: bool = True)
     )],
         text=text
     )
+    
+def build_protocol_applied(vaccine_type: str, doseNumber: int = 1) -> ProtocolApplied:
+    list_of_diseases = PROTOCOL_DISEASE_MAP.get(vaccine_type.upper(), [])
+    return ProtocolApplied(
+        targetDisease=[
+            CodeableConcept(
+                coding=[
+                    Coding(
+                        system=disease["system"],
+                        code=disease["code"],
+                        display=disease["display"],
+                        extension=None
+                    )
+                ]
+            )
+            for disease in list_of_diseases
+        ],
+        doseNumberPositiveInt=doseNumber
+    )
 
 def create_immunization_object(patient, vaccine_type: str) -> Immunization:
     practitioner = Practitioner(
@@ -151,8 +170,7 @@ def create_immunization_object(patient, vaccine_type: str) -> Immunization:
         name=[HumanName(family="Furlong", given=["Darren"])]
     )
     extension = [build_vaccine_procedure_extension(vaccine_type.upper())]
-    vaccine_details = get_vaccine_details(vaccine_type)
-    # site_details = get_site_details(vaccine_type.upper())
+    vaccine_details = get_vaccine_details(vaccine_type)  
 
     return Immunization(
         resourceType="Immunization",
@@ -174,5 +192,5 @@ def create_immunization_object(patient, vaccine_type: str) -> Immunization:
         doseQuantity=DoseQuantity(**random.choice(DOSE_QUANTITY_MAP)),
         performer=build_performer(),
         reasonCode=[CodeableConcept(coding=[random.choice(REASON_CODE_MAP)])],
-        protocolApplied=[ProtocolApplied(targetDisease=[CodeableConcept(coding=[random.choice(PROTOCOL_DISEASE_MAP.get(vaccine_type.upper(), []))])], doseNumberPositiveInt=1)]
+        protocolApplied=[build_protocol_applied(vaccine_type.upper())]
     )

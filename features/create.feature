@@ -15,9 +15,13 @@ Scenario Outline:  Verify that the POST Create API for different vaccine types
 
     Examples: 
       | Patient  | vaccine_type| Supplier     |
-      |Random    | COVID19     | RAVS         |
-      |Random    | RSV         | Postman_Auth |
+      |Random    | COVID19     | Postman_Auth |
+      |Random    | RSV         | RAVS         |
       |Random    | FLU         | MAVIS        |
+      |Random    | PERTUSSIS   | Postman_Auth |
+      |Random    | MMR         | Postman_Auth |
+      |Random    | MENACWY     | MAVIS        |
+      |Random    | 3in1        | MAVIS        |
 
 @Delete_cleanUp @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
 Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_VACCINATION_TERM, ROUTE_OF_VACCINATION_TERM fields are mapped to respective text fields in imms delta table
@@ -59,7 +63,7 @@ Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_
     And The location key in header will contain the Immunization Id
     And The terms are blank in imms delta table 
 
-Scenario Outline:  Verify that the POST Create API for different differ supplier fails on access denied
+Scenario Outline:  Verify that the POST Create API for different supplier fails on access denied
     Given Valid token is generated for the '<Supplier>'
     And Valid json payload is created with Patient '<Patient>' and vaccine_type '<vaccine_type>'
     When Trigger the post create request
