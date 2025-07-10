@@ -194,3 +194,30 @@ def create_immunization_object(patient, vaccine_type: str) -> Immunization:
         reasonCode=[CodeableConcept(coding=[random.choice(REASON_CODE_MAP)])],
         protocolApplied=[build_protocol_applied(vaccine_type.upper())]
     )
+    
+
+def convert_to_update(immunization: Immunization, id: str) -> ImmunizationUpdate:
+    return ImmunizationUpdate(
+        resourceType=immunization.resourceType,
+        id=id,
+        contained=immunization.contained, 
+        extension=immunization.extension,
+        identifier=immunization.identifier,
+        status=immunization.status,
+        vaccineCode=immunization.vaccineCode,
+        patient=immunization.patient,  
+        occurrenceDateTime=immunization.occurrenceDateTime,
+        recorded=immunization.recorded,
+        lotNumber=immunization.lotNumber,
+        expirationDate=immunization.expirationDate,
+        primarySource=immunization.primarySource,
+        location=immunization.location,
+        manufacturer=immunization.manufacturer,
+        site=immunization.site,
+        route=immunization.route,
+        doseQuantity=immunization.doseQuantity,
+        performer=immunization.performer, 
+        reasonCode=immunization.reasonCode,
+        protocolApplied=immunization.protocolApplied
+    )
+

@@ -56,7 +56,7 @@ Scenario Outline: Verify that the immunisation events retrieved in the response 
       |9728403348       | COVID19      | 2025-06-18 | 2025-06-25 |
 
 # Negative Scenarios
-@supplier_name_RAVS
+@supplier_name_Postman_Auth
 Scenario Outline: Verify that Search API will throw error if NHS Number is invalid
     When Send a search request with GET method with invalid NHS Number '<NHSNumber>' and valid Disease Type '<DiseaseType>'
     Then The request will be unsuccessful with the status code '400'
@@ -72,7 +72,7 @@ Scenario Outline: Verify that Search API will throw error if NHS Number is inval
       | 1          |        COVID19           |
       | 10000000000 00001 | COVID19           |
 
-@supplier_name_RAVS
+@supplier_name_Postman_Auth
 Scenario Outline: Verify that Search API will throw error if Disease Type is invalid
     When Send a search request with GET method with valid NHS Number '<NHSNumber>' and invalid Disease Type '<DiseaseType>'
     Then The request will be unsuccessful with the status code '400'
@@ -87,7 +87,7 @@ Scenario Outline: Verify that Search API will throw error if Disease Type is inv
       | 9449304424 |        FLu               |
       | 9449304424 |        ABC               |   
 
-@supplier_name_MAVIS
+@supplier_name_Postman_Auth
 Scenario Outline: Verify that Search API will throw error if both NHS Number and Disease Type are invalid
     When Send a search request with GET method with invalid NHS Number '<NHSNumber>' and invalid Disease Type '<DiseaseType>'
     Then The request will be unsuccessful with the status code '400'

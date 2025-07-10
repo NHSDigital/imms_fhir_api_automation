@@ -12,6 +12,8 @@ from utilities.getHeader import *
 from utilities.config import *
 import pytest_check as check
 
+
+    
 @given(parsers.parse("Valid token is generated for the '{Supplier}'"))
 def valid_token_is_generated(context, Supplier):
     context.supplier_name = Supplier
@@ -35,6 +37,11 @@ def validVaccinationRecordIsCreated(context):
     Trigger_the_post_create_request(context)
     The_request_will_have_status_code(context, 201)
     validateCreateLocation(context)
+    
+@given(parsers.parse("valid vaccination record is created by '{Supplier}' supplier"))
+def valid_vaccination_record_is_created_by_supplier(context, Supplier):
+    valid_token_is_generated(context, Supplier)
+    validVaccinationRecordIsCreated(context)
     
 @when("Trigger the post create request")
 def Trigger_the_post_create_request(context):
@@ -118,7 +125,7 @@ def validate_imms_event_table_by_operation(context, operation: Operation):
         ("SupplierSystem", context.supplier_name, item.get("SupplierSystem")),
         ("PatientPK", f"Patient#{context.patient.identifier[0].value}", item.get("PatientPK")),
         ("PatientSK", f"{context.vaccine_type}#{context.ImmsID}", item.get("PatientSK")),
-        ("Version", 1, item.get("Version")),
+         ("Version", int(context.expected_version), int(item.get("Version"))),
     ]
     
     for name, expected, actual in fields_to_compare:
@@ -139,4 +146,10 @@ def validateUnauthorizedAccess(context):
 def validateImmsIdNotFound(context):
     error_response = parse_errorResponse(context.response.json())
     validateErrorResponse(error_response, "not_found", context.ImmsID)
+    print(f"\n Error Response - \n {error_response}")
+    
+@then('The Response JSONs should contain correct error message for forbidden access')
+def validateForbiddenAccess(context):
+    error_response = parse_errorResponse(context.response.json())
+    validateErrorResponse(error_response, "forbidden", context.vaccine_type)
     print(f"\n Error Response - \n {error_response}")

@@ -499,7 +499,7 @@ ERROR_MAP = {
         "issue_code": "invalid",
         "severity": "error",
         "code": "INVALID",
-        "diagnostics": "immunization-target must be one or more of the following: COVID19,FLU,HPV,MMR,RSV"
+        "diagnostics": "immunization-target must be one or more of the following: PERTUSSIS, RSV, 3in1, MMR, HPV, MMRV, PCV13, SHINGLES, COVID19, FLU, MENACWY"
     },
     "invalid_DateFrom": {
         "issue_code": "invalid",
@@ -524,6 +524,13 @@ ERROR_MAP = {
         "severity": "error",
         "code": "NOT-FOUND",
         "diagnostics": f"Immunization resource does not exist."
+    },
+      
+    "forbidden": {
+        "issue_code": "forbidden",  
+        "severity": "error",
+        "code": "FORBIDDEN",
+        "diagnostics": f"Unauthorized request for vaccine type present in the stored immunization resource"
     }
 }
 

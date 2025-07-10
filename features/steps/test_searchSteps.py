@@ -1,4 +1,3 @@
-from urllib.parse import urlencode
 import requests
 import requests
 from src.objectModels.immunization_builder import *

@@ -51,7 +51,7 @@ def get_deleteURLHeader(context):
     context.corrID = context.headers['X-Correlation-ID']
     context.reqID = context.headers['X-Request-ID']
     
-def get_updateURLHeader(context, tag:int = 1):
+def get_updateURLHeader(context, tag:str = '1'):
     context.url = context.baseUrl + "/Immunization"    
     context.headers = {
         'X-Correlation-ID': str(uuid.uuid4()),

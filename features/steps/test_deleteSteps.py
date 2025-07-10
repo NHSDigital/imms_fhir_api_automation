@@ -30,6 +30,11 @@ def send_delete_for_immunization_event_created(context):
     print(f"\n Delete Request is {context.url}/{context.ImmsID}")
     context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
     
+@when(parsers.parse("Send a delete for Immunization event created for the above created event is send by '{Supplier}'"))
+def send_delete_for_immunization_event_by_supplier(context, Supplier):
+    valid_token_is_generated(context, Supplier)
+    send_delete_for_immunization_event_created(context)
+    
 @then('The delta table will be populated with the correct data for deleted event')
 def validate_imms_delta_table_by_ImmsID(context):
     create_obj = context.create_object
