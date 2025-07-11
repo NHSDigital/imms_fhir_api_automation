@@ -75,7 +75,7 @@ def validate_imms_delta_record_with_created_event(context, create_obj, item, eve
     fields_to_compare = [
         ("Operation", event_type.upper(), item[0].get("Operation")),
         ("SupplierSystem", context.supplier_name.lower(), item[0].get("SupplierSystem").lower()),
-        ("VaccineType", f"{context.vaccine_type.lower()}", item[0].get("VaccineType")),
+        ("VaccineType", f"{context.vaccine_type.lower()}", item[0].get("VaccineType").lower()),
         ("Source", "IEDS", item[0].get("Source")),
         ("CONVERSION_ERRORS", [], event.get("CONVERSION_ERRORS")),
         ("PERSON_FORENAME", create_obj.contained[1].name[0].given[0], event.get("PERSON_FORENAME")),

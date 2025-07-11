@@ -116,25 +116,32 @@ def is_valid_nhs_number(nhs_number: str) -> bool:
     return check_digit == digits[9]
 
 
-def validateErrorResponse(error_response, errorName: str):
+def validateErrorResponse(error_response, errorName: str, imms_id: str = ""):
     uuid_obj = uuid.UUID(error_response.id, version=4)
     check.is_true(isinstance(uuid_obj, uuid.UUID), f"Id is not UUID {error_response.id}")
-    
-    fields_to_compare = [
-        ("ResourceType", error_response.resourceType, ERROR_MAP["Common_field"]["resourceType"]),
-        ("Meta_Profile", error_response.meta.profile[0], ERROR_MAP["Common_field"]["profile"]),
-        ("Issue_Code",  error_response.issue[0].code, ERROR_MAP[errorName]["issue_code"]),
-        ("Coding_system",  error_response.issue[0].details.coding[0].system, ERROR_MAP["Common_field"]["system"]),
-        ("Coding_Code",  error_response.issue[0].details.coding[0].code, ERROR_MAP[errorName]["code"]),
-        ("severity",  error_response.issue[0].severity, ERROR_MAP[errorName]["severity"]),
-        ("Diagnostics",  error_response.issue[0].diagnostics, ERROR_MAP[errorName]["diagnostics"]),
-    ]
+
+    fields_to_compare = []
+
+    if errorName == "not_found":
+        expected_diagnostics = ERROR_MAP["not_found"]["diagnostics"]+ f" ID: {imms_id}"
+        fields_to_compare.append(("Diagnostics", expected_diagnostics, error_response.issue[0].diagnostics))
+    else:
+        fields_to_compare.append(("Diagnostics", ERROR_MAP[errorName]["diagnostics"], error_response.issue[0].diagnostics))
+
+    fields_to_compare.extend([
+        ("ResourceType", ERROR_MAP["Common_field"]["resourceType"], error_response.resourceType),
+        ("Meta_Profile", ERROR_MAP["Common_field"]["profile"], error_response.meta.profile[0]),
+        ("Issue_Code", ERROR_MAP[errorName]["issue_code"], error_response.issue[0].code),
+        ("Coding_system", ERROR_MAP["Common_field"]["system"], error_response.issue[0].details.coding[0].system),
+        ("Coding_Code", ERROR_MAP[errorName]["code"], error_response.issue[0].details.coding[0].code),
+        ("severity", ERROR_MAP[errorName]["severity"], error_response.issue[0].severity),
+    ])
 
     for name, expected, actual in fields_to_compare:
         check.is_true(
             expected == actual,
             f"Expected {name}: {expected}, got {actual}"
-        )  
+        )
 
 
 def parse_FHIRImmunizationResponse(json_data: dict) -> FHIRImmunizationResponse:

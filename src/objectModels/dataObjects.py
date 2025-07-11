@@ -121,7 +121,7 @@ class Immunization(BaseModel):
 class ResponseActorOrganization(BaseModel):
     type: str = "Organization"
     display: Optional[str] = None
-    identifier: Identifier  
+    identifier: Optional[Identifier]  
 
 class ResponsePerformer(BaseModel):
     actor: ResponseActorOrganization
@@ -165,6 +165,29 @@ class ImmunizationResponse(BaseModel):
     performer: Optional[List[ResponsePerformer]]
     reasonCode: List[ReasonCode]
     protocolApplied: List[ProtocolApplied]
+    
+class ImmunizationUpdate(BaseModel):
+    resourceType:  Literal["Immunization"]
+    id: str
+    contained: List[Union[Patient, Practitioner]]
+    extension: List[Extension]
+    identifier: List[Identifier]
+    status: str = "completed"
+    vaccineCode: CodeableConcept  # Fixed type
+    patient: Reference  # Fixed type
+    manufacturer: Dict[str, str]
+    location: Location  
+    site: CodeableConcept
+    route: CodeableConcept
+    doseQuantity: DoseQuantity
+    performer: List[Performer]
+    reasonCode: List[ReasonCode]
+    protocolApplied: List[ProtocolApplied]
+    occurrenceDateTime: str = ""
+    recorded: str = ""
+    primarySource: bool = True
+    lotNumber: str = ""
+    expirationDate: str = ""
 
 class PatientResource(BaseModel):
     resourceType: Literal["Patient"]

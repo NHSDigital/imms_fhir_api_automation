@@ -17,11 +17,23 @@ logger = logging.getLogger(__name__)
 
 scenarios("delete.feature")
 
+@when('Send a delete for Immunization event created with invalid Imms Id')
+def send_delete_for_immunization_event_created(context):
+    get_deleteURLHeader(context)
+    context.ImmsID = str(uuid.uuid4())
+    print(f"\n Delete Request is {context.url}/{context.ImmsID}")
+    context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
+
 @when('Send a delete for Immunization event created')
 def send_delete_for_immunization_event_created(context):
     get_deleteURLHeader(context)
     print(f"\n Delete Request is {context.url}/{context.ImmsID}")
     context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
+    
+@when(parsers.parse("Send a delete for Immunization event created for the above created event is send by '{Supplier}'"))
+def send_delete_for_immunization_event_by_supplier(context, Supplier):
+    valid_token_is_generated(context, Supplier)
+    send_delete_for_immunization_event_created(context)
     
 @then('The delta table will be populated with the correct data for deleted event')
 def validate_imms_delta_table_by_ImmsID(context):

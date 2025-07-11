@@ -33,4 +33,5 @@ class ScenarioContext:
         self.params = None
         self.soft_assertions = None
         self.aws_profile_name = None
+        self.expected_version = 1
 

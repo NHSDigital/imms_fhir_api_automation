@@ -89,41 +89,71 @@ VACCINE_CODE_MAP = {
             "manufacturer": "Merck Sharp & Dohme (UK) Ltd"    
         }
     ] ,
-    "MenACWY":[
+    "MENACWY":[
         {
-        "system": "http://snomed.info/sct",
-        "code": "39779611000001104",    
-        "display": "MenQuadfi vaccine solution for injection 0.5ml vials (Sanofi) (product)",
-        "stringValue": "MenQuadfi vaccine solution for injection 0.5ml vials",
-        "idValue": "3977961100001104",
-        "manufacturer": "Sanofi"
+            "system": "http://snomed.info/sct",
+            "code": "39779611000001104",    
+            "display": "MenQuadfi vaccine solution for injection 0.5ml vials (Sanofi) (product)",
+            "stringValue": "MenQuadfi vaccine solution for injection 0.5ml vials",
+            "idValue": "3977961100001104",
+            "manufacturer": "Sanofi"
         },
         {
-        "system": "http://snomed.info/sct",
-        "code": "20517811000001104",    
-        "display": "Nimenrix vaccine powder and solvent for solution for injection 0.5ml pre-filled syringes (GlaxoSmithKline UK Ltd) (product)",
-        "stringValue": "Nimenrix vaccine powder and solvent for solution for injection 0.5ml pre-filled syringes",
-        "idValue": "20517811000001104",
-        "manufacturer": "GlaxoSmithKline UK Ltd"
+            "system": "http://snomed.info/sct",
+            "code": "20517811000001104",    
+            "display": "Nimenrix vaccine powder and solvent for solution for injection 0.5ml pre-filled syringes (GlaxoSmithKline UK Ltd) (product)",
+            "stringValue": "Nimenrix vaccine powder and solvent for solution for injection 0.5ml pre-filled syringes",
+            "idValue": "20517811000001104",
+            "manufacturer": "GlaxoSmithKline UK Ltd"
         }
         ,
         {
-        "system": "http://snomed.info/sct",
-        "code": "17188711000001105",    
-        "display": "Menveo vaccine powder and solvent for solution for injection 0.5ml vials (Novartis Vaccines and Diagnostics Ltd) (product)",
-        "stringValue": "Menveo vaccine powder and solvent for solution for injection 0.5ml vials",
-        "idValue": "17188711000001105",
-        "manufacturer": "Novartis Vaccines and Diagnostics Ltd"
+            "system": "http://snomed.info/sct",
+            "code": "17188711000001105",    
+            "display": "Menveo vaccine powder and solvent for solution for injection 0.5ml vials (Novartis Vaccines and Diagnostics Ltd) (product)",
+            "stringValue": "Menveo vaccine powder and solvent for solution for injection 0.5ml vials",
+            "idValue": "17188711000001105",
+            "manufacturer": "Novartis Vaccines and Diagnostics Ltd"
         }
     ],
-    "3-in-1":[
+    "3IN1":[
         {   
-        "system": "http://snomed.info/sct",
-        "code": "7374511000001107",
-        "display": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes (Sanofi) 1 pre-filled disposable injection (product)",
-        "stringValue": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes ",
-        "idValue": "7374511000001107",
-        "manufacturer": "Sanofi"
+            "system": "http://snomed.info/sct",
+            "code": "7374511000001107",
+            "display": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes (Sanofi) 1 pre-filled disposable injection (product)",
+            "stringValue": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes ",
+            "idValue": "7374511000001107",
+            "manufacturer": "Sanofi"
+        },
+    ],
+    "MMR":[
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "7374511000001107",
+            "display": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes (Sanofi) 1 pre-filled disposable injection (product)",
+            "stringValue": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes ",
+            "idValue": "7374511000001107",
+            "manufacturer": "Sanofi"
+        },
+    ],
+    "MMRV":[
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "7374511000001107",
+            "display": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes (Sanofi) 1 pre-filled disposable injection (product)",
+            "stringValue": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes ",
+            "idValue": "7374511000001107",
+            "manufacturer": "Sanofi"
+        },
+    ],
+    "PERTUSSIS":[
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "7374511000001107",
+            "display": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes (Sanofi) 1 pre-filled disposable injection (product)",
+            "stringValue": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes ",
+            "idValue": "7374511000001107",
+            "manufacturer": "Sanofi"
         },
     ]
 }
@@ -195,7 +225,7 @@ VACCINATION_PROCEDURE_MAP = {
             "idValue": "761841000"
         }
     ],
-    "MenACWY": [ 
+    "MENACWY": [ 
         {
             "system": "http://snomed.info/sct",
             "code": "871874000",
@@ -211,15 +241,73 @@ VACCINATION_PROCEDURE_MAP = {
             "idValue": "871874000"
         }
     ],
-    "3-in-1": [     
+    "MMR": [
         {
             "system": "http://snomed.info/sct",
-            "code": "866186002",
-            "display": "Administration of vaccine product containing only Clostridium tetani and Corynebacterium diphtheriae and Human poliovirus antigens (procedure)",
-            "stringValue": "Administration of vaccine product containing only Clostridium tetani and Corynebacterium diphtheriae and Human poliovirus antigens",
+            "code": "170433008",
+            "display": "Administration of second dose of vaccine product containing only Measles morbillivirus and Mumps orthorubulavirus and Rubella virus antigens",
+            "stringValue": "Administration of vaccine product containing only Measles virus and Mumps virus and Rubella virus antigens",
             "idValue": "866186002"
+        },
+         {
+            "system": "http://snomed.info/sct",
+            "code": "38598009",
+            "display": "Administration of vaccine product containing only Measles morbillivirus and Mumps orthorubulavirus and Rubella virus antigens",
+            "stringValue": "Administration of vaccine product containing only Measles virus and Mumps virus and Rubella virus antigens",
+            "idValue": "8666002"
         }
+    ],
+    "MMRV": [
+        {
+            "system": "http://snomed.info/sct",
+            "code": "432636005",
+            "display": "Administration of vaccine product containing only Human alphaherpesvirus 3 and Measles morbillivirus and Mumps orthorubulavirus and Rubella virus antigens",
+            "stringValue": "Administration of second dose of vaccine product containing only Human alphaherpesvirus 3 and Measles morbillivirus and Mumps orthorubulavirus and Rubella virus antigens",
+            "idValue": "866182"
+        },
+        {
+            "system": "http://snomed.info/sct",
+            "code": "433733003",
+            "display": "Administration of second dose of vaccine product containing only Human alphaherpesvirus 3 and Measles morbillivirus and Mumps orthorubulavirus and Rubella virus antigens",
+            "stringValue": "Administration of vaccine product containing only Human alphaherpesvirus 3 and Measles morbillivirus and Mumps orthorubulavirus and Rubella virus antigens",
+            "idValue": "86602"
+        }
+    ],
+    "SHINGLES": [
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "722215002",
+            "display": "Administration of vaccine product containing only Human alphaherpesvirus 3 antigen for shingles (procedure)",
+            "stringValue": "Administration of vaccine product containing only Human alphaherpesvirus 3 antigen for shingles",
+            "idValue": "4326365"
+        },
+    ],
+    "3IN1": [
+        {
+            "system": "http://snomed.info/sct",
+            "code": "414619005",
+            "display": "Administration of vaccine product containing only Clostridium tetani and low dose Corynebacterium diphtheriae and inactivated Human poliovirus antigens",
+            "stringValue": "Administration of vaccine product containing only Clostridium tetani and Corynebacterium diphtheriae and inactivated Human poliovirus antigens",
+            "idValue": "866182"
+        },
+        {
+            "system": "http://snomed.info/sct",
+            "code": "866227002",
+            "display": "Administration of booster dose of vaccine product containing only Clostridium tetani and Corynebacterium diphtheriae and Human poliovirus antigens",
+            "stringValue": "Administration of vaccine product containing only Clostridium tetani and low dose Corynebacterium diphtheriae and inactivated Human poliovirus antigens",
+            "idValue": "8662002"
+        }
+    ],
+     "PERTUSSIS": [
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "722215002",
+            "display": "Administration of vaccine product containing only Human alphaherpesvirus 3 antigen for shingles (procedure)",
+            "stringValue": "Administration of vaccine product containing only Human alphaherpesvirus 3 antigen for shingles",
+            "idValue": "4326365"
+        },
     ]
+    
 }
 
 SITE_MAP = [
@@ -308,7 +396,91 @@ PROTOCOL_DISEASE_MAP = {
             "code": "240532009",
             "display": "Human papillomavirus infection"
         }
-    ]
+    ],
+    "MMR": [
+        {
+            "system": "http://snomed.info/sct",
+            "code": "14189004",
+            "display": "Measles (disorder)"
+        },
+        {
+            "system": "http://snomed.info/sct",
+            "code": "36989005",
+            "display": "Mumps (disorder)"
+        },
+        {
+            "system": "http://snomed.info/sct",
+            "code": "36653000",
+            "display": "Rubella (disorder)"
+        }        
+    ],
+    "MMRV": [
+      {
+            "system": "http://snomed.info/sct",
+            "code": "14189004",
+            "display": "Measles (disorder)"
+      },
+      {
+           "system": "http://snomed.info/sct",
+            "code": "36989005",
+            "display": "Mumps (disorder)"
+      },
+      {
+            "system": "http://snomed.info/sct",
+            "code": "36653000",
+            "display": "Rubella (disorder)"
+      },
+      {
+            "system": "http://snomed.info/sct",
+            "code": "38907003",
+            "display": "Varicella (disorder)"
+      }
+    ],
+    "PERTUSSIS": [
+      {
+            "system": "http://snomed.info/sct",
+            "code": "27836007",
+            "display": "Pertussis (disorder)"
+      }
+    ],
+     "SHINGLES": [
+      {
+            "system": "http://snomed.info/sct",
+            "code": "4740000",
+            "display": "Herpes zoster"
+      }
+    ],  
+    "PCV13": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "16814004",
+        "display": "Pneumococcal infectious disease"
+      }
+    ],
+    "3IN1": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "398102009",
+        "display": "Acute poliomyelitis"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "397430003",
+        "display": "Diphtheria caused by Corynebacterium diphtheriae"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "76902006",
+        "display": "Tetanus (disorder)"
+      }
+    ],
+    "MENACWY": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "23511006",
+        "display": "Meningococcal infectious disease"
+      }
+    ]    
 }
 
 ERROR_MAP = {
@@ -327,7 +499,7 @@ ERROR_MAP = {
         "issue_code": "invalid",
         "severity": "error",
         "code": "INVALID",
-        "diagnostics": "immunization-target must be one or more of the following: COVID19,FLU,HPV,MMR,RSV"
+        "diagnostics": "immunization-target must be one or more of the following: PERTUSSIS, RSV, 3in1, MMR, HPV, MMRV, PCV13, SHINGLES, COVID19, FLU, MENACWY"
     },
     "invalid_DateFrom": {
         "issue_code": "invalid",
@@ -340,6 +512,25 @@ ERROR_MAP = {
         "severity": "error",
         "code": "INVALID",
         "diagnostics": "Search parameter -date.to must be in format: YYYY-MM-DD"
-    },        
+    },  
+    "unauthorized_access": {
+        "issue_code": "forbidden",  
+        "severity": "error",
+        "code": "FORBIDDEN",
+        "diagnostics": "Unauthorized request for vaccine type"
+    },  
+    "not_found": {
+        "issue_code": "not-found",  
+        "severity": "error",
+        "code": "NOT-FOUND",
+        "diagnostics": f"Immunization resource does not exist."
+    },
+      
+    "forbidden": {
+        "issue_code": "forbidden",  
+        "severity": "error",
+        "code": "FORBIDDEN",
+        "diagnostics": f"Unauthorized request for vaccine type present in the stored immunization resource"
+    }
 }
 
