@@ -16,4 +16,4 @@ Scenario: Verify that the updated event request will fail with forbidden access 
     Given valid vaccination record is created by 'RAVS' supplier 
     When Send a update for Immunization event created with patient address being updated by 'MAVIS'
     Then The request will be successful with the status code '403'
-    And The Response JSONs should contain correct error message for forbidden access
+    And The Response JSONs should contain correct error message for 'forbidden' access

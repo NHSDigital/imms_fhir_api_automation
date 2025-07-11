@@ -6,7 +6,7 @@ from src.dynamoDB.dynamoDBHelper import *
 from src.objectModels.patient_loader import load_patient_by_id
 from src.objectModels.immunization_builder import *
 from utilities.FHIRImmunizationHelper import *
-from utilities.enums import Operation
+from utilities.enums import ErrorName, Operation
 from utilities.genToken import get_tokens
 from utilities.getHeader import *
 from utilities.config import *
@@ -78,10 +78,10 @@ def operationOutcomeInvalidParams(context):
     error_response = parse_errorResponse(context.response.json())
 
     error_checks = [
-        (not is_valid_disease_type(context.DiseaseType), "invalid_DiseaseType"),
-        (not is_valid_date(context.DateFrom), "invalid_DateFrom") if getattr(context, "DateFrom", None) else (False, None),
-        (not is_valid_date(context.DateTo), "invalid_DateTo") if getattr(context, "DateTo", None) else (False, None),
-        (not is_valid_nhs_number(context.NHSNumber), "invalid_NHSNumber"),
+        (not is_valid_disease_type(context.DiseaseType), ErrorName.invalid_DiseaseType.value) if getattr(context, "DiseaseType", None) else (False, None),
+        (not is_valid_date(context.DateFrom), ErrorName.invalid_DateFrom.value) if getattr(context, "DateFrom", None) else (False, None),
+        (not is_valid_date(context.DateTo), ErrorName.invalid_DateTo.value) if getattr(context, "DateTo", None) else (False, None),
+        (not is_valid_nhs_number(context.NHSNumber), ErrorName.invalid_NHSNumber.value) if getattr(context, "NHSNumber", None) else (False, None),
     ]
 
     for failed, errorName in error_checks:
@@ -135,21 +135,10 @@ def validate_imms_event_table_by_operation(context, operation: Operation):
             )
         
     validateToCompareRequestAndResponse(context, create_obj, created_event, True)
-    
-@then('The Response JSONs should contain correct error message for Unauthorized supplier access')
-def validateUnauthorizedAccess(context):
+
+@then(parsers.parse("The Response JSONs should contain correct error message for '{errorName}' access"))
+@then(parsers.parse("The Response JSONs should contain correct error message for Imms_id '{errorName}'"))
+def validateForbiddenAccess(context, errorName):
     error_response = parse_errorResponse(context.response.json())
-    validateErrorResponse(error_response, "unauthorized_access")
-    print(f"\n Error Response - \n {error_response}")   
-  
-@then('The Response JSONs should contain correct error message for Imms_id not found')
-def validateImmsIdNotFound(context):
-    error_response = parse_errorResponse(context.response.json())
-    validateErrorResponse(error_response, "not_found", context.ImmsID)
-    print(f"\n Error Response - \n {error_response}")
-    
-@then('The Response JSONs should contain correct error message for forbidden access')
-def validateForbiddenAccess(context):
-    error_response = parse_errorResponse(context.response.json())
-    validateErrorResponse(error_response, "forbidden", context.vaccine_type)
+    validateErrorResponse(error_response, ErrorName[errorName].value, context.ImmsID)
     print(f"\n Error Response - \n {error_response}")

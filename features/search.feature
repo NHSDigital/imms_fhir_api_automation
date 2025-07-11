@@ -151,10 +151,10 @@ Scenario Outline: Verify that Search API will throw error if both date from and 
 Scenario Outline: Verify that Search API will throw error supplier is not authorized to make Search 
     When Send a search request with GET method with invalid NHS Number '<NHSNumber>' and valid Disease Type '<DiseaseType>'
     Then The request will be unsuccessful with the status code '403'
-    And The Response JSONs should contain correct error message for Unauthorized supplier access
+    And The Response JSONs should contain correct error message for 'unauthorized_access' access
     When Send a search request with POST method with invalid NHS Number '<NHSNumber>' and valid Disease Type '<DiseaseType>'
     Then The request will be unsuccessful with the status code '403'
-    And The Response JSONs should contain correct error message for Unauthorized supplier access
+    And The Response JSONs should contain correct error message for 'unauthorized_access' access
 
     Examples:
       | NHSNumber   | DiseaseType |
