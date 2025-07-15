@@ -67,7 +67,7 @@ Scenario Outline:  Verify that the POST Create API for different supplier fails 
     Given Valid token is generated for the '<Supplier>'
     And Valid json payload is created with Patient '<Patient>' and vaccine_type '<vaccine_type>'
     When Trigger the post create request
-    Then The request will be successful with the status code '403'
+    Then The request will be unsuccessful with the status code '403'
     And The Response JSONs should contain correct error message for 'unauthorized_access' access
     Examples: 
       | Patient  | vaccine_type| Supplier     |
