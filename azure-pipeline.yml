@@ -1,10 +1,8 @@
 trigger:
-- master
-
+  - master
 
 pool:
   vmImage: 'ubuntu-latest'
-
 
 steps:
 - task: UsePythonVersion@0
@@ -16,13 +14,8 @@ steps:
     python -m venv venv
     source venv/bin/activate
     python -m pip install --upgrade pip
-    pip install -r requirements.txt 
-    pip install lxml
-    pip install requests
-    pip install git+https://github.com/behave/behave
-    pip install allure-behave    
-    pip install selenium
-    pip install boto3    
+    pip install -r requirements.txt
+    pip install allure-pytest
   displayName: 'Install dependencies'
 
 - script: |
@@ -36,23 +29,23 @@ steps:
 
 - script: |
     allure --version
-  displayName: 'Verify Allure Installation'  
+  displayName: 'Verify Allure Installation'
 
 - script: |
     source venv/bin/activate
-    behave -f allure_behave.formatter:AllureFormatter -o output/allure-results || true
-  displayName: 'Run Behave tests with Allure formatter'
+    pytest --alluredir=output/allure-results || true
+  displayName: 'Run Pytest-BDD tests with Allure'
 
 - script: |
     allure generate output/allure-results -o output/allure-report --clean || true
-  displayName: 'Generate Allure report'
+  displayName: 'Generate Allure Report'
 
-
+# Optional: Enable Allure tab in DevOps (if extension is installed)
 # - task: AllureReport@1
 #   inputs:
 #     resultsDirectory: 'output/allure-results'
 #     targetDirectory: 'output/allure-report'
-#   displayName: 'Generate Allure report'
+#   displayName: 'Generate Allure Report'
 
 - script: |
     mkdir -p $(Build.ArtifactStagingDirectory)/allure-report
@@ -62,6 +55,5 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     pathToPublish: '$(Build.ArtifactStagingDirectory)/allure-report'
-    # pathtoPublish: 'output/allure-report'
     artifactName: 'AllureReport'
-  displayName: 'Publish Allure report artifact'
+  displayName: 'Publish Allure Report Artifact'
