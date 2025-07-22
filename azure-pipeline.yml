@@ -58,6 +58,19 @@ steps:
 #     artifactName: 'AllureReport'
 #   displayName: 'Publish Allure Report Artifact'
 
+- task: CopyFiles@2
+  displayName: 'Copy Allure Report to Staging'
+  inputs:
+    SourceFolder: '$(System.DefaultWorkingDirectory)/allure-report'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/allure-report'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Allure Report Artifact'
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)/allure-report'
+    artifactName: 'AllureReport'
+    publishLocation: 'Pipeline'
+
 - task: Bash@3
   displayName: 'Generate Allure Report'
   inputs:
@@ -72,3 +85,6 @@ steps:
     pathToPublish: 'output/allure-report'
     artifactName: 'AllureReport'
     publishLocation: 'Pipeline'
+
+- script: ls -la output/allure-report
+  displayName: 'List Allure Report Contents'    
