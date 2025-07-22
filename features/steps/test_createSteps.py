@@ -125,7 +125,6 @@ def validate_imms_delta_table_by_ImmsID(context):
      
     validate_imms_delta_record_with_created_event(context, create_obj, item, Operation.created.value, ActionFlag.created.value)    
   
-
 @then('The terms are mapped to the respective text fields in imms delta table')
 def validate_procedure_term_text_in_delta_table(context):
      actual_terms = get_all_term_text(context)
@@ -134,7 +133,7 @@ def validate_procedure_term_text_in_delta_table(context):
      assert actual_terms["site_term"] == context.create_object.site.text, f"Expected site of vaccination term '{context.create_object.site.text}', but got '{actual_terms['site_term']}'"
      assert actual_terms["route_term"] == context.create_object.route.text, f"Expected route of vaccination term '{context.create_object.route.text}', but got '{actual_terms['route_term']}'"
      print(f"\n The delta table fields covered are VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_VACCINATION_TERM, ROUTE_OF_VACCINATION_TERM\n")
-
+     
 @then('The terms are mapped to first instance of coding.display fields in imms delta table')
 def validate_procedure_term_first_display_in_delta_table(context):
     actual_terms = get_all_term_text(context)
