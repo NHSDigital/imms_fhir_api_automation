@@ -65,11 +65,11 @@ def validate_delta_table_for_updated_event(context):
     assert items, f"Items not found in response for ImmsID: {context.ImmsID}"
 
     # Find the latest item where operation is updated
-    deleted_items = [i for i in items if i.get('Operation') == Operation.updated.value]
-    assert deleted_items, f"No deleted item found for ImmsID: {context.ImmsID}"
+    delta_items = [i for i in items if i.get('Operation') == Operation.updated.value ]
+    
+    assert delta_items, f"No item found for ImmsID: {context.ImmsID}"
 
-    # Assuming each item has a 'timestamp' field to determine the latest
-    item = [max(deleted_items, key=lambda x: x.get('timestamp', 0))]
+    item = [max(delta_items, key=lambda x: x.get('DateTimeStamp', 0))]
      
     validate_imms_delta_record_with_created_event(context, create_obj, item, Operation.updated.value, ActionFlag.updated.value)
     
@@ -78,3 +78,4 @@ def validate_etag_in_header(context):
     etag = context.response.headers['E-Tag']
     assert etag, "Etag header is missing in the response"
     context.eTag= etag.strip('"')
+    assert context.eTag == str(context.expected_version), f"Etag version mismatch: expected {context.expected_version}, got {context.eTag}"
