@@ -36,9 +36,9 @@ steps:
     pytest --alluredir=output/allure-results || true
   displayName: 'Run Pytest-BDD tests with Allure'
 
-- script: |
-    allure generate output/allure-results -o output/allure-report --clean || true
-  displayName: 'Generate Allure Report'
+# - script: |
+#     allure generate output/allure-results -o output/allure-report --clean || true
+#   displayName: 'Generate Allure Report'
 
 # Optional: Enable Allure tab in DevOps (if extension is installed)
 # - task: AllureReport@1
@@ -47,13 +47,28 @@ steps:
 #     targetDirectory: 'output/allure-report'
 #   displayName: 'Generate Allure Report'
 
-- script: |
-    mkdir -p $(Build.ArtifactStagingDirectory)/allure-report
-    cp -r output/allure-report/* $(Build.ArtifactStagingDirectory)/allure-report
-  displayName: 'Copy Allure report to staging directory'
+# - script: |
+#     mkdir -p $(Build.ArtifactStagingDirectory)/allure-report
+#     cp -r output/allure-report/* $(Build.ArtifactStagingDirectory)/allure-report
+#   displayName: 'Copy Allure report to staging directory'
+
+# - task: PublishBuildArtifacts@1
+#   inputs:
+#     pathToPublish: '$(Build.ArtifactStagingDirectory)/allure-report'
+#     artifactName: 'AllureReport'
+#   displayName: 'Publish Allure Report Artifact'
+
+- task: Bash@3
+  displayName: 'Generate Allure Report'
+  inputs:
+    targetType: 'inline'
+    script: |
+      npm install -g allure-commandline --save-dev
+      allure generate output/allure-results --clean -o output/allure-report
 
 - task: PublishBuildArtifacts@1
+  displayName: 'Publish Allure Report'
   inputs:
-    pathToPublish: '$(Build.ArtifactStagingDirectory)/allure-report'
+    pathToPublish: 'output/allure-report'
     artifactName: 'AllureReport'
-  displayName: 'Publish Allure Report Artifact'
+    publishLocation: 'Pipeline'
