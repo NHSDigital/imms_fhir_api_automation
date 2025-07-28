@@ -29,8 +29,32 @@ steps:
 
 - script: |
     source venv/bin/activate
-    pytest --alluredir=output/allure-results || true
+    pytest --alluredir:output/allure-results || true
   displayName: 'Run Pytest-BDD tests with Allure'
+  env:
+    auth_url : https://int.api.service.nhs.uk/oauth2-mock/authorize
+    token_url : https://int.api.service.nhs.uk/oauth2-mock/token
+    callback_url : https://oauth.pstmn.io/v1/callback
+    Postman_Auth_client_Id : mNnjGa3dtSh7eKkMxkGjy3JXrAkvZW1s
+    Postman_Auth_client_Secret : 2np7WP9Iz6NOKXMN
+    username : aal3
+    scope : nhs-cis2
+
+    RAVS_client_Id : mKAFdGHvfAmRJIYCmrgvVAOms5X3gZiG
+    RAVS_client_Secret : 8udIRfKfnFHZje3r
+
+    MAVIS_client_Id : ZMFe92RMTQ7JntxAeOSe4ZlLmdlkBtnK
+    MAVIS_client_Secret : IA9jmEHI04wKwH6C
+
+    OPTUM_client_Id : hWAOPTqJLC2hjMEIC6Y5AiXyBBctSzrl
+    OPTUM_client_Secret : FZIOoP8C9F8ng9Ht
+
+    SONAR_client_Id : ooAGdMkVxkGDk3ioxT6nvmtopILi9A3u
+    SONAR_client_Secret : bAgm21lNWITrFftY
+
+    baseUrl : https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4
+    aws_token_refresh: 'False'
+    aws_profile_name : 
 
 - task: Bash@3
   displayName: 'Generate Allure Report'
