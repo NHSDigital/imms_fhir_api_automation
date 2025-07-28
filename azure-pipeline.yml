@@ -29,7 +29,7 @@ steps:
 
 - script: |
     source venv/bin/activate
-    pytest --alluredir:output/allure-results || true
+    pytest --alluredir=output/allure-results || true
   displayName: 'Run Pytest-BDD tests with Allure'
   env:
     auth_url : https://int.api.service.nhs.uk/oauth2-mock/authorize
@@ -54,7 +54,6 @@ steps:
 
     baseUrl : https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4
     aws_token_refresh: 'False'
-    aws_profile_name : 
 
 - task: Bash@3
   displayName: 'Generate Allure Report'
