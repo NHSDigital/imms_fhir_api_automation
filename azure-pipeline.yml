@@ -29,7 +29,7 @@ steps:
 
 - script: |
     source venv/bin/activate
-    pytest --alluredir=output/allure-results || true
+    pytest --junitxml=output/test-results.xml --alluredir=output/allure-results || true
   displayName: 'Run Pytest-BDD tests with Allure'
   env:
     auth_url : https://int.api.service.nhs.uk/oauth2-mock/authorize
