@@ -58,7 +58,7 @@ steps:
 - task: PublishTestResults@2
   condition: succeededOrFailed()
   inputs:
-    testResultsFiles: '**/output/allure-results/*.xml'
+    testResultsFiles: '**/output/test-results.xml'
     testRunTitle: 'BDD Test Summary'
 
 - task: Bash@3
