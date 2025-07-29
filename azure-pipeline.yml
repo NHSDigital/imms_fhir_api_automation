@@ -6,14 +6,14 @@ pool:
 
 resources:
   repositories:
-    - repository: immunisation-fhir-api
+    - repository: common
       type: github
       name: NHSDigital/immunisation-fhir-api
       ref: refs/heads/edge
       endpoint: NHSDigital
 
 steps:
-- template: azure/templates/aws-assume-role.yml
+- template: azure/templates/aws-assume-role.yml@common
   parameters:
     role: auto-ops
     profile: apim-dev
