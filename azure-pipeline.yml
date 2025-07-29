@@ -6,7 +6,7 @@ pool:
 
 resources:
   repositories:
-    - repository: common
+    - repository: immunisation-fhir-api
       type: github
       name: NHSDigital/immunisation-fhir-api
       ref: refs/heads/edge
