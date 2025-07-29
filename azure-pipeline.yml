@@ -4,12 +4,12 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-resources:
-  repositories:
+ repositories:
     - repository: common
       type: github
-      name: NHSDigital/immunisation-fhir-api      
-      endpoint: nhsdigital
+      name: NHSDigital/api-management-utils
+      ref: refs/heads/edge
+      endpoint: NHSDigital
 
 steps:
 - template: azure/templates/aws-assume-role.yml@common
