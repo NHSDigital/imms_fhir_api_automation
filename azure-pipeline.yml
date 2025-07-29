@@ -4,7 +4,7 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
- repositories:
+repositories:
     - repository: common
       type: github
       name: NHSDigital/api-management-utils
