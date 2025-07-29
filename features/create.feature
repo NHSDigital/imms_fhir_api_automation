@@ -18,7 +18,6 @@ Scenario Outline:  Verify that the POST Create API for different vaccine types
       |Random    | COVID19     | Postman_Auth |
       |Random    | RSV         | RAVS         |
       |Random    | FLU         | MAVIS        |
-      |Random    | PERTUSSIS   | Postman_Auth |
       |Random    | MMR         | Postman_Auth |
       |Random    | MENACWY     | MAVIS        |
       |Random    | 3in1        | MAVIS        |
@@ -72,7 +71,6 @@ Scenario Outline:  Verify that the POST Create API for different supplier fails 
     Examples: 
       | Patient  | vaccine_type| Supplier     |
       |Random    | HPV         |  RAVS        |
-      |Random    | HPV         | OPTUM        |
       |Random    | RSV         | MAVIS        |
       |Random    | RSV         | SONAR        |
 

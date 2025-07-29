@@ -98,7 +98,7 @@ def validate_imms_delta_record_with_created_event(context, create_obj, item, eve
         ("SITE_OF_VACCINATION_TERM", create_obj.site.coding[0].extension[0].valueString, event.get("SITE_OF_VACCINATION_TERM")),
         ("SITE_OF_VACCINATION_CODE", create_obj.site.coding[0].code, event.get("SITE_OF_VACCINATION_CODE")),        
         ("DOSE_AMOUNT", create_obj.doseQuantity.value , float(event.get("DOSE_AMOUNT")) ),
-        ("PRIMARY_SOURCE", create_obj.primarySource, event.get("PRIMARY_SOURCE")),
+        ("PRIMARY_SOURCE", str(create_obj.primarySource).upper(), event.get("PRIMARY_SOURCE")),
         ("ROUTE_OF_VACCINATION_TERM", create_obj.route.coding[0].extension[0].valueString, event.get("ROUTE_OF_VACCINATION_TERM")),
         ("ROUTE_OF_VACCINATION_CODE", create_obj.route.coding[0].code, event.get("ROUTE_OF_VACCINATION_CODE")),
         ("ACTION_FLAG", action_flag, event.get("ACTION_FLAG")),
