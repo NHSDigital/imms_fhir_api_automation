@@ -4,12 +4,26 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+resources:
+  repositories:
+    - repository: common
+      type: github
+      name: NHSDigital/immunisation-fhir-api
+      ref: refs/heads/edge
+      endpoint: NHSDigital
+
 steps:
+- template: azure/templates/aws-assume-role.yml
+  parameters:
+    role: auto-ops
+    profile: apim-dev
+    aws_account: dev
+
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '3.x'
     addToPath: true
-
+  
 - script: |
     python -m venv venv
     source venv/bin/activate
@@ -27,9 +41,10 @@ steps:
     allure --version
   displayName: 'Install Allure CLI'
 
+
 - script: |
     source venv/bin/activate
-    pytest --junitxml=output/test-results.xml --alluredir=output/allure-results || true
+    pytest --junitxml=output/test-results.xml || true
   displayName: 'Run Pytest-BDD tests with Allure'
   env:
     auth_url : https://int.api.service.nhs.uk/oauth2-mock/authorize
@@ -60,20 +75,3 @@ steps:
   inputs:
     testResultsFiles: '**/output/test-results.xml'
     testRunTitle: 'BDD Test Summary'
-
-- task: Bash@3
-  displayName: 'Generate Allure Report'
-  inputs:
-    targetType: 'inline'
-    script: |
-      allure generate output/allure-results --clean -o output/allure-report
-
-- script: ls -la output/allure-report
-  displayName: 'List Allure Report Contents'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Allure Report Artifact'
-  inputs:
-    pathToPublish: 'output/allure-report'
-    artifactName: 'AllureReport'
-    publishLocation: 'Pipeline'
