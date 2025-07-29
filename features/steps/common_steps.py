@@ -59,12 +59,15 @@ def The_request_will_have_status_code(context, statusCode):
     assert context.response.status_code == int(statusCode), f"\n Expected status code: {statusCode}, but got: {context.response.status_code}. Response: {context.response.json()} \n"
 
 
-@then('The location key in header will contain the Immunization Id')
+@then('The location key and Etag in header will contain the Immunization Id and version')
 def validateCreateLocation(context):
     location = context.response.headers['location']
+    eTag = context.response.headers['E-Tag']
     assert  "location" in context.response.headers, f"Location header is missing in the response with Status code: {context.response.statusCode}. Response: {context.response.json()}"
+    assert  "E-Tag" in context.response.headers, f"E-Tag header is missing in the response with Status code: {context.response.statusCode}. Response: {context.response.json()}"
     context.ImmsID = location.split("/")[-1]
-    print(f"\n Immunisation ID is {context.ImmsID}")
+    context.eTag= eTag.strip('"')
+    print(f"\n Immunisation ID is {context.ImmsID} and Etag is {context.eTag} \n")
     check.is_true(
         context.ImmsID is not None, 
         f"Expected IdentifierPK: {context.patient.identifier[0].value}, Found: {context.ImmsID}"
@@ -119,12 +122,16 @@ def validate_imms_event_table_by_operation(context, operation: Operation):
 
     assert resource is not None, "Resource is None in the response"
     created_event = parse_imms_int_imms_event_response(resource)
+    
+    assert int(context.expected_version) == int(context.eTag), (
+        f"Expected Version: {context.expected_version}, Found: {context.eTag}"
+    )
 
     fields_to_compare = [
         ("Operation", Operation[operation].value, item.get("Operation")),
         ("SupplierSystem", context.supplier_name, item.get("SupplierSystem")),
         ("PatientPK", f"Patient#{context.patient.identifier[0].value}", item.get("PatientPK")),
-        ("PatientSK", f"{context.vaccine_type}#{context.ImmsID}", item.get("PatientSK")),
+        ("PatientSK", f"{context.vaccine_type.upper()}#{context.ImmsID}", item.get("PatientSK")),
          ("Version", int(context.expected_version), int(item.get("Version"))),
     ]
     
@@ -142,3 +149,4 @@ def validateForbiddenAccess(context, errorName):
     error_response = parse_errorResponse(context.response.json())
     validateErrorResponse(error_response, ErrorName[errorName].value, context.ImmsID)
     print(f"\n Error Response - \n {error_response}")
+

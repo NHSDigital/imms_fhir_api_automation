@@ -499,7 +499,7 @@ ERROR_MAP = {
         "issue_code": "invalid",
         "severity": "error",
         "code": "INVALID",
-        "diagnostics": "immunization-target must be one or more of the following: RSV, SHINGLES, COVID19, MMR, MMRV, MENACWY, PCV13, FLU, HPV, 3in1, PERTUSSIS"
+        "diagnostics": "immunization-target must be one or more of the following: RSV, COVID19, MMR, MENACWY, FLU, HPV, 3IN1"
     },
     "invalid_DateFrom": {
         "issue_code": "invalid",

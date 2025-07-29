@@ -8,7 +8,7 @@ Scenario Outline:  Verify that the POST Create API for different vaccine types
     And Valid json payload is created with Patient '<Patient>' and vaccine_type '<vaccine_type>'
     When Trigger the post create request
     Then The request will be successful with the status code '201'
-    And The location key in header will contain the Immunization Id
+    And The location key and Etag in header will contain the Immunization Id and version
     And The X-Request-ID and X-Correlation-ID keys in header will populate correctly
     And The imms event table will be populated with the correct data for 'created' event
     And The delta table will be populated with the correct data for created event
@@ -18,7 +18,6 @@ Scenario Outline:  Verify that the POST Create API for different vaccine types
       |Random    | COVID19     | Postman_Auth |
       |Random    | RSV         | RAVS         |
       |Random    | FLU         | MAVIS        |
-      |Random    | PERTUSSIS   | Postman_Auth |
       |Random    | MMR         | Postman_Auth |
       |Random    | MENACWY     | MAVIS        |
       |Random    | 3in1        | MAVIS        |
@@ -28,7 +27,7 @@ Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_
     Given Valid json payload is created where vaccination terms has text field populated
     When Trigger the post create request
     Then The request will be successful with the status code '201'
-    And The location key in header will contain the Immunization Id
+    And The location key and Etag in header will contain the Immunization Id and version
     And The terms are mapped to the respective text fields in imms delta table
 
 @Delete_cleanUp @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
@@ -36,7 +35,7 @@ Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM fields ar
     Given Valid json payload is created where vaccination terms has multiple instances of coding
     When Trigger the post create request
     Then The request will be successful with the status code '201'
-    And The location key in header will contain the Immunization Id
+    And The location key and Etag in header will contain the Immunization Id and version
     And The terms are mapped to first instance of coding.display fields in imms delta table
 
 @Delete_cleanUp @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
@@ -44,7 +43,7 @@ Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_
     Given Valid json payload is created where vaccination terms has multiple instance of coding with different coding system
     When Trigger the post create request
     Then The request will be successful with the status code '201'
-    And The location key in header will contain the Immunization Id
+    And The location key and Etag in header will contain the Immunization Id and version
     And The terms are mapped to correct instance of coding.display fields in imms delta table
 
 @Delete_cleanUp @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
@@ -52,7 +51,7 @@ Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_
     Given Valid json payload is created where vaccination terms has one instance of coding with no text or value string field
     When Trigger the post create request
     Then The request will be successful with the status code '201'
-    And The location key in header will contain the Immunization Id
+    And The location key and Etag in header will contain the Immunization Id and version
     And The terms are mapped to correct coding.display fields in imms delta table
 
 @Delete_cleanUp @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
@@ -60,7 +59,7 @@ Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_
     Given Valid json payload is created where vaccination terms has no text or value string or display field
     When Trigger the post create request
     Then The request will be successful with the status code '201'
-    And The location key in header will contain the Immunization Id
+    And The location key and Etag in header will contain the Immunization Id and version
     And The terms are blank in imms delta table 
 
 Scenario Outline:  Verify that the POST Create API for different supplier fails on access denied
@@ -72,7 +71,6 @@ Scenario Outline:  Verify that the POST Create API for different supplier fails 
     Examples: 
       | Patient  | vaccine_type| Supplier     |
       |Random    | HPV         |  RAVS        |
-      |Random    | HPV         | OPTUM        |
       |Random    | RSV         | MAVIS        |
       |Random    | RSV         | SONAR        |
 

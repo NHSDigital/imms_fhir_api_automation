@@ -27,7 +27,7 @@ Scenario: Verify that the Delete event is not coming in Post Search API response
 @vaccine_type_RSV @patient_id_Random
 Scenario: Verify that the Delete event request will fail with unauthorized access for OPTUM supplier
     Given valid vaccination record is created by 'RAVS' supplier 
-    When Send a delete for Immunization event created for the above created event is send by 'OPTUM'
+    When Send a delete for Immunization event created for the above created event is send by 'MAVIS'
     Then The request will be successful with the status code '403'
     And The Response JSONs should contain correct error message for 'unauthorized_access' access
 
