@@ -13,7 +13,7 @@ resources:
       endpoint: NHSDigital
 
 steps:
-- template: azure/templates/aws-assume-role.yml@common
+- template: azure/common/aws-assume-role.yml@common
   parameters:
     role: auto-ops
     profile: apim-dev
