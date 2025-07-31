@@ -58,17 +58,18 @@ steps:
     python -m venv venv
     source venv/bin/activate
     python -m pip install --upgrade pip
-    pip install -r requirements.txt  
+    pip install -r requirements.txt
+    pip install allure-pytest
   displayName: 'Install dependencies'
 
-- script: |
-    sudo apt update
-    sudo apt install -y default-jre wget unzip
-    wget https://github.com/allure-framework/allure2/releases/download/2.21.0/allure-2.21.0.zip
-    unzip allure-2.21.0.zip -d /opt/
-    sudo ln -s /opt/allure-2.21.0/bin/allure /usr/bin/allure
-    allure --version
-  displayName: 'Install Allure CLI'
+# - script: |
+#     sudo apt update
+#     sudo apt install -y default-jre wget unzip
+#     wget https://github.com/allure-framework/allure2/releases/download/2.21.0/allure-2.21.0.zip
+#     unzip allure-2.21.0.zip -d /opt/
+#     sudo ln -s /opt/allure-2.21.0/bin/allure /usr/bin/allure
+#     allure --version
+#   displayName: 'Install Allure CLI'
 
 
 - script: |
