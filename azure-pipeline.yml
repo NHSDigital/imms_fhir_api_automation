@@ -66,6 +66,8 @@ steps:
   
 - task: Bash@3
   displayName: 'Install dependencies'
+  failOnStderr: true
+  continueOnError: false
   inputs:
     targetType: 'inline'
     script: |
@@ -75,25 +77,23 @@ steps:
 
       echo "Upgrading pip"
       python -m pip install --upgrade pip
-      
+
       echo "Installing requirements"
       pip install -r requirements.txt
-      pip install allure-pytest
-  continueOnError: false       
-  failOnStderr: true           
+      pip install allure-pytest        
 
 - task: Bash@3
+  displayName: 'Run Pytest-BDD tests with Allure'
+  failOnStderr: true
+  continueOnError: true
   inputs:
     targetType: 'inline'
     script: |
       echo "🔍 Activating virtualenv"
       source venv/bin/activate
-      
+
       echo "🚀 Running Pytest-BDD tests"
       pytest --junitxml=output/test-results.xml
-  continueOnError: true    
-  failOnStderr: true        
-  displayName: 'Run Pytest-BDD tests with Allure'
   env:
     auth_url: https://int.api.service.nhs.uk/oauth2-mock/authorize
     token_url: https://int.api.service.nhs.uk/oauth2-mock/token
