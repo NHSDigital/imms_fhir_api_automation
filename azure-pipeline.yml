@@ -11,13 +11,22 @@ resources:
       name: NHSDigital/api-management-utils
       ref: refs/heads/edge
       endpoint: NHSDigital
+    - repository: immunisation-fhir-api
+      type: github
+      name: NHSDigital/immunisation-fhir-api
+   
 
 steps:
 - template: azure/components/aws-assume-role.yml@common
   parameters:
-    role: auto-ops
-    profile: apim-dev
-    aws_account: dev
+      role: "auto-ops"
+      profile: "apm_ptl"
+
+- template: /azure/templates/aws-assume-role.yml@immunisation-fhir-api
+  parameters:
+      role: "auto-ops"
+      profile: "apim-dev"
+      aws_account: dev
 
 - script: |
     echo "DEBUG: AWS Credentials"
