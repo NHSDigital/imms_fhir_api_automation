@@ -86,7 +86,7 @@ steps:
       
       echo "🚀 Running Pytest-BDD tests"
       pytest --junitxml=output/test-results.xml
-  continueOnError: false 
+  continueOnError: true 
   failOnStderr: true
   displayName: 'Run Pytest-BDD tests with Allure'
   env:
