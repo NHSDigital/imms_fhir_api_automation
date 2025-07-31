@@ -76,12 +76,8 @@ steps:
     SONAR_client_Secret : bAgm21lNWITrFftY
 
     baseUrl : https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4
-    aws_token_refresh= True
-    aws_profile_name = DEV-IMMS-Devops-345594581768
-    aws_region = eu-west-2
-    SET AWS_ACCESS_KEY_ID=ASIAVA5YK2MEKCNV2B3E
-    SET AWS_SECRET_ACCESS_KEY=+YMj6mo2lB58pceSMDqzFDQfbPh01MBoZe7sApIL
-
+    aws_token_refresh: 'False'
+    
 - task: PublishTestResults@2
   condition: succeededOrFailed()
   inputs:
