@@ -1,9 +1,10 @@
 trigger:
-  - master
+  branches:
+    include:
+      - master
 
 pool:
   name: 'AWS-ECS'
-  # vmImage: 'ubuntu-latest'
 
 resources:
   repositories:
@@ -66,25 +67,38 @@ steps:
   
 - task: Bash@3
   displayName: 'Install dependencies'
-  failOnStderr: true
   continueOnError: false
   inputs:
     targetType: 'inline'
     script: |
+      set -o pipefail
+
       echo "Creating virtual environment"
       python -m venv venv
       source venv/bin/activate
 
       echo "Upgrading pip"
-      python -m pip install --upgrade pip
+      python -m pip install --upgrade pip 2> pip_error.log || {
+        echo "Failed to upgrade pip"
+        cat pip_error.log
+        exit 1
+      }
 
       echo "Installing requirements"
-      pip install -r requirements.txt
-      pip install allure-pytest        
+      pip install -r requirements.txt 2> req_error.log || {
+        echo "Failed to install requirements.txt"
+        cat req_error.log
+        exit 1
+      }
+
+      pip install allure-pytest 2> allure_error.log || {
+        echo "Failed to install allure-pytest"
+        cat allure_error.log
+        exit 1
+      }      
 
 - task: Bash@3
   displayName: 'Run Pytest-BDD tests with Allure'
-  failOnStderr: true
   continueOnError: true
   inputs:
     targetType: 'inline'
