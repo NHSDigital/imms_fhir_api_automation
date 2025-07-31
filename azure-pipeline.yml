@@ -13,6 +13,12 @@ resources:
       endpoint: NHSDigital
 
 steps:
+- template: azure/components/aws-assume-role.yml@common
+  parameters:
+    role: auto-ops
+    profile: apim-dev
+    aws_account: dev
+
 - script: |
     echo "DEBUG: AWS Credentials"
     echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID"
@@ -20,12 +26,6 @@ steps:
     echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN"
     aws sts get-caller-identity || echo "AWS CLI failed"
   displayName: "DEBUG: Show AWS Credentials"
-
-- template: azure/components/aws-assume-role.yml@common
-  parameters:
-    role: auto-ops
-    profile: apim-dev
-    aws_account: dev
 
 - task: UsePythonVersion@0
   inputs:
