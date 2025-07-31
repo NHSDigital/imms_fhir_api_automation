@@ -25,6 +25,7 @@ steps:
     addToPath: true
   
 - script: |
+    export AWS_PROFILE=apim-dev
     python -m venv venv
     source venv/bin/activate
     python -m pip install --upgrade pip
