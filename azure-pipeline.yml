@@ -49,19 +49,12 @@ steps:
     aws sts get-caller-identity || echo "AWS CLI failed"
   displayName: "DEBUG: Show AWS Credentials"
 
-# - script: |
-#     sudo apt update
-#     sudo apt install -y software-properties-common
-#     sudo add-apt-repository -y ppa:deadsnakes/ppa
-#     sudo apt update
-#     sudo apt install -y python3.11 python3.11-venv python3.11-dev python3.11-distutils
-#     # Verify installation and set up PATH
-#     /usr/bin/python3.11 --version
-#     which python3.11 || echo "python3.11 not in PATH"
-#     ls -la /usr/bin/python3.11
+- script: |
+    pyenv install -s 3.11.11
+    pyenv local 3.11.11
 
-#     python3.11 --version
-#   displayName: 'Install Python 3.11'
+    python3.11 --version
+  displayName: 'Install Python 3.11'
 
 # - task: UsePythonVersion@0
 #   inputs:
