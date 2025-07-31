@@ -14,7 +14,7 @@ resources:
     - repository: immunisation-fhir-api
       type: github
       name: NHSDigital/immunisation-fhir-api
-   
+      endpoint: nhsdigital   
 
 steps:
 - template: azure/components/aws-assume-role.yml@common
