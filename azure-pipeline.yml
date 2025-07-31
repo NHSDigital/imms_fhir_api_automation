@@ -65,29 +65,34 @@ steps:
   displayName: 'Check Python Version'
   
 - task: Bash@3
+  displayName: 'Install dependencies'
   inputs:
     targetType: 'inline'
     script: |
+      echo "Creating virtual environment"
       python -m venv venv
       source venv/bin/activate
+
+      echo "Upgrading pip"
       python -m pip install --upgrade pip
+      
+      echo "Installing requirements"
       pip install -r requirements.txt
       pip install allure-pytest
-    continueOnError: false 
-    failOnStderr: true
-    displayName: 'Install dependencies'
+  continueOnError: false       
+  failOnStderr: true           
 
 - task: Bash@3
   inputs:
     targetType: 'inline'
     script: |
-      echo "🔍 Activating virtual environment"
+      echo "🔍 Activating virtualenv"
       source venv/bin/activate
       
       echo "🚀 Running Pytest-BDD tests"
       pytest --junitxml=output/test-results.xml
-  continueOnError: true 
-  failOnStderr: true
+  continueOnError: true    
+  failOnStderr: true        
   displayName: 'Run Pytest-BDD tests with Allure'
   env:
     auth_url: https://int.api.service.nhs.uk/oauth2-mock/authorize
@@ -97,19 +102,14 @@ steps:
     Postman_Auth_client_Secret: 2np7WP9Iz6NOKXMN
     username: aal3
     scope: nhs-cis2
-
     RAVS_client_Id: mKAFdGHvfAmRJIYCmrgvVAOms5X3gZiG
     RAVS_client_Secret: 8udIRfKfnFHZje3r
-
     MAVIS_client_Id: ZMFe92RMTQ7JntxAeOSe4ZlLmdlkBtnK
     MAVIS_client_Secret: IA9jmEHI04wKwH6C
-
     OPTUM_client_Id: hWAOPTqJLC2hjMEIC6Y5AiXyBBctSzrl
     OPTUM_client_Secret: FZIOoP8C9F8ng9Ht
-
     SONAR_client_Id: ooAGdMkVxkGDk3ioxT6nvmtopILi9A3u
     SONAR_client_Secret: bAgm21lNWITrFftY
-
     baseUrl: https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4
     aws_token_refresh: 'False'
     
