@@ -13,6 +13,14 @@ resources:
       endpoint: NHSDigital
 
 steps:
+- script: |
+    echo "DEBUG: AWS Credentials"
+    echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID"
+    echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
+    echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN"
+    aws sts get-caller-identity || echo "AWS CLI failed"
+  displayName: "DEBUG: Show AWS Credentials"
+
 - template: azure/components/aws-assume-role.yml@common
   parameters:
     role: auto-ops
@@ -25,7 +33,6 @@ steps:
     addToPath: true
   
 - script: |
-    export AWS_PROFILE=apim-dev
     python -m venv venv
     source venv/bin/activate
     python -m pip install --upgrade pip
@@ -69,7 +76,11 @@ steps:
     SONAR_client_Secret : bAgm21lNWITrFftY
 
     baseUrl : https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4
-    aws_token_refresh: 'False'
+    aws_token_refresh= True
+    aws_profile_name = DEV-IMMS-Devops-345594581768
+    aws_region = eu-west-2
+    SET AWS_ACCESS_KEY_ID=ASIAVA5YK2MEKCNV2B3E
+    SET AWS_SECRET_ACCESS_KEY=+YMj6mo2lB58pceSMDqzFDQfbPh01MBoZe7sApIL
 
 - task: PublishTestResults@2
   condition: succeededOrFailed()
