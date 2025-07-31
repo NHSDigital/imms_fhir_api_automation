@@ -98,7 +98,7 @@ steps:
       }      
 
 - task: Bash@3
-  displayName: 'Run Pytest-BDD tests with Allure'
+  displayName: 'Run Pytest-BDD tests'
   continueOnError: true
   inputs:
     targetType: 'inline'
@@ -108,6 +108,13 @@ steps:
 
       echo "🚀 Running Pytest-BDD tests"
       pytest --junitxml=output/test-results.xml
+      EXIT_CODE=$?
+
+      if [ $EXIT_CODE -ne 0 ]; then
+        echo "##vso[task.logissue type=error]Pytest failed with exit code $EXIT_CODE"
+        echo "##vso[task.complete result=Failed]Test execution failed"
+      fi
+
   env:
     auth_url: https://int.api.service.nhs.uk/oauth2-mock/authorize
     token_url: https://int.api.service.nhs.uk/oauth2-mock/token
