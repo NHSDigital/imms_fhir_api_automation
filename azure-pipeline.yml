@@ -2,7 +2,8 @@ trigger:
   - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: 'AWS-ECS'
+  # vmImage: 'ubuntu-latest'
 
 resources:
   repositories:
@@ -22,7 +23,19 @@ steps:
       role: "auto-ops"
       profile: "apm_ptl"
 
-- template: /azure/templates/aws-assume-role.yml@immunisation-fhir-api
+- template: "azure/components/get-aws-secrets-and-ssm-params.yml@common"
+  parameters:
+    secret_file_ids:
+      - ptl/app-credentials/jwt_testing/non-prod/JWT_TESTING_PRIVATE_KEY
+    secret_ids:
+      - ptl/app-credentials/immunisation-fhir-api-testing-app/non-prod/INTROSPECTION_CLIENT_ID
+      - ptl/app-credentials/immunisation-fhir-api-testing-app/non-prod/INTROSPECTION_CLIENT_SECRET
+      - ptl/app-credentials/immunisation-fhir-api-testing-app/non-prod/INTROSPECTION_CLIENT_ID_INT
+      - ptl/app-credentials/immunisation-fhir-api-testing-app/non-prod/INTROSPECTION_CLIENT_SECRET_INT
+      - ptl/app-credentials/immunisation-fhir-api-testing-app/non-prod/INT_CLIENT_ID
+      - ptl/app-credentials/immunisation-fhir-api-testing-app/non-prod/INT_CLIENT_SECRET
+
+- template: azure/templates/aws-assume-role.yml@immunisation-fhir-api
   parameters:
       role: "auto-ops"
       profile: "apim-dev"
