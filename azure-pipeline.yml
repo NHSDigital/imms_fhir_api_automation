@@ -96,7 +96,7 @@ steps:
       echo "Pytest exit code: $EXIT_CODE"
 
       if [ $EXIT_CODE -ne 0 ]; then
-        echo "##vso[task.logissue type=error]Pytest failed with exit code $EXIT_CODE"
+        echo "##vso[task.complete result=Failed]Pytest failed with exit code $EXIT_CODE"
       fi
 
   env:
