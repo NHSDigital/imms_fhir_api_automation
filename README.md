@@ -78,11 +78,57 @@ python -m http.server
 
 To Open the index.html file
 ----------------------------------------------------
+once the allure plug in place then we need to update the ymal with following code : 
+''' 
+- script: |
+    source venv/bin/activate
+    pytest --junitxml=output/test-results.xml --alluredir=output/allure-results || true
+  displayName: 'Run Pytest-BDD tests with Allure'
+  env:
+    auth_url : https://int.api.service.nhs.uk/oauth2-mock/authorize
+    token_url : https://int.api.service.nhs.uk/oauth2-mock/token
+    callback_url : https://oauth.pstmn.io/v1/callback
+    Postman_Auth_client_Id : mNnjGa3dtSh7eKkMxkGjy3JXrAkvZW1s
+    Postman_Auth_client_Secret : 2np7WP9Iz6NOKXMN
+    username : aal3
+    scope : nhs-cis2
 
-cd output/allure-report
-python3 -m http.server 8000
+    RAVS_client_Id : mKAFdGHvfAmRJIYCmrgvVAOms5X3gZiG
+    RAVS_client_Secret : 8udIRfKfnFHZje3r
 
-CSV file
-----------------------------------------------------
+    MAVIS_client_Id : ZMFe92RMTQ7JntxAeOSe4ZlLmdlkBtnK
+    MAVIS_client_Secret : IA9jmEHI04wKwH6C
 
- To read the csv file in tabular format or edit download a plugin in vscode - Edit CSV
+    OPTUM_client_Id : hWAOPTqJLC2hjMEIC6Y5AiXyBBctSzrl
+    OPTUM_client_Secret : FZIOoP8C9F8ng9Ht
+
+    SONAR_client_Id : ooAGdMkVxkGDk3ioxT6nvmtopILi9A3u
+    SONAR_client_Secret : bAgm21lNWITrFftY
+
+    baseUrl : https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4
+    aws_token_refresh: 'False'
+
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFiles: '**/output/test-results.xml'
+    testRunTitle: 'BDD Test Summary'
+
+- task: Bash@3
+  displayName: 'Generate Allure Report'
+  inputs:
+    targetType: 'inline'
+    script: |
+      allure generate output/allure-results --clean -o output/allure-report
+
+- script: ls -la output/allure-report
+  displayName: 'List Allure Report Contents'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Allure Report Artifact'
+  inputs:
+    pathToPublish: 'output/allure-report'
+    artifactName: 'AllureReport'
+    publishLocation: 'Pipeline'
+
+'''
