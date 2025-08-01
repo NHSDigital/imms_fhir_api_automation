@@ -1,5 +1,6 @@
 __pycache__/
 .venv/
+venv/
 output/
 utilities/__pycache__
 mytest.py
