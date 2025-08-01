@@ -22,7 +22,7 @@ steps:
 - template: azure/templates/aws-assume-role.yml@immunisation-fhir-api
   parameters:
       role: "auto-ops"
-      profile: "apim-dev"
+      profile: "345594581768_DEV-IMMS-Devops"
       aws_account: dev
 
 - script: |
@@ -86,10 +86,10 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      echo "🔍 Activating virtual env"
+      echo "Activating virtual env"
       source venv/bin/activate
 
-      echo "🚀 Running Pytest-BDD tests"
+      echo "Running Pytest-BDD tests"
       pytest --junitxml=output/test-results.xml
       EXIT_CODE=$?
 
