@@ -22,7 +22,7 @@ steps:
 - template: azure/templates/aws-assume-role.yml@immunisation-fhir-api
   parameters:
       role: "auto-ops"
-      profile: "345594581768_DEV-IMMS-Devops"
+      profile: "apim-dev"
       aws_account: dev
 
 - script: |
@@ -55,6 +55,7 @@ steps:
     targetType: 'inline'
     script: |
       set -o pipefail
+      export AWS_PROFILE= "apim-dev"
 
       echo "Creating virtual environment"
       python -m venv venv
