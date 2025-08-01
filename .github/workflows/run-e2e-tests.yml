@@ -32,42 +32,63 @@ jobs:
 
       - name: Install Python dependencies
         run: |
+          set -o pipefail
+
+          echo "Creating virtual environment"
           python -m venv venv
           source venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt 
-          pip install lxml
-          pip install requests
-          pip install git+https://github.com/behave/behave
-          pip install allure-behave    
-          pip install selenium
-          pip install boto3  
 
-      - name: Install Allure CLI
-        run: |
-          sudo apt update
-          sudo apt install -y default-jre wget unzip
-          wget https://github.com/allure-framework/allure2/releases/download/2.21.0/allure-2.21.0.zip
-          unzip allure-2.21.0.zip -d /opt/
-          sudo ln -s /opt/allure-2.21.0/bin/allure /usr/bin/allure
-          allure --version
+          echo "Upgrading pip"
+          python -m pip install --upgrade pip 2> pip_error.log || {
+            echo "Failed to upgrade pip"
+            cat pip_error.log
+            exit 1
+          }
 
-      - name: Run Behave tests with Allure formatter
+          echo "Installing requirements"
+          pip install -r requirements.txt 2> req_error.log || {
+            echo "Failed to install requirements.txt"
+            cat req_error.log
+            exit 1
+          }
+
+          pip install allure-pytest 2> allure_error.log || {
+            echo "Failed to install allure-pytest"
+            cat allure_error.log
+            exit 1
+          }      
+
+      - name: Run Pytest-BDD tests
+        continue-on-error: true
+        env:
+          auth_url: https://int.api.service.nhs.uk/oauth2-mock/authorize
+          token_url: https://int.api.service.nhs.uk/oauth2-mock/token
+          callback_url: https://oauth.pstmn.io/v1/callback
+          Postman_Auth_client_Id: mNnjGa3dtSh7eKkMxkGjy3JXrAkvZW1s
+          Postman_Auth_client_Secret: 2np7WP9Iz6NOKXMN
+          username: aal3
+          scope: nhs-cis2
+          RAVS_client_Id: mKAFdGHvfAmRJIYCmrgvVAOms5X3gZiG
+          RAVS_client_Secret: 8udIRfKfnFHZje3r
+          MAVIS_client_Id: ZMFe92RMTQ7JntxAeOSe4ZlLmdlkBtnK
+          MAVIS_client_Secret: IA9jmEHI04wKwH6C
+          OPTUM_client_Id: hWAOPTqJLC2hjMEIC6Y5AiXyBBctSzrl
+          OPTUM_client_Secret: FZIOoP8C9F8ng9Ht
+          SONAR_client_Id: ooAGdMkVxkGDk3ioxT6nvmtopILi9A3u
+          SONAR_client_Secret: bAgm21lNWITrFftY
+          baseUrl: https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4
+          aws_token_refresh: 'False'
         run: |
+          echo "Activating virtual env"
           source venv/bin/activate
-          behave -f allure_behave.formatter:AllureFormatter -o output/allure-results || true
 
-      - name: Generate Allure report
-        run: |
-          allure generate output/allure-results -o output/allure-report --clean || true
+          echo "Running Pytest-BDD tests"
+          pytest --junitxml=output/test-results.xml
+          EXIT_CODE=$?
 
-      - name: Copy Allure report to staging
-        run: |
-          mkdir -p allure-artifacts
-          cp -r output/allure-report/* allure-artifacts/
+          echo "Pytest exit code: $EXIT_CODE"
 
-      - name: Upload Allure report artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: AllureReport
-          path: allure-artifacts/
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "::error::Pytest failed with exit code $EXIT_CODE"
+          fi
+
