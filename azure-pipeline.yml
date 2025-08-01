@@ -1,8 +1,10 @@
 trigger:
-  - master
+  branches:
+    include:
+      - master
 
 pool:
-  vmImage: "ubuntu-latest"
+  name: 'AWS-ECS'
 
 resources:
   repositories:
@@ -11,66 +13,114 @@ resources:
       name: NHSDigital/api-management-utils
       ref: refs/heads/edge
       endpoint: NHSDigital
+    - repository: immunisation-fhir-api
+      type: github
+      name: NHSDigital/immunisation-fhir-api
+      endpoint: nhsdigital   
 
 steps:
-  - template: azure/components/aws-assume-role.yml@common
-    parameters:
-      role: auto-ops
-      profile: apim-dev
+- template: azure/templates/aws-assume-role.yml@immunisation-fhir-api
+  parameters:
+      role: "auto-ops"
+      profile: "apim-dev"
       aws_account: dev
 
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: "3.x"
-      addToPath: true
+- script: |
+    echo "DEBUG: AWS Credentials"
+    echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID"
+    echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
+    echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN"
+    aws sts get-caller-identity || echo "AWS CLI failed"
+  displayName: "DEBUG: Show AWS Credentials"
 
-  - script: |
+- script: |
+    pyenv install -s 3.11.11
+    pyenv local 3.11.11
+
+    python3.11 --version
+  displayName: 'Install Python 3.11'
+
+- script: |
+    echo "🔍 Checking Python version..."
+    which python
+    python --version
+    which python3
+    python3 --version
+  displayName: 'Check Python Version'
+  
+- task: Bash@3
+  displayName: 'Install dependencies'
+  continueOnError: false
+  inputs:
+    targetType: 'inline'
+    script: |
+      set -o pipefail
+      export AWS_PROFILE= "apim-dev"
+
+      echo "Creating virtual environment"
       python -m venv venv
       source venv/bin/activate
-      python -m pip install --upgrade pip
-      pip install -r requirements.txt
-      pip install allure-pytest
-    displayName: "Install dependencies"
 
-  - script: |
-      sudo apt update
-      sudo apt install -y default-jre wget unzip
-      wget https://github.com/allure-framework/allure2/releases/download/2.21.0/allure-2.21.0.zip
-      unzip allure-2.21.0.zip -d /opt/
-      sudo ln -s /opt/allure-2.21.0/bin/allure /usr/bin/allure
-      allure --version
-    displayName: "Install Allure CLI"
+      echo "Upgrading pip"
+      python -m pip install --upgrade pip 2> pip_error.log || {
+        echo "Failed to upgrade pip"
+        cat pip_error.log
+        exit 1
+      }
 
-  - script: |
+      echo "Installing requirements"
+      pip install -r requirements.txt 2> req_error.log || {
+        echo "Failed to install requirements.txt"
+        cat req_error.log
+        exit 1
+      }
+
+      pip install allure-pytest 2> allure_error.log || {
+        echo "Failed to install allure-pytest"
+        cat allure_error.log
+        exit 1
+      }      
+
+- task: Bash@3
+  displayName: 'Run Pytest-BDD tests'
+  continueOnError: true
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo "Activating virtual env"
       source venv/bin/activate
-      pytest --junitxml=output/test-results.xml || true
-    displayName: "Run Pytest-BDD tests with Allure"
-    env:
-      auth_url: https://int.api.service.nhs.uk/oauth2-mock/authorize
-      token_url: https://int.api.service.nhs.uk/oauth2-mock/token
-      callback_url: https://oauth.pstmn.io/v1/callback
-      Postman_Auth_client_Id: mNnjGa3dtSh7eKkMxkGjy3JXrAkvZW1s
-      Postman_Auth_client_Secret: 2np7WP9Iz6NOKXMN
-      username: aal3
-      scope: nhs-cis2
 
-      RAVS_client_Id: mKAFdGHvfAmRJIYCmrgvVAOms5X3gZiG
-      RAVS_client_Secret: 8udIRfKfnFHZje3r
+      echo "Running Pytest-BDD tests"
+      pytest --junitxml=output/test-results.xml
+      EXIT_CODE=$?
 
-      MAVIS_client_Id: ZMFe92RMTQ7JntxAeOSe4ZlLmdlkBtnK
-      MAVIS_client_Secret: IA9jmEHI04wKwH6C
+      echo "Pytest exit code: $EXIT_CODE"
 
-      OPTUM_client_Id: hWAOPTqJLC2hjMEIC6Y5AiXyBBctSzrl
-      OPTUM_client_Secret: FZIOoP8C9F8ng9Ht
+      if [ $EXIT_CODE -ne 0 ]; then
+        echo "##vso[task.complete result=Failed]Pytest failed with exit code $EXIT_CODE"
+      fi
 
-      SONAR_client_Id: ooAGdMkVxkGDk3ioxT6nvmtopILi9A3u
-      SONAR_client_Secret: bAgm21lNWITrFftY
-
-      baseUrl: https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4
-      aws_token_refresh: "False"
-
-  - task: PublishTestResults@2
-    condition: succeededOrFailed()
-    inputs:
-      testResultsFiles: "**/output/test-results.xml"
-      testRunTitle: "BDD Test Summary"
+  env:
+    auth_url: https://int.api.service.nhs.uk/oauth2-mock/authorize
+    token_url: https://int.api.service.nhs.uk/oauth2-mock/token
+    callback_url: https://oauth.pstmn.io/v1/callback
+    Postman_Auth_client_Id: mNnjGa3dtSh7eKkMxkGjy3JXrAkvZW1s
+    Postman_Auth_client_Secret: 2np7WP9Iz6NOKXMN
+    username: aal3
+    scope: nhs-cis2
+    RAVS_client_Id: mKAFdGHvfAmRJIYCmrgvVAOms5X3gZiG
+    RAVS_client_Secret: 8udIRfKfnFHZje3r
+    MAVIS_client_Id: ZMFe92RMTQ7JntxAeOSe4ZlLmdlkBtnK
+    MAVIS_client_Secret: IA9jmEHI04wKwH6C
+    OPTUM_client_Id: hWAOPTqJLC2hjMEIC6Y5AiXyBBctSzrl
+    OPTUM_client_Secret: FZIOoP8C9F8ng9Ht
+    SONAR_client_Id: ooAGdMkVxkGDk3ioxT6nvmtopILi9A3u
+    SONAR_client_Secret: bAgm21lNWITrFftY
+    baseUrl: https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4
+    aws_token_refresh: 'False'
+    
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFiles: '**/output/test-results.xml'
+    testRunTitle: 'BDD Test Summary'
