@@ -1,22 +1,33 @@
-name: Run e2e tests
+name: Fhir API Automation - E2e Tests
 
 on:
   push:
     branches: [ github-workflow ]
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "int"
+        type: choice
+        options:
+          - pre-prod
+          - int
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     permissions:
       id-token: write
       contents: read
+      checks: write
     steps:
       - name: Connect to AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-2
-          role-to-assume: arn:aws:iam::345594581768:role/auto-ops
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_IAM_ACCOUNT }}:role/auto-ops
           role-session-name: github-actions
 
       - name: Whoami
@@ -61,22 +72,22 @@ jobs:
       - name: Run Pytest-BDD tests
         continue-on-error: true
         env:
-          auth_url: https://int.api.service.nhs.uk/oauth2-mock/authorize
-          token_url: https://int.api.service.nhs.uk/oauth2-mock/token
-          callback_url: https://oauth.pstmn.io/v1/callback
-          Postman_Auth_client_Id: mNnjGa3dtSh7eKkMxkGjy3JXrAkvZW1s
-          Postman_Auth_client_Secret: 2np7WP9Iz6NOKXMN
-          username: aal3
-          scope: nhs-cis2
-          RAVS_client_Id: mKAFdGHvfAmRJIYCmrgvVAOms5X3gZiG
-          RAVS_client_Secret: 8udIRfKfnFHZje3r
-          MAVIS_client_Id: ZMFe92RMTQ7JntxAeOSe4ZlLmdlkBtnK
-          MAVIS_client_Secret: IA9jmEHI04wKwH6C
-          OPTUM_client_Id: hWAOPTqJLC2hjMEIC6Y5AiXyBBctSzrl
-          OPTUM_client_Secret: FZIOoP8C9F8ng9Ht
-          SONAR_client_Id: ooAGdMkVxkGDk3ioxT6nvmtopILi9A3u
-          SONAR_client_Secret: bAgm21lNWITrFftY
-          baseUrl: https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4
+          auth_url: ${{ vars.auth_url }}
+          token_url: ${{ vars.token_url }}
+          callback_url: ${{ vars.callback_url }}
+          Postman_Auth_client_Id: ${{ secrets.Postman_Auth_client_Id }}
+          Postman_Auth_client_Secret: ${{ secrets.Postman_Auth_client_Secret }}
+          username: ${{ secrets.username }}
+          scope: ${{ vars.scope }}
+          RAVS_client_Id: ${{ secrets.RAVS_client_Id }}
+          RAVS_client_Secret: ${{ secrets.RAVS_client_Secret }}
+          MAVIS_client_Id: ${{ secrets.MAVIS_client_Id }}
+          MAVIS_client_Secret: ${{ secrets.MAVIS_client_Secret }}
+          OPTUM_client_Id: ${{ secrets.OPTUM_client_Id }}
+          OPTUM_client_Secret: ${{ secrets.OPTUM_client_Secret }}
+          SONAR_client_Id: ${{ secrets.SONAR_client_Id }}
+          SONAR_client_Secret: ${{ secrets.SONAR_client_Secret }}
+          baseUrl: ${{ vars.baseUrl }}
           aws_token_refresh: 'False'
         run: |
           echo "Activating virtual env"
