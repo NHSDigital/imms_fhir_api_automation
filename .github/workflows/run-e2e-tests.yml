@@ -1,4 +1,4 @@
-name: Fhir API Automation - E2e Tests
+name: FHIR API Automation - E2E Tests
 
 on:
   push:
