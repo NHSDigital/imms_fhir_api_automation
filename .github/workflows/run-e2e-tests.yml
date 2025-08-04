@@ -97,10 +97,9 @@ jobs:
           pytest --junitxml=output/test-results.xml
           EXIT_CODE=$?
 
-          echo "Pytest exit code: $EXIT_CODE"
-
-          if [ $EXIT_CODE -ne 0 ]; then
+          if [ "$EXIT_CODE" -ne 0 ]; then
             echo "::error::Pytest failed with exit code $EXIT_CODE"
+            exit $EXIT_CODE  
           fi
       
       - name: Publish test results to GitHub UI
