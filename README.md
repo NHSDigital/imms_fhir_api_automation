@@ -78,11 +78,28 @@ python -m http.server
 
 To Open the index.html file
 ----------------------------------------------------
+once the allure plug in place then we need to update the ymal with following code : 
+''' 
+- script: |
+    source venv/bin/activate
+    pytest --junitxml=output/test-results.xml --alluredir=output/allure-results || true
+  displayName: 'Run Pytest-BDD tests with Allure'
 
-cd output/allure-report
-python3 -m http.server 8000
+- task: Bash@3
+  displayName: 'Generate Allure Report'
+  inputs:
+    targetType: 'inline'
+    script: |
+      allure generate output/allure-results --clean -o output/allure-report
 
-CSV file
-----------------------------------------------------
+- script: ls -la output/allure-report
+  displayName: 'List Allure Report Contents'
 
- To read the csv file in tabular format or edit download a plugin in vscode - Edit CSV
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Allure Report Artifact'
+  inputs:
+    pathToPublish: 'output/allure-report'
+    artifactName: 'AllureReport'
+    publishLocation: 'Pipeline'
+
+'''
