@@ -69,6 +69,12 @@ jobs:
             exit 1
           }      
 
+          pip install pytest-html 2> pytest_html_error.log || {
+            echo "Failed to install pytest-html"
+            cat pytest_html_error.log
+            exit 1
+          }
+
       - name: Run Pytest-BDD tests
         continue-on-error: true
         env:
@@ -95,6 +101,7 @@ jobs:
 
           echo "Running Pytest-BDD tests"
           pytest --junitxml=output/test-results.xml
+          pytest --html=output/report.html
           if [ $? -ne 0 ]; then
             echo "Pytest-BDD tests failed"
             exit 1
