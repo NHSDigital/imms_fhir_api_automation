@@ -117,4 +117,10 @@ jobs:
           path: '**/output/test-results.xml'
           reporter: java-junit
 
+      - name: Publish Pytest HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pytest HTML Report
+          path: '**/output/report.html
 
