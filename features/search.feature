@@ -21,6 +21,7 @@ Scenario Outline: Verify that the GET method of Search API will be successful wi
       |Random        | COVID19     |
       |SFlag         | COVID19     |
       |SupersedeNhsNo| COVID19     |
+      |Mod11_NHS     | RSV         |
 
 @Delete_cleanUp @supplier_name_Postman_Auth
 Scenario Outline: Verify that the POST method of Search API will be successful with all the valid parameters 
