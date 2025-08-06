@@ -2,7 +2,10 @@ name: FHIR API Automation - E2E Tests
 
 on:
   push:
-    branches: [ github-workflow ]
+    branches: 
+    branches:
+      - master
+      - '**'
   workflow_dispatch:
     inputs:
       environment:
