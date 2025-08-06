@@ -103,6 +103,7 @@ jobs:
           echo "Running Pytest-BDD tests"
           pytest --junitxml=output/test-results.xml
           pytest --html=output/report.html
+ 
           if [ $? -ne 0 ]; then
             echo "Pytest-BDD tests failed"
             exit 1
@@ -123,5 +124,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Pytest HTML Report
-          path: '**/output/report.html
+          path: 'output/report.html
 
