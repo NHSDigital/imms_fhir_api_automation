@@ -101,8 +101,7 @@ jobs:
           source venv/bin/activate
 
           echo "Running Pytest-BDD tests"
-          pytest --junitxml=output/test-results.xml
-          pytest --html=output/report.html
+          pytest --html-report=./report --title="Pytest Report"
  
           if [ $? -ne 0 ]; then
             echo "Pytest-BDD tests failed"
@@ -111,18 +110,10 @@ jobs:
             echo "Pytest-BDD tests passed"
           fi
       
-      - name: Publish test results to GitHub UI
-        if: always()
-        uses: dorny/test-reporter@v1
-        with:
-          name: BDD Test Summary
-          path: '**/output/test-results.xml'
-          reporter: java-junit
-
-      - name: Publish Pytest HTML report
+      - name: Upload Pytest HTML report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Pytest HTML Report
-          path: 'output/report.html
+          path: 'report/pytest_html_reporter.html'
 
