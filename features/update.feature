@@ -53,3 +53,13 @@ Scenario: Verify that update will be successful when request is triggered by oth
     And The Etag in header will containing the latest event version
     And The imms event table will be populated with the correct data for 'updated' event
     And The delta table will be populated with the correct data for updated event
+
+@Delete_cleanUp @vaccine_type_RSV @patient_id_Mod11_NHS @supplier_name_Postman_Auth
+Scenario: Verify that the Update API will be successful with invalid but Mod11 compliant NHS Number
+    Given I have created a valid vaccination record
+    When Send a update for Immunization event created with patient address being updated
+    Then The request will be successful with the status code '200'
+    And The Etag in header will containing the latest event version
+    And The X-Request-ID and X-Correlation-ID keys in header will populate correctly
+    And The imms event table will be populated with the correct data for 'updated' event
+    And The delta table will be populated with the correct data for updated event

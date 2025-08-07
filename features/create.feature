@@ -74,4 +74,14 @@ Scenario Outline:  Verify that the POST Create API for different supplier fails 
       |Random    | RSV         | MAVIS        |
       |Random    | RSV         | SONAR        |
 
+@Delete_cleanUp @supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Mod11_NHS
+Scenario:  Verify that the POST Create API for invalid but Mod11 compliant NHS Number 
+    Given Valid json payload is created
+    When Trigger the post create request
+    Then The request will be successful with the status code '201'
+    And The location key and Etag in header will contain the Immunization Id and version
+    And The X-Request-ID and X-Correlation-ID keys in header will populate correctly
+    And The imms event table will be populated with the correct data for 'created' event
+    And The delta table will be populated with the correct data for created event
+
 
