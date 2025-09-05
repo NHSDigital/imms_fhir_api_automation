@@ -73,9 +73,3 @@ def validate_delta_table_for_updated_event(context):
      
     validate_imms_delta_record_with_created_event(context, create_obj, item, Operation.updated.value, ActionFlag.updated.value)
     
-@then('The Etag in header will containing the latest event version')
-def validate_etag_in_header(context):
-    etag = context.response.headers['E-Tag']
-    assert etag, "Etag header is missing in the response"
-    context.eTag= etag.strip('"')
-    assert context.eTag == str(context.expected_version), f"Etag version mismatch: expected {context.expected_version}, got {context.eTag}"

@@ -140,9 +140,8 @@ class PatientIdentifier(BaseModel):
 
 class ResponsePatient(BaseModel):
     reference: str
-    type: str
-    identifier: PatientIdentifier
-   
+    type: Optional[str] = None
+    identifier: Optional[PatientIdentifier] = None   
 
 class ImmunizationResponse(BaseModel):
     resourceType:  Literal["Immunization"]

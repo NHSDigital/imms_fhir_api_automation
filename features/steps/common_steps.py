@@ -31,6 +31,13 @@ def The_Immunization_object_is_created_with_patient_for_vaccine_type(context, Pa
     context.patient = load_patient_by_id(context.patient_id)
     context.immunization_object = create_immunization_object(context.patient, context.vaccine_type)
     
+@given(parsers.parse("Valid vaccination record is created with Patient '{Patient}' and vaccine_type '{vaccine_type}'"))
+def validVaccinationRecordIsCreatedWithPatient(context, Patient, vaccine_type):
+    The_Immunization_object_is_created_with_patient_for_vaccine_type(context, Patient, vaccine_type)
+    Trigger_the_post_create_request(context)
+    The_request_will_have_status_code(context, 201)
+    validateCreateLocation(context)
+        
 @given("I have created a valid vaccination record")
 def validVaccinationRecordIsCreated(context):
     valid_json_payload_is_created(context)
@@ -149,4 +156,11 @@ def validateForbiddenAccess(context, errorName):
     error_response = parse_errorResponse(context.response.json())
     validateErrorResponse(error_response, ErrorName[errorName].value, context.ImmsID)
     print(f"\n Error Response - \n {error_response}")
+    
+@then('The Etag in header will containing the latest event version')
+def validate_etag_in_header(context):
+    etag = context.response.headers['E-Tag']
+    assert etag, "Etag header is missing in the response"
+    context.eTag= etag.strip('"')
+    assert context.eTag == str(context.expected_version), f"Etag version mismatch: expected {context.expected_version}, got {context.eTag}"
 

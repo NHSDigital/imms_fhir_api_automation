@@ -63,3 +63,15 @@ def get_updateURLHeader(context, tag:str):
         }
     context.corrID = context.headers['X-Correlation-ID']
     context.reqID = context.headers['X-Request-ID']
+    
+def get_readURLHeader(context):
+    context.url = context.baseUrl + f"/Immunization/{context.ImmsID}?_summary"    
+    context.headers = {
+        'X-Correlation-ID': str(uuid.uuid4()),
+        'X-Request-ID': str(uuid.uuid4()),
+        'Accept': 'application/fhir+json',
+        'Content-Type': 'application/fhir+json',
+        'Authorization': 'Bearer ' + context.token
+        }
+    context.corrID = context.headers['X-Correlation-ID']
+    context.reqID = context.headers['X-Request-ID']
