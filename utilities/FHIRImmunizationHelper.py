@@ -8,12 +8,9 @@ from typing import Type, Dict
 import uuid
 from pydantic import BaseModel
 import pytest_check as check
-from utilities.config import configparser, getConfigParser
 from src.objectModels.dataObjects import *
 from src.objectModels.operation_outcome import OperationOutcome
 from utilities.vaccination_constants import ERROR_MAP
-
-config = getConfigParser()
 
 
 def empty_folder(path):
@@ -157,7 +154,7 @@ def validateToCompareRequestAndResponse(context, create_obj, created_event, tabl
     request_patient = create_obj.contained[1]
     response_patient = created_event.patient
 
-    expected_fullUrl = f"{config['SEARCH']['fullUrlRes']}{context.ImmsID}" # type: ignore
+    expected_fullUrl = f"{context.baseUrl}/Immunization/{context.ImmsID}" # type: ignore
     
     referencePattern = r"^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"   
     expected_occurrenceDateTime = covert_to_expected_date_format(create_obj.occurrenceDateTime)

@@ -1,13 +1,10 @@
 import os
 from utilities.awsToken import refresh_sso_token, set_aws_session_token
-from utilities.config import *
 from urllib.parse import parse_qs, urlparse
 import requests
 import uuid
 from lxml import html
 from datetime import datetime, timezone, timedelta
-
-config = getConfigParser()
 
 
 def extract_code(response):

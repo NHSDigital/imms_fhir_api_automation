@@ -9,7 +9,6 @@ from utilities.FHIRImmunizationHelper import *
 from utilities.enums import ErrorName, Operation
 from utilities.genToken import get_tokens
 from utilities.getHeader import *
-from utilities.config import *
 import pytest_check as check
 
 

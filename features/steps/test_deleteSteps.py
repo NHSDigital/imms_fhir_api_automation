@@ -3,12 +3,9 @@ from src.dynamoDB.dynamoDBHelper import *
 from src.objectModels.immunization_builder import *
 from utilities.enums import ActionFlag
 from utilities.getHeader import *
-from utilities.config import *
 import logging
 from pytest_bdd import scenarios, given, when, then, parsers
 from features.steps.common_steps import *
-
-config = getConfigParser()
 
 
 logging.basicConfig(filename='debugLog.log', level=logging.INFO)

@@ -5,24 +5,14 @@ from src.objectModels.patient_loader import load_patient_by_id
 from src.objectModels.SearchObject import *
 from utilities.enums import ActionFlag
 from utilities.getHeader import *
-from utilities.config import *
 from src.delta.dateValidation import *
 from src.delta.deltaHelper import *
-import logging
 from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
 from features.steps.common_steps import *
 from datetime import datetime
 from utilities.FHIRImmunizationHelper import *
 from datetime import datetime
-
-
-
-config = getConfigParser()
-
-
-logging.basicConfig(filename='debugLog.log', level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 scenarios("update.feature")
 

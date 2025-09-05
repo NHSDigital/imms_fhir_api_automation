@@ -1,8 +1,4 @@
-from utilities.config import *
 import uuid
-
-config = getConfigParser()
-
 
 def get_search_getURLHeader(context):
     context.url = context.baseUrl + "/Immunization"
