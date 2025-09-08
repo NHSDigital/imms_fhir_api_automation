@@ -61,5 +61,4 @@ def validate_delta_table_for_updated_event(context):
 
     item = [max(delta_items, key=lambda x: x.get('DateTimeStamp', 0))]
      
-    validate_imms_delta_record_with_created_event(context, create_obj, item, Operation.updated.value, ActionFlag.updated.value)
-    
+    validate_imms_delta_record_with_created_event(context, create_obj, item, Operation.updated.value, ActionFlag.updated.value)    

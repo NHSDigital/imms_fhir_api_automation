@@ -18,3 +18,4 @@ class ErrorName(Enum):
    invalid_DateFrom = "invalid_DateFrom"
    invalid_DateTo = "invalid_DateTo"
    invalid_NHSNumber = "invalid_NHSNumber"
+   read_not_found = "read_not_found"

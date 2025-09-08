@@ -207,7 +207,7 @@ class FHIRImmunizationResponse(BaseModel):
     entry: Optional[List[Entry]] = []  
     total: Optional[int] = None
 
-class ImmunizationIntTable(BaseModel):
+class ImmunizationReadResponse_IntTable(BaseModel):
     resourceType: str
     contained: List[Union[Patient, Practitioner]]
     extension: List[Extension]

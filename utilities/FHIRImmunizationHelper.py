@@ -144,8 +144,8 @@ def validateErrorResponse(error_response, errorName: str, imms_id: str = ""):
 def parse_FHIRImmunizationResponse(json_data: dict) -> FHIRImmunizationResponse:
     return FHIRImmunizationResponse.parse_obj(json_data)  
 
-def parse_readResponse(json_data: dict) -> ImmunizationIntTable:
-    return ImmunizationIntTable.parse_obj(json_data)  
+def parse_readResponse(json_data: dict) -> ImmunizationReadResponse_IntTable:
+    return ImmunizationReadResponse_IntTable.parse_obj(json_data)  
 
 def parse_errorResponse(json_data: dict) -> OperationOutcome:
     return OperationOutcome.parse_obj(json_data) 

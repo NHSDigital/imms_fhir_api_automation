@@ -524,8 +524,13 @@ ERROR_MAP = {
         "severity": "error",
         "code": "NOT-FOUND",
         "diagnostics": f"Immunization resource does not exist."
-    },
-      
+    },  
+    "read_not_found": {
+        "issue_code": "not-found",  
+        "severity": "error",
+        "code": "NOT-FOUND",
+        "diagnostics": f"The requested resource was not found."
+    },      
     "forbidden": {
         "issue_code": "forbidden",  
         "severity": "error",

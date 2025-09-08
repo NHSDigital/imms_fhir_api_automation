@@ -2,6 +2,8 @@ import json
 from venv import logger
 import requests
 from pytest_bdd import given, when, then, parsers
+from features.steps.test_deleteSteps import send_delete_for_immunization_event_created
+from features.steps.test_updateSteps import send_update_for_immunization_event, send_update_for_vaccination_detail
 from src.dynamoDB.dynamoDBHelper import *
 from src.objectModels.patient_loader import load_patient_by_id
 from src.objectModels.immunization_builder import *
@@ -149,6 +151,7 @@ def validate_imms_event_table_by_operation(context, operation: Operation):
         
     validateToCompareRequestAndResponse(context, create_obj, created_event, True)
 
+@then(parsers.parse("The Response JSONs should contain correct error message for '{errorName}'"))
 @then(parsers.parse("The Response JSONs should contain correct error message for '{errorName}' access"))
 @then(parsers.parse("The Response JSONs should contain correct error message for Imms_id '{errorName}'"))
 def validateForbiddenAccess(context, errorName):
@@ -162,4 +165,15 @@ def validate_etag_in_header(context):
     assert etag, "Etag header is missing in the response"
     context.eTag= etag.strip('"')
     assert context.eTag == str(context.expected_version), f"Etag version mismatch: expected {context.expected_version}, got {context.eTag}"
-
+    
+@given('created event is being updated twice')
+def created_event_is_being_updated_twice(context):
+    send_update_for_immunization_event(context)
+    The_request_will_have_status_code(context, 200)
+    send_update_for_vaccination_detail(context)
+    The_request_will_have_status_code(context, 200)
+    
+@given('created event is being deleted')
+def created_event_is_being_deleted(context):
+    send_delete_for_immunization_event_created(context)
+    The_request_will_have_status_code(context, 204)

@@ -5,7 +5,7 @@ from botocore.config import Config
 from utilities.FHIRImmunizationHelper import *
 import pytest_check as check
 
-from src.objectModels.dataObjects import ImmunizationIntTable
+from src.objectModels.dataObjects import ImmunizationReadResponse_IntTable
 
 my_config = Config(
     region_name='eu-west-2',
@@ -39,8 +39,8 @@ def fetch_immunization_events_detail(aws_profile_name:str, ImmsID: str):
 
     return response
     
-def parse_imms_int_imms_event_response(json_data: dict) -> ImmunizationIntTable:
-    return ImmunizationIntTable.parse_obj(json_data)  
+def parse_imms_int_imms_event_response(json_data: dict) -> ImmunizationReadResponse_IntTable:
+    return ImmunizationReadResponse_IntTable.parse_obj(json_data)  
 
 
 def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name:str, ImmsID: str, max_retries: int = 3, wait_seconds: int = 3):

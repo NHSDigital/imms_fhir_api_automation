@@ -31,3 +31,11 @@ def the_read_response_jsons_field_values_should_match_with_the_input_jsons_field
     data = context.response.json()
     context.created_event = parse_readResponse(data)
     validateToCompareRequestAndResponse(context, create_obj, context.created_event , True)
+    
+    
+@when('Send a read request for Immunization event created with invalid Imms Id')
+def send_read_for_immunization_event_created_with_invalid_imms_id(context):
+    context.ImmsID = str(uuid.uuid4())
+    get_readURLHeader(context)    
+    print(f"\n Read Request is {context.url}")
+    context.response = requests.get(f"{context.url}", headers=context.headers)
