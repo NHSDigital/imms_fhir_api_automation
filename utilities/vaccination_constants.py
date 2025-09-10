@@ -535,7 +535,8 @@ ERROR_MAP = {
         "issue_code": "forbidden",  
         "severity": "error",
         "code": "FORBIDDEN",
-        "diagnostics": f"Unauthorized request for vaccine type present in the stored immunization resource"
+        "diagnostics": f"Unauthorized request for vaccine type"
+        # "diagnostics": f"Unauthorized request for vaccine type present in the stored immunization resource"
     }
 }
 
