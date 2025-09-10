@@ -140,9 +140,8 @@ class PatientIdentifier(BaseModel):
 
 class ResponsePatient(BaseModel):
     reference: str
-    type: str
-    identifier: PatientIdentifier
-   
+    type: Optional[str] = None
+    identifier: Optional[PatientIdentifier] = None   
 
 class ImmunizationResponse(BaseModel):
     resourceType:  Literal["Immunization"]
@@ -208,7 +207,7 @@ class FHIRImmunizationResponse(BaseModel):
     entry: Optional[List[Entry]] = []  
     total: Optional[int] = None
 
-class ImmunizationIntTable(BaseModel):
+class ImmunizationReadResponse_IntTable(BaseModel):
     resourceType: str
     contained: List[Union[Patient, Practitioner]]
     extension: List[Extension]

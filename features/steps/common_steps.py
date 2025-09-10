@@ -9,9 +9,7 @@ from utilities.FHIRImmunizationHelper import *
 from utilities.enums import ErrorName, Operation
 from utilities.genToken import get_tokens
 from utilities.getHeader import *
-from utilities.config import *
 import pytest_check as check
-
 
     
 @given(parsers.parse("Valid token is generated for the '{Supplier}'"))
@@ -31,6 +29,13 @@ def The_Immunization_object_is_created_with_patient_for_vaccine_type(context, Pa
     context.patient = load_patient_by_id(context.patient_id)
     context.immunization_object = create_immunization_object(context.patient, context.vaccine_type)
     
+@given(parsers.parse("Valid vaccination record is created with Patient '{Patient}' and vaccine_type '{vaccine_type}'"))
+def validVaccinationRecordIsCreatedWithPatient(context, Patient, vaccine_type):
+    The_Immunization_object_is_created_with_patient_for_vaccine_type(context, Patient, vaccine_type)
+    Trigger_the_post_create_request(context)
+    The_request_will_have_status_code(context, 201)
+    validateCreateLocation(context)
+        
 @given("I have created a valid vaccination record")
 def validVaccinationRecordIsCreated(context):
     valid_json_payload_is_created(context)
@@ -143,10 +148,62 @@ def validate_imms_event_table_by_operation(context, operation: Operation):
         
     validateToCompareRequestAndResponse(context, create_obj, created_event, True)
 
+@then(parsers.parse("The Response JSONs should contain correct error message for '{errorName}'"))
 @then(parsers.parse("The Response JSONs should contain correct error message for '{errorName}' access"))
 @then(parsers.parse("The Response JSONs should contain correct error message for Imms_id '{errorName}'"))
 def validateForbiddenAccess(context, errorName):
     error_response = parse_errorResponse(context.response.json())
     validateErrorResponse(error_response, ErrorName[errorName].value, context.ImmsID)
     print(f"\n Error Response - \n {error_response}")
-
+    
+@then('The Etag in header will containing the latest event version')
+def validate_etag_in_header(context):
+    etag = context.response.headers['E-Tag']
+    assert etag, "Etag header is missing in the response"
+    context.eTag= etag.strip('"')
+    assert context.eTag == str(context.expected_version), f"Etag version mismatch: expected {context.expected_version}, got {context.eTag}"
+    
+@when('Send a update for Immunization event created with vaccination detail being updated')
+def send_update_for_vaccination_detail(context):
+    get_updateURLHeader(context, str(context.expected_version))
+    context.update_object = convert_to_update(context.immunization_object, context.ImmsID)
+    context.expected_version = int(context.expected_version) + 1
+    context.update_object.extension = [build_vaccine_procedure_extension(context.vaccine_type.upper())]
+    vaccine_details = get_vaccine_details(context.vaccine_type.upper())
+    context.update_object.vaccineCode = vaccine_details["vaccine_code"]
+    context.update_object.site = build_site_route(random.choice(SITE_MAP))
+    context.update_object.route = build_site_route(random.choice(ROUTE_MAP))
+    context.create_object = context.update_object
+    context.request = context.update_object.dict(exclude_none=True, exclude_unset=True)
+    context.response = requests.put(context.url + "/" + context.ImmsID, json=context.request, headers=context.headers)
+    print(f"Update Request is {json.dumps(context.request)}" )
+    
+@when('Send a update for Immunization event created with patient address being updated')
+def send_update_for_immunization_event(context):
+    get_updateURLHeader(context, str(context.expected_version))
+    context.update_object = convert_to_update(context.immunization_object, context.ImmsID)
+    context.expected_version = int(context.expected_version) + 1
+    context.update_object.contained[1].address[0].city = "Updated City"
+    context.update_object.contained[1].address[0].state = "Updated State"
+    context.create_object = context.update_object
+    context.request = context.update_object.dict(exclude_none=True, exclude_unset=True)
+    context.response = requests.put(context.url + "/" + context.ImmsID, json=context.request, headers=context.headers)
+    print(f"Update Request is {json.dumps(context.request)}" )
+    
+@given('created event is being updated twice')
+def created_event_is_being_updated_twice(context):
+    send_update_for_immunization_event(context)
+    The_request_will_have_status_code(context, 200)
+    send_update_for_vaccination_detail(context)
+    The_request_will_have_status_code(context, 200)
+    
+@given('created event is being deleted')
+def created_event_is_being_deleted(context):
+    send_delete_for_immunization_event_created(context)
+    The_request_will_have_status_code(context, 204)
+    
+@when('Send a delete for Immunization event created')
+def send_delete_for_immunization_event_created(context):
+    get_deleteURLHeader(context)
+    print(f"\n Delete Request is {context.url}/{context.ImmsID}")
+    context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)

@@ -4,7 +4,6 @@ from src.objectModels.immunization_builder import *
 from src.objectModels.patient_loader import load_patient_by_id
 from src.objectModels.SearchObject import *
 from utilities.getHeader import *
-from utilities.config import *
 from src.delta.dateValidation import *
 from src.delta.deltaHelper import *
 import logging
@@ -15,22 +14,7 @@ from datetime import datetime
 from utilities.FHIRImmunizationHelper import *
 from datetime import datetime
 
-
-
-config = getConfigParser()
-
-
-logging.basicConfig(filename='debugLog.log', level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 scenarios("search.feature")
-
-@given(parsers.parse("Valid vaccination record is created with Patient '{Patient}' and vaccine_type '{vaccine_type}'"))
-def validVaccinationRecordIsCreatedWithPatient(context, Patient, vaccine_type):
-    The_Immunization_object_is_created_with_patient_for_vaccine_type(context, Patient, vaccine_type)
-    Trigger_the_post_create_request(context)
-    The_request_will_have_status_code(context, 201)
-    validateCreateLocation(context)
 
 @when("Send a search request with GET method for Immunization event created")
 def TriggerSearchGetRequest(context):
@@ -187,13 +171,11 @@ def validateImmsID(context):
     # Assign to context for further usage
     context.Patient_fullUrl = patient_reference
 
-
 @then('The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization')
 def validateJsonImms(context):
     create_obj = context.create_object
     created_event= context.created_event.resource
     validateToCompareRequestAndResponse(context, create_obj, created_event)
-
 
 @then('The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient')
 def validateJsonPat(context):        

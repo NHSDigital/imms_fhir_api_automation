@@ -3,12 +3,9 @@ from src.dynamoDB.dynamoDBHelper import *
 from src.objectModels.immunization_builder import *
 from utilities.enums import ActionFlag
 from utilities.getHeader import *
-from utilities.config import *
 import logging
 from pytest_bdd import scenarios, given, when, then, parsers
 from features.steps.common_steps import *
-
-config = getConfigParser()
 
 
 logging.basicConfig(filename='debugLog.log', level=logging.INFO)
@@ -18,17 +15,12 @@ logger = logging.getLogger(__name__)
 scenarios("delete.feature")
 
 @when('Send a delete for Immunization event created with invalid Imms Id')
-def send_delete_for_immunization_event_created(context):
+def send_delete_for_immunization_event_created_inv(context):
     get_deleteURLHeader(context)
     context.ImmsID = str(uuid.uuid4())
     print(f"\n Delete Request is {context.url}/{context.ImmsID}")
     context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
 
-@when('Send a delete for Immunization event created')
-def send_delete_for_immunization_event_created(context):
-    get_deleteURLHeader(context)
-    print(f"\n Delete Request is {context.url}/{context.ImmsID}")
-    context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
     
 @when(parsers.parse("Send a delete for Immunization event created for the above created event is send by '{Supplier}'"))
 def send_delete_for_immunization_event_by_supplier(context, Supplier):
