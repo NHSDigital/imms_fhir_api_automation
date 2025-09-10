@@ -21,11 +21,6 @@ def send_delete_for_immunization_event_created(context):
     print(f"\n Delete Request is {context.url}/{context.ImmsID}")
     context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
 
-@when('Send a delete for Immunization event created')
-def send_delete_for_immunization_event_created(context):
-    get_deleteURLHeader(context)
-    print(f"\n Delete Request is {context.url}/{context.ImmsID}")
-    context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
     
 @when(parsers.parse("Send a delete for Immunization event created for the above created event is send by '{Supplier}'"))
 def send_delete_for_immunization_event_by_supplier(context, Supplier):

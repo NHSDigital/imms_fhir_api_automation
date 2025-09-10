@@ -2,8 +2,6 @@ import json
 from venv import logger
 import requests
 from pytest_bdd import given, when, then, parsers
-from features.steps.test_deleteSteps import send_delete_for_immunization_event_created
-from features.steps.test_updateSteps import send_update_for_immunization_event, send_update_for_vaccination_detail
 from src.dynamoDB.dynamoDBHelper import *
 from src.objectModels.patient_loader import load_patient_by_id
 from src.objectModels.immunization_builder import *
@@ -12,7 +10,6 @@ from utilities.enums import ErrorName, Operation
 from utilities.genToken import get_tokens
 from utilities.getHeader import *
 import pytest_check as check
-
 
     
 @given(parsers.parse("Valid token is generated for the '{Supplier}'"))
@@ -166,6 +163,33 @@ def validate_etag_in_header(context):
     context.eTag= etag.strip('"')
     assert context.eTag == str(context.expected_version), f"Etag version mismatch: expected {context.expected_version}, got {context.eTag}"
     
+@when('Send a update for Immunization event created with vaccination detail being updated')
+def send_update_for_vaccination_detail(context):
+    get_updateURLHeader(context, str(context.expected_version))
+    context.update_object = convert_to_update(context.immunization_object, context.ImmsID)
+    context.expected_version = int(context.expected_version) + 1
+    context.update_object.extension = [build_vaccine_procedure_extension(context.vaccine_type.upper())]
+    vaccine_details = get_vaccine_details(context.vaccine_type.upper())
+    context.update_object.vaccineCode = vaccine_details["vaccine_code"]
+    context.update_object.site = build_site_route(random.choice(SITE_MAP))
+    context.update_object.route = build_site_route(random.choice(ROUTE_MAP))
+    context.create_object = context.update_object
+    context.request = context.update_object.dict(exclude_none=True, exclude_unset=True)
+    context.response = requests.put(context.url + "/" + context.ImmsID, json=context.request, headers=context.headers)
+    print(f"Update Request is {json.dumps(context.request)}" )
+    
+@when('Send a update for Immunization event created with patient address being updated')
+def send_update_for_immunization_event(context):
+    get_updateURLHeader(context, str(context.expected_version))
+    context.update_object = convert_to_update(context.immunization_object, context.ImmsID)
+    context.expected_version = int(context.expected_version) + 1
+    context.update_object.contained[1].address[0].city = "Updated City"
+    context.update_object.contained[1].address[0].state = "Updated State"
+    context.create_object = context.update_object
+    context.request = context.update_object.dict(exclude_none=True, exclude_unset=True)
+    context.response = requests.put(context.url + "/" + context.ImmsID, json=context.request, headers=context.headers)
+    print(f"Update Request is {json.dumps(context.request)}" )
+    
 @given('created event is being updated twice')
 def created_event_is_being_updated_twice(context):
     send_update_for_immunization_event(context)
@@ -177,3 +201,9 @@ def created_event_is_being_updated_twice(context):
 def created_event_is_being_deleted(context):
     send_delete_for_immunization_event_created(context)
     The_request_will_have_status_code(context, 204)
+    
+@when('Send a delete for Immunization event created')
+def send_delete_for_immunization_event_created(context):
+    get_deleteURLHeader(context)
+    print(f"\n Delete Request is {context.url}/{context.ImmsID}")
+    context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
