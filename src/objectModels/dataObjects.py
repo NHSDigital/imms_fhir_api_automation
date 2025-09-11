@@ -141,11 +141,14 @@ class PatientIdentifier(BaseModel):
 class ResponsePatient(BaseModel):
     reference: str
     type: Optional[str] = None
-    identifier: Optional[PatientIdentifier] = None   
-
+    identifier: Optional[PatientIdentifier] = None 
+    
+class Meta(BaseModel):
+    versionId: str
 class ImmunizationResponse(BaseModel):
     resourceType:  Literal["Immunization"]
     id: str
+    meta: Meta
     extension: List[Extension]
     identifier: List[Identifier]
     status: str

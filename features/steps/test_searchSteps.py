@@ -16,6 +16,15 @@ from datetime import datetime
 
 scenarios("search.feature")
 
+@when('Send a search request with Post method using identifier header for Immunization event created')  
+def send_search_post_request_with_identifier_header(context):
+    get_search_postURLHeader(context)
+    context.request =  {
+             "identifier": f'{context.create_object.identifier[0].system}|{context.create_object.identifier[0].value}'
+            }
+    print(f"\n Search Post Request - \n {context.request}")
+    context.response = requests.post(context.url, headers=context.headers, data=context.request)
+
 @when("Send a search request with GET method for Immunization event created")
 def TriggerSearchGetRequest(context):
     get_search_getURLHeader(context)
@@ -203,3 +212,17 @@ def validateJsonPat(context):
                 f"Expected {name}: {expected}, Actual {actual}"
             )
 
+
+@then('correct immunization event is returned in the response')
+def validate_correct_immunization_event(context):
+    data = context.response.json()
+    context.parsed_search_object = parse_FHIRImmunizationResponse(data)
+
+    context.created_event = context.parsed_search_object.entry[0] if context.parsed_search_object.entry else None
+   
+    if context.created_event is None:
+        raise AssertionError(f"No object found with Immunisation ID {context.ImmsID} in the search response.")
+       
+    validateJsonImms(context)
+    
+    assert context.parsed_search_object.total == 1, "Expected total to be 1, but got {context.parsed_search_object.total}"

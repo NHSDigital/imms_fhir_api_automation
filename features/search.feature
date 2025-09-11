@@ -160,3 +160,24 @@ Scenario Outline: Verify that Search API will throw error supplier is not author
     Examples:
       | NHSNumber   | DiseaseType |
       |  9449304424 | COVID19     |
+
+    
+@Delete_cleanUp @vaccine_type_FLU @patient_id_Random  @supplier_name_Postman_Auth
+Scenario: Flu event is created and updated twice and search request fetch the latest meta version and Etag
+    Given I have created a valid vaccination record 
+    And created event is being updated twice
+    When Send a search request with GET method for Immunization event created
+    Then The request will be successful with the status code '200'
+    And The Search Response JSONs should contain the detail of the immunization events created above
+    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
+    And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
+
+@Delete_cleanUp @vaccine_type_FLU @patient_id_Random  @supplier_name_Postman_Auth
+Scenario: Flu event is created and search post request fetch the only one record matched with identifier
+    Given I have created a valid vaccination record 
+    #And I have the identifier of the created event by getting all the vaccination records of the patient
+    When Send a search request with Post method using identifier header for Immunization event created
+    Then The request will be successful with the status code '200'
+    And correct immunization event is returned in the response
+  
+    
