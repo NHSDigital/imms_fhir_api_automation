@@ -24,6 +24,16 @@ def send_search_post_request_with_identifier_header(context):
             }
     print(f"\n Search Post Request - \n {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
+    
+@when('Send a search request with Post method using identifier and _elements header for Immunization event created')
+def send_search_post_request_with_identifier_and_elements_header(context):
+    get_search_postURLHeader(context)
+    context.request =  {
+             "identifier": f'{context.create_object.identifier[0].system}|{context.create_object.identifier[0].value}',
+             "_elements": "meta,id"
+            }
+    print(f"\n Search Post Request - \n {context.request}")
+    context.response = requests.post(context.url, headers=context.headers, data=context.request)
 
 @when("Send a search request with GET method for Immunization event created")
 def TriggerSearchGetRequest(context):
@@ -166,6 +176,12 @@ def validateDateRange(context):
 def validateImmsID(context):
     data = context.response.json()
     context.parsed_search_object = parse_FHIRImmunizationResponse(data)
+    
+    assert context.parsed_search_object.resourceType == "Bundle", f"expected resourceType to be 'Bundle' but got {context.parsed_search_object.resourceType}"
+    assert context.parsed_search_object.type == "searchset", f"expected resourceType to be 'searchset' but got {context.parsed_search_object.type }"
+    assert context.parsed_search_object.link[0].relation == "self" , f"expected link relation to be 'self' but got {context.parsed_search_object.link[0].relation }"
+    assert  context.parsed_search_object.link[0].url.startswith(context.baseUrl), f"Expected link URL to start with '{context.baseUrl}', but got '{context.parsed_search_object.link[0].url}'"
+    assert context.parsed_search_object.total >= 1, f"expected total to be greater than or equal to 1 but got {context.parsed_search_object.total }"
 
     context.created_event = find_entry_by_Imms_id(context.parsed_search_object, context.ImmsID)
    
@@ -225,4 +241,34 @@ def validate_correct_immunization_event(context):
        
     validateJsonImms(context)
     
-    assert context.parsed_search_object.total == 1, "Expected total to be 1, but got {context.parsed_search_object.total}"
+    assert context.parsed_search_object.resourceType == "Bundle", f"expected resourceType to be 'Bundle' but got {context.parsed_search_object.resourceType}"
+    assert context.parsed_search_object.type == "searchset", f"expected resourceType to be 'searchset' but got {context.parsed_search_object.type }"
+    assert context.parsed_search_object.link[0].relation == "self" , f"expected link relation to be 'self' but got {context.parsed_search_object.link[0].relation }"
+    assert  context.parsed_search_object.link[0].url.startswith(context.baseUrl), f"Expected link URL to start with '{context.baseUrl}', but got '{context.parsed_search_object.link[0].url}'"
+    assert context.parsed_search_object.total == 1, f"expected total to be greater than or equal to 1 but got {context.parsed_search_object.total }"
+
+@then('correct immunization event is returned in the response with only specified elements')
+def validate_correct_immunization_event_with_elements(context):
+    response = context.response.json()
+    assert response.get("resourceType") == "Bundle", "resourceType should be 'Bundle'"
+    assert response.get("type") == "searchset", "type should be 'searchset'"
+    assert isinstance(response.get("entry"), list) and len(response["entry"]) > 0, " entry list is missing or empty"
+
+    # Link validation
+    link = response.get("link", [{}])[0]
+    link_url = link.get("url")
+    assert link_url is not None, " link[0].url is missing"
+    assert link_url.startswith(context.baseUrl), f"link[0].url should start with '{context.baseUrl}', got '{link_url}'"
+
+    # Entry resource validation
+    resource = response["entry"][0].get("resource", {})
+    assert resource.get("resourceType") == "Immunization", "resourceType should be 'Immunization'"
+    assert "id" in resource, "resource.id is missing"
+    assert "meta" in resource and "versionId" in resource["meta"], " meta.versionId is missing"
+    
+    assert resource["id"] == context.ImmsID, f"resource.id mismatch: expected '{context.ImmsID}', got '{resource['id']}'"
+    assert str(resource["meta"]["versionId"]) == str(context.expected_version),  f"meta.versionId mismatch: expected '{context.expected_version}', got '{resource['meta']['versionId']}'"
+
+    assert response.get("total") == 1, "total should be 1"
+
+
