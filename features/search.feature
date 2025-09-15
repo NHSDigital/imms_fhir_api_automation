@@ -177,5 +177,26 @@ Scenario: Flu event is created and search post request fetch the only one record
     When Send a search request with Post method using identifier and _elements header for Immunization event created
     Then The request will be successful with the status code '200'
     And correct immunization event is returned in the response with only specified elements
-  
+
+@Delete_cleanUp @vaccine_type_FLU @patient_id_Random  @supplier_name_Postman_Auth
+Scenario: Flu event is created and search post request fetch the only one record matched with identifier with correct version id
+    Given I have created a valid vaccination record
+    And created event is being updated twice
+    When Send a search request with Post method using identifier header for Immunization event created
+    Then The request will be successful with the status code '200'
+    And correct immunization event is returned in the response
+
+@Delete_cleanUp @vaccine_type_FLU @patient_id_Random  @supplier_name_Postman_Auth
+Scenario: Flu event is created and search post request fetch the only one record matched with identifier and _elements with correct version id
+    Given I have created a valid vaccination record
+    And created event is being updated twice
+    When Send a search request with Post method using identifier and _elements header for Immunization event created
+    Then The request will be successful with the status code '200'
+    And correct immunization event is returned in the response with only specified elements
+
+@vaccine_type_FLU @patient_id_Random  @supplier_name_Postman_Auth
+Scenario: Empty search response will be received when no record is found for the given identifier in search request
+    When Send a search request with post method using invalid identifier header for Immunization event created
+    Then The request will be successful with the status code '200'
+    And Empty immunization event is returned in the response  
     

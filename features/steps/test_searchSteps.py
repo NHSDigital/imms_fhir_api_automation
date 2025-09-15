@@ -34,6 +34,16 @@ def send_search_post_request_with_identifier_and_elements_header(context):
             }
     print(f"\n Search Post Request - \n {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
+    
+@when('Send a search request with post method using invalid identifier header for Immunization event created')
+def send_search_post_request_with_invalid_identifier_header(context):
+    get_search_postURLHeader(context)
+    context.request =  {
+             "identifier": f'https://www.ieds.england.nhs.uk/|{str(uuid.uuid4())}',
+             "_elements": "meta,id"
+            }
+    print(f"\n Search Post Request - \n {context.request}")
+    context.response = requests.post(context.url, headers=context.headers, data=context.request)
 
 @when("Send a search request with GET method for Immunization event created")
 def TriggerSearchGetRequest(context):
@@ -271,4 +281,17 @@ def validate_correct_immunization_event_with_elements(context):
 
     assert response.get("total") == 1, "total should be 1"
 
+@then('Empty immunization event is returned in the response')
+def validate_empty_immunization_event(context):
+    response = context.response.json()
+    assert response.get("resourceType") == "Bundle", "resourceType should be 'Bundle'"
+    assert response.get("type") == "searchset", "type should be 'searchset'"
+    assert isinstance(response.get("entry"), list) and len(response["entry"]) == 0, " entry list should be empty"
 
+    # Link validation
+    link = response.get("link", [{}])[0]
+    link_url = link.get("url")
+    assert link_url is not None, " link[0].url is missing"
+    assert link_url == f"{context.baseUrl}/Immunization?identifier=None", f"link[0].url should be '{context.baseUrl}/Immunization?identifier=None', got '{link_url}'"
+
+    assert response.get("total") == 0, "total should be 0"
