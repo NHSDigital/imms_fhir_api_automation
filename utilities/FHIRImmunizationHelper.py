@@ -154,7 +154,7 @@ def validateToCompareRequestAndResponse(context, create_obj, created_event, tabl
     request_patient = create_obj.contained[1]
     response_patient = created_event.patient
 
-    expected_fullUrl = f"{context.baseUrl}/Immunization/{context.ImmsID}" # type: ignore
+    expected_fullUrl = f"{context.baseUrl}/Immunization/{context.ImmsID}"
     
     referencePattern = r"^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"   
     expected_occurrenceDateTime = covert_to_expected_date_format(create_obj.occurrenceDateTime)
@@ -169,6 +169,7 @@ def validateToCompareRequestAndResponse(context, create_obj, created_event, tabl
         fields_to_compare.append(("patient.identifier.system", request_patient.identifier[0].system, response_patient.identifier.system))
         fields_to_compare.append(("patient.identifier.value", request_patient.identifier[0].value, response_patient.identifier.value))
         fields_to_compare.append(("patient.reference", bool(re.match(referencePattern, response_patient.reference)), True))
+        fields_to_compare.append(("meta.versionId", context.expected_version, int(created_event.meta.versionId))) 
     
     if table_validation:
         fields_to_compare.append(("Contained", create_obj.contained, created_event.contained))
