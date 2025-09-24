@@ -84,4 +84,14 @@ Scenario:  Verify that the POST Create API for invalid but Mod11 compliant NHS N
     And The imms event table will be populated with the correct data for 'created' event
     And The delta table will be populated with the correct data for created event
 
-
+ @supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Random
+Scenario Outline:  Verify that the POST Create API will fail if doseNumberPositiveInt is not valid
+    Given Valid json payload is created where doseNumberPositiveInt is '<doseNumberPositiveInt>'
+    When Trigger the post create request
+    Then The request will be unsuccessful with the status code '400'
+    And The Response JSONs should contain correct error message for '<error_type>'
+    Examples: 
+      | doseNumberPositiveInt | error_type                                  |
+      | -1                    | doseNumberPositiveInt_PositiveInteger       |
+      | 0                     | doseNumberPositiveInt_PositiveInteger       |
+      | 10                    | doseNumberPositiveInt_ValidRange            |

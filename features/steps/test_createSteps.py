@@ -18,6 +18,12 @@ logger = logging.getLogger(__name__)
 
 scenarios("create.feature")
 
+@given(parsers.parse("Valid json payload is created where doseNumberPositiveInt is '{doseNumberPositiveInt}'"))
+def createValidJsonPayloadWithDoseNumberPositiveInt(context, doseNumberPositiveInt):
+    valid_json_payload_is_created(context)
+    context.immunization_object.protocolApplied[0].doseNumberPositiveInt = int(doseNumberPositiveInt)
+
+
 @given('Valid json payload is created where vaccination terms has text field populated')
 def createValidJsonPayloadWithProcedureText(context):
     valid_json_payload_is_created(context)
