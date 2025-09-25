@@ -1,5 +1,5 @@
 from dataclasses import fields, is_dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from logging import config
 import os
 import re
@@ -205,3 +205,19 @@ def validateToCompareRequestAndResponse(context, create_obj, created_event, tabl
                 expected == actual,
                 f"Expected {name}: {expected}, Actual {actual}"
             )
+
+def generate_date(date_str: str) -> str:
+    if date_str == "future_occurrence":
+        future_date = datetime.now(timezone.utc) + timedelta(seconds=50)
+        return  str(future_date.isoformat(timespec='milliseconds'))
+    elif date_str == "future_date":
+        future_date = datetime.now(timezone.utc) + timedelta(days=1)
+        return str(future_date.date())
+    elif date_str == "invalid_format":
+        return "2023/23/01"
+    elif date_str == "nonexistent":
+        return "2023-02-30T10:00:00.000Z"
+    elif date_str == "empty":
+        return ""
+    else:
+        raise ValueError(f"Unknown date type: {date_str}")

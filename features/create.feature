@@ -95,3 +95,63 @@ Scenario Outline:  Verify that the POST Create API will fail if doseNumberPositi
       | -1                    | doseNumberPositiveInt_PositiveInteger       |
       | 0                     | doseNumberPositiveInt_PositiveInteger       |
       | 10                    | doseNumberPositiveInt_ValidRange            |
+
+
+@Delete_cleanUp @supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Random
+Scenario: Verify that the POST Create API will be successful if all date field has valid past date
+    Given Valid json payload is created where date fields has past date
+    When Trigger the post create request
+    Then The request will be successful with the status code '201'
+    And The location key and Etag in header will contain the Immunization Id and version
+
+
+@supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Random
+Scenario Outline: Verify that the POST Create API will fail if occurrenceDateTime has future or invalid formatted date
+    Given Valid json payload is created where occurrenceDateTime has invalid '<Date>' date
+    When Trigger the post create request
+    Then The request will be unsuccessful with the status code '400'
+    And The Response JSONs should contain correct error message for 'invalid_OccurrenceDateTime'
+     Examples: 
+        | Date                  | 
+        | future_occurrence     | 
+        | invalid_format        |
+        | nonexistent           |
+        | empty                 |
+
+@supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Random
+Scenario Outline: Verify that the POST Create API will fail if recorded has future or invalid formatted date
+    Given Valid json payload is created where recorded has invalid '<Date>' date
+    When Trigger the post create request
+    Then The request will be unsuccessful with the status code '400'
+    And The Response JSONs should contain correct error message for 'invalid_recorded'
+     Examples: 
+        | Date                  | 
+        | future_date           | 
+        | invalid_format        |
+        | nonexistent           |
+        | empty                 |
+
+@supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Random
+Scenario Outline: Verify that the POST Create API will fail if patient's data of birth has future or invalid formatted date
+    Given Valid json payload is created where date of birth has invalid '<Date>' date
+    When Trigger the post create request
+    Then The request will be unsuccessful with the status code '400'
+    And The Response JSONs should contain correct error message for '<error_type>'
+     Examples: 
+        | Date                  | error_type            |   
+        | future_date           | future_DateOfBirth    |
+        | invalid_format        | invalid_DateOfBirth   |
+        | nonexistent           | invalid_DateOfBirth   |
+        | empty                 | invalid_DateOfBirth   |
+
+@supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Random
+Scenario Outline: Verify that the POST Create API will fail if expiration date has invalid formatted date
+    Given Valid json payload is created where expiration date has invalid '<Date>' date
+    When Trigger the post create request
+    Then The request will be unsuccessful with the status code '400'
+    And The Response JSONs should contain correct error message for 'invalid_expirationDate'
+     Examples: 
+        | Date                  | 
+        | invalid_format        |
+        | nonexistent           |
+        | empty                 |

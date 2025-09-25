@@ -549,5 +549,35 @@ ERROR_MAP = {
         "code": "INVARIANT",
         "diagnostics": "Validation errors: protocolApplied[0].doseNumberPositiveInt must be an integer in the range 1 to 9"
     },
+    "invalid_OccurrenceDateTime": {
+        "issue_code": "invariant",    
+        "severity": "error",
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: occurrenceDateTime must be a valid datetime in one of the following formats:- 'YYYY-MM-DD' — Full date only- 'YYYY-MM-DDThh:mm:ss%z' — Full date and time with timezone (e.g. +00:00 or +01:00)- 'YYYY-MM-DDThh:mm:ss.f%z' — Full date and time with milliseconds and timezone-  Date must not be in the future.Only '+00:00' and '+01:00' are accepted as valid timezone offsets.\nNote that partial dates are not allowed for occurrenceDateTime in this service.\n"
+    },
+    "invalid_recorded": {
+        "issue_code": "invariant",
+        "severity": "error",
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: recorded must be a valid datetime in one of the following formats:- 'YYYY-MM-DD' — Full date only- 'YYYY-MM-DDThh:mm:ss%z' — Full date and time with timezone (e.g. +00:00 or +01:00)- 'YYYY-MM-DDThh:mm:ss.f%z' — Full date and time with milliseconds and timezone-  Date must not be in the future."
+    },
+    "future_DateOfBirth": {
+        "issue_code": "invariant",
+        "severity": "error",
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].birthDate must not be in the future"
+    },
+    "invalid_DateOfBirth": {
+        "issue_code": "invariant",
+        "severity": "error",
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].birthDate must be a valid date string in the format \"YYYY-MM-DD\""
+    },
+    "invalid_expirationDate": {
+        "issue_code": "invariant",
+        "severity": "error",
+        "code": "INVARIANT",
+        "diagnostics": 'Validation errors: expirationDate must be a valid date string in the format \"YYYY-MM-DD\"'
+    }
 }
 
