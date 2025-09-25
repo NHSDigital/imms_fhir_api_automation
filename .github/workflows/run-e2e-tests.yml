@@ -101,7 +101,7 @@ jobs:
           else
             echo "Pytest-BDD tests passed"
           fi
-      
+          
       - name: Publish test results to GitHub UI
         if: always()
         uses: dorny/test-reporter@v1

@@ -536,7 +536,18 @@ ERROR_MAP = {
         "severity": "error",
         "code": "FORBIDDEN",
         "diagnostics": f"Unauthorized request for vaccine type"
-        # "diagnostics": f"Unauthorized request for vaccine type present in the stored immunization resource"
-    }
+    },
+    "doseNumberPositiveInt_PositiveInteger": {
+        "issue_code": "invariant",
+        "severity": "error",
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: protocolApplied[0].doseNumberPositiveInt must be a positive integer"
+    },
+    "doseNumberPositiveInt_ValidRange": {
+        "issue_code": "invariant",
+        "severity": "error",
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: protocolApplied[0].doseNumberPositiveInt must be an integer in the range 1 to 9"
+    },
 }
 
