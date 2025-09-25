@@ -101,7 +101,17 @@ jobs:
           else
             echo "Pytest-BDD tests passed"
           fi
-          
+
+  report:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Publish test results to GitHub UI
         if: always()
         uses: dorny/test-reporter@v1
@@ -110,5 +120,3 @@ jobs:
           path: '**/output/test-results.xml'
           reporter: java-junit
           fail-on-error: false
-
-
