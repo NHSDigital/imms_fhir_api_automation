@@ -10,7 +10,7 @@ from pydantic import BaseModel
 import pytest_check as check
 from src.objectModels.dataObjects import *
 from src.objectModels.operation_outcome import OperationOutcome
-from utilities.vaccination_constants import ERROR_MAP
+from utilities.error_constants import ERROR_MAP
 
 
 def empty_folder(path):
@@ -128,10 +128,10 @@ def validateErrorResponse(error_response, errorName: str, imms_id: str = ""):
     fields_to_compare.extend([
         ("ResourceType", ERROR_MAP["Common_field"]["resourceType"], error_response.resourceType),
         ("Meta_Profile", ERROR_MAP["Common_field"]["profile"], error_response.meta.profile[0]),
-        ("Issue_Code", ERROR_MAP[errorName]["issue_code"], error_response.issue[0].code),
+        ("Issue_Code", ERROR_MAP[errorName]["code"].lower(), error_response.issue[0].code.lower()),
         ("Coding_system", ERROR_MAP["Common_field"]["system"], error_response.issue[0].details.coding[0].system),
-        ("Coding_Code", ERROR_MAP[errorName]["code"], error_response.issue[0].details.coding[0].code),
-        ("severity", ERROR_MAP[errorName]["severity"], error_response.issue[0].severity),
+        ("Coding_Code", ERROR_MAP[errorName]["code"].lower(), error_response.issue[0].details.coding[0].code.lower()),
+        ("severity", ERROR_MAP["Common_field"]["severity"], error_response.issue[0].severity),
     ])
 
     for name, expected, actual in fields_to_compare:

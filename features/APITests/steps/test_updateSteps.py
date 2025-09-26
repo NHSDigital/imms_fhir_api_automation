@@ -9,12 +9,12 @@ from src.delta.dateValidation import *
 from src.delta.deltaHelper import *
 from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
-from features.steps.common_steps import *
+from ..steps.common_steps import *
 from datetime import datetime
 from utilities.FHIRImmunizationHelper import *
 from datetime import datetime
 
-scenarios("update.feature")
+scenarios('APITests/update.feature')
 
    
 @when(parsers.parse("Send a update for Immunization event created with patient address being updated by '{Supplier}'"))

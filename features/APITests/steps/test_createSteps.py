@@ -10,14 +10,14 @@ from src.delta.deltaHelper import *
 import logging
 from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
-from features.steps.common_steps import *
+from ..steps.common_steps import *
 
 
 logging.basicConfig(filename='debugLog.log', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-scenarios("create.feature")
+scenarios('APITests/create.feature')
 
 @given(parsers.parse("Valid json payload is created where doseNumberPositiveInt is '{doseNumberPositiveInt}'"))
 def createValidJsonPayloadWithDoseNumberPositiveInt(context, doseNumberPositiveInt):
@@ -34,6 +34,7 @@ def create_valid_json_payload_with_past_dates(context):
     context.immunization_object.recorded = str((today - timedelta(days=20)).date())
     context.immunization_object.expirationDate = str((today + timedelta(days=5)).date())
     
+ 
 @given(parsers.parse("Valid json payload is created where occurrenceDateTime has invalid '{DateText}' date"))
 def createValidJsonPayloadWithInvalidOccurrenceDateTime(context, DateText):
     valid_json_payload_is_created(context)

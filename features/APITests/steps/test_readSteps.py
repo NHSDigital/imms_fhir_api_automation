@@ -9,7 +9,7 @@ from src.delta.deltaHelper import *
 import logging
 from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
-from features.steps.common_steps import *
+from ..steps.common_steps import *
 from datetime import datetime
 from utilities.FHIRImmunizationHelper import *
 from datetime import datetime
@@ -17,7 +17,7 @@ from datetime import datetime
 logging.basicConfig(filename='debugLog.log', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-scenarios("read.feature")
+scenarios('APITests/read.feature')
 
 @when("Send a read request for Immunization event created")
 def send_read_for_immunization_event_created(context):

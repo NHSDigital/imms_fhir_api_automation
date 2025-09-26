@@ -90,7 +90,7 @@ jobs:
           echo "Activating virtual env"
           source venv/bin/activate
           echo "Running Pytest-BDD tests"
-          pytest --junitxml=output/test-results.xml
+          pytest features/APITests --junitxml=output/test-results.xml
           if [ $? -ne 0 ]; then
             echo "Pytest-BDD tests failed"
             exit 1
