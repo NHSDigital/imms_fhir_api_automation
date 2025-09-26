@@ -54,8 +54,6 @@ def createValidJsonPayloadWithInvalidExpiration(context, DateText):
 def createValidJsonPayloadWithInvalidDOB(context, DateText):
     valid_json_payload_is_created(context)
     context.immunization_object.contained[1].birthDate = generate_date(DateText)
-    
-
 
 @given('Valid json payload is created where vaccination terms has text field populated')
 def createValidJsonPayloadWithProcedureText(context):
@@ -65,7 +63,6 @@ def createValidJsonPayloadWithProcedureText(context):
     context.immunization_object.vaccineCode = vaccine_details["vaccine_code"]
     context.immunization_object.site = build_site_route(random.choice(SITE_MAP), "testing site text")
     context.immunization_object.route = build_site_route(random.choice(ROUTE_MAP), "testing route text")
-
     
 @given('Valid json payload is created where vaccination terms has multiple instances of coding')
 def createValidJsonPayloadWithProcedureMultipleCodings(context):
