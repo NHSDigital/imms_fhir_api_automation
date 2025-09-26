@@ -9,12 +9,12 @@ from src.delta.deltaHelper import *
 import logging
 from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
-from features.steps.common_steps import *
+from ..steps.common_steps import *
 from datetime import datetime
 from utilities.FHIRImmunizationHelper import *
 from datetime import datetime
 
-scenarios("search.feature")
+scenarios('APITests/search.feature')
 
 @when('Send a search request with Post method using identifier header for Immunization event created')  
 def send_search_post_request_with_identifier_header(context):

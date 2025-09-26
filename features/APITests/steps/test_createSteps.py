@@ -1,6 +1,7 @@
 from src.dynamoDB.dynamoDBHelper import *
 from src.objectModels.immunization_builder import *
 from src.objectModels.patient_loader import load_patient_by_id
+from datetime import datetime, timedelta, timezone
 from utilities.FHIRImmunizationHelper import *
 from utilities.enums import ActionFlag
 from utilities.getHeader import *
@@ -9,20 +10,50 @@ from src.delta.deltaHelper import *
 import logging
 from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
-from features.steps.common_steps import *
+from ..steps.common_steps import *
 
 
 logging.basicConfig(filename='debugLog.log', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-scenarios("create.feature")
+scenarios('APITests/create.feature')
 
 @given(parsers.parse("Valid json payload is created where doseNumberPositiveInt is '{doseNumberPositiveInt}'"))
 def createValidJsonPayloadWithDoseNumberPositiveInt(context, doseNumberPositiveInt):
     valid_json_payload_is_created(context)
     context.immunization_object.protocolApplied[0].doseNumberPositiveInt = int(doseNumberPositiveInt)
+    
 
+@given("Valid json payload is created where date fields has past date")
+def create_valid_json_payload_with_past_dates(context):
+    valid_json_payload_is_created(context)
+    today = datetime.now(timezone.utc)
+    context.immunization_object.contained[1].birthDate = str((today - timedelta(days=150)).date())
+    context.immunization_object.occurrenceDateTime = str((today - timedelta(days=15)).isoformat(timespec='milliseconds'))
+    context.immunization_object.recorded = str((today - timedelta(days=20)).date())
+    context.immunization_object.expirationDate = str((today + timedelta(days=5)).date())
+    
+ 
+@given(parsers.parse("Valid json payload is created where occurrenceDateTime has invalid '{DateText}' date"))
+def createValidJsonPayloadWithInvalidOccurrenceDateTime(context, DateText):
+    valid_json_payload_is_created(context)
+    context.immunization_object.occurrenceDateTime = generate_date(DateText)
+    
+@given(parsers.parse("Valid json payload is created where recorded has invalid '{DateText}' date"))
+def createValidJsonPayloadWithInvalidRecorded(context, DateText):
+    valid_json_payload_is_created(context)
+    context.immunization_object.recorded = generate_date(DateText)
+    
+@given(parsers.parse("Valid json payload is created where expiration date has invalid '{DateText}' date"))
+def createValidJsonPayloadWithInvalidExpiration(context, DateText):
+    valid_json_payload_is_created(context)
+    context.immunization_object.expirationDate = generate_date(DateText)
+    
+@given(parsers.parse("Valid json payload is created where date of birth has invalid '{DateText}' date"))
+def createValidJsonPayloadWithInvalidDOB(context, DateText):
+    valid_json_payload_is_created(context)
+    context.immunization_object.contained[1].birthDate = generate_date(DateText)
 
 @given('Valid json payload is created where vaccination terms has text field populated')
 def createValidJsonPayloadWithProcedureText(context):
@@ -32,7 +63,6 @@ def createValidJsonPayloadWithProcedureText(context):
     context.immunization_object.vaccineCode = vaccine_details["vaccine_code"]
     context.immunization_object.site = build_site_route(random.choice(SITE_MAP), "testing site text")
     context.immunization_object.route = build_site_route(random.choice(ROUTE_MAP), "testing route text")
-
     
 @given('Valid json payload is created where vaccination terms has multiple instances of coding')
 def createValidJsonPayloadWithProcedureMultipleCodings(context):
@@ -66,7 +96,6 @@ def createValidJsonPayloadWithProcedureNoTextValue(context):
     context.immunization_object.site = build_site_route(random.choice(SITE_MAP), add_extensions=False)
     context.immunization_object.route = build_site_route(random.choice(ROUTE_MAP), add_extensions=False)
 
-
 @given('Valid json payload is created where vaccination terms has no text or value string or display field')
 def createValidJsonPayloadWithProcedureNoTextValueDisplay(context):
     valid_json_payload_is_created(context)
@@ -81,8 +110,7 @@ def createValidJsonPayloadWithProcedureNoTextValueDisplay(context):
     context.immunization_object.site.text = None      
     context.immunization_object.route.coding[0].extension = None
     context.immunization_object.route.coding[0].display = None
-    context.immunization_object.route.text = None          
-
+    context.immunization_object.route.text = None     
 
 @then('The imms event table will be populated with the correct data for created event')
 def validate_imms_event_table(context):
@@ -166,7 +194,3 @@ def validate_procedure_term_blank_in_delta_table(context):
     assert actual_terms["product_term"] == "", f"Expected product term text to be blank, but got '{actual_terms['product_term']}'"
     assert actual_terms["site_term"] == "", f"Expected site of vaccination term text to be blank, but got '{actual_terms['site_term']}'"
     assert actual_terms["route_term"] == "", f"Expected route of vaccination term text to be blank, but got '{actual_terms['route_term']}'"
-
-
-
-

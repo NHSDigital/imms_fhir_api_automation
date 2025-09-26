@@ -1,18 +1,18 @@
-from features.steps.test_searchSteps import TriggerSearchGetRequest, TriggerSearchPostRequest
+from ..steps.test_searchSteps import TriggerSearchGetRequest, TriggerSearchPostRequest
 from src.dynamoDB.dynamoDBHelper import *
 from src.objectModels.immunization_builder import *
 from utilities.enums import ActionFlag
 from utilities.getHeader import *
 import logging
 from pytest_bdd import scenarios, given, when, then, parsers
-from features.steps.common_steps import *
+from ..steps.common_steps import *
 
 
 logging.basicConfig(filename='debugLog.log', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-scenarios("delete.feature")
+scenarios('APITests/delete.feature')
 
 @when('Send a delete for Immunization event created with invalid Imms Id')
 def send_delete_for_immunization_event_created_invalid(context):

@@ -21,3 +21,9 @@ class ErrorName(Enum):
    read_not_found = "read_not_found"
    doseNumberPositiveInt_PositiveInteger  = "doseNumberPositiveInt_PositiveInteger"
    doseNumberPositiveInt_ValidRange = "doseNumberPositiveInt_ValidRange"
+   invalid_OccurrenceDateTime = "invalid_OccurrenceDateTime"
+   invalid_recorded = "invalid_recorded"
+   invalid_DateOfBirth = "invalid_DateOfBirth"
+   invalid_expirationDate = "invalid_expirationDate"
+   future_DateOfBirth = "future_DateOfBirth"
+   

@@ -63,3 +63,54 @@ Scenario: Verify that the Update API will be successful with invalid but Mod11 c
     And The X-Request-ID and X-Correlation-ID keys in header will populate correctly
     And The imms event table will be populated with the correct data for 'updated' event
     And The delta table will be populated with the correct data for updated event
+
+@Delete_cleanUp @vaccine_type_RSV @patient_id_Mod11_NHS @supplier_name_Postman_Auth
+Scenario Outline: Scenario Outline name: Verify that the Update API will be fails if occurrenceDateTime has future or invalid formatted date
+    Given I have created a valid vaccination record
+    When Send a update for Immunization event created with occurrenceDateTime being updated to '<Date>'
+    Then The request will be unsuccessful with the status code '400'
+    And The Response JSONs should contain correct error message for 'invalid_OccurrenceDateTime'
+     Examples: 
+        | Date                  | 
+        | future_occurrence     | 
+        | invalid_format        |
+        | nonexistent           |
+        | empty                 |
+
+@Delete_cleanUp @vaccine_type_RSV @patient_id_Mod11_NHS @supplier_name_Postman_Auth
+Scenario Outline: Scenario Outline name: Verify that the Update API will be fails if recorded has future or invalid formatted date
+    Given I have created a valid vaccination record
+    When Send a update for Immunization event created with recorded being updated to '<Date>'
+    Then The request will be unsuccessful with the status code '400'
+    And The Response JSONs should contain correct error message for 'invalid_recorded'
+     Examples: 
+        | Date                  | 
+        | future_date           | 
+        | invalid_format        |
+        | nonexistent           |
+        | empty                 |
+
+@Delete_cleanUp @vaccine_type_RSV @patient_id_Mod11_NHS @supplier_name_Postman_Auth
+Scenario Outline: Scenario Outline name: Verify that the Update API will be fails if expiration date has invalid formatted date
+    Given I have created a valid vaccination record
+    When Send a update for Immunization event created with expiration date being updated to '<Date>'
+    Then The request will be unsuccessful with the status code '400'
+   And The Response JSONs should contain correct error message for 'invalid_expirationDate'
+     Examples: 
+        | Date                  | 
+        | invalid_format        |
+        | nonexistent           |
+        | empty                 |
+
+@Delete_cleanUp @vaccine_type_RSV @patient_id_Mod11_NHS @supplier_name_Postman_Auth
+Scenario Outline: Scenario Outline name: Verify that the Update API will be fails if patient's date of birth has future or invalid formatted date
+    Given I have created a valid vaccination record
+    When Send a update for Immunization event created with patient date of bith being updated to '<Date>'
+    Then The request will be unsuccessful with the status code '400'
+    And The Response JSONs should contain correct error message for '<error_type>'
+     Examples: 
+        | Date                  | error_type            |   
+        | future_date           | future_DateOfBirth    |
+        | invalid_format        | invalid_DateOfBirth   |
+        | nonexistent           | invalid_DateOfBirth   |
+        | empty                 | invalid_DateOfBirth   |

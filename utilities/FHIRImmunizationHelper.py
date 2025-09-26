@@ -1,5 +1,5 @@
 from dataclasses import fields, is_dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from logging import config
 import os
 import re
@@ -10,7 +10,7 @@ from pydantic import BaseModel
 import pytest_check as check
 from src.objectModels.dataObjects import *
 from src.objectModels.operation_outcome import OperationOutcome
-from utilities.vaccination_constants import ERROR_MAP
+from utilities.error_constants import ERROR_MAP
 
 
 def empty_folder(path):
@@ -128,10 +128,10 @@ def validateErrorResponse(error_response, errorName: str, imms_id: str = ""):
     fields_to_compare.extend([
         ("ResourceType", ERROR_MAP["Common_field"]["resourceType"], error_response.resourceType),
         ("Meta_Profile", ERROR_MAP["Common_field"]["profile"], error_response.meta.profile[0]),
-        ("Issue_Code", ERROR_MAP[errorName]["issue_code"], error_response.issue[0].code),
+        ("Issue_Code", ERROR_MAP[errorName]["code"].lower(), error_response.issue[0].code.lower()),
         ("Coding_system", ERROR_MAP["Common_field"]["system"], error_response.issue[0].details.coding[0].system),
-        ("Coding_Code", ERROR_MAP[errorName]["code"], error_response.issue[0].details.coding[0].code),
-        ("severity", ERROR_MAP[errorName]["severity"], error_response.issue[0].severity),
+        ("Coding_Code", ERROR_MAP[errorName]["code"].lower(), error_response.issue[0].details.coding[0].code.lower()),
+        ("severity", ERROR_MAP["Common_field"]["severity"], error_response.issue[0].severity),
     ])
 
     for name, expected, actual in fields_to_compare:
@@ -205,3 +205,19 @@ def validateToCompareRequestAndResponse(context, create_obj, created_event, tabl
                 expected == actual,
                 f"Expected {name}: {expected}, Actual {actual}"
             )
+
+def generate_date(date_str: str) -> str:
+    if date_str == "future_occurrence":
+        future_date = datetime.now(timezone.utc) + timedelta(seconds=50)
+        return  str(future_date.isoformat(timespec='milliseconds'))
+    elif date_str == "future_date":
+        future_date = datetime.now(timezone.utc) + timedelta(days=1)
+        return str(future_date.date())
+    elif date_str == "invalid_format":
+        return "2023/23/01"
+    elif date_str == "nonexistent":
+        return "2023-02-30T10:00:00.000Z"
+    elif date_str == "empty":
+        return ""
+    else:
+        raise ValueError(f"Unknown date type: {date_str}")

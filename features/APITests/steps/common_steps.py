@@ -182,14 +182,10 @@ def send_update_for_vaccination_detail(context):
 def send_update_for_immunization_event(context):
     get_updateURLHeader(context, str(context.expected_version))
     context.update_object = convert_to_update(context.immunization_object, context.ImmsID)
-    context.expected_version = int(context.expected_version) + 1
     context.update_object.contained[1].address[0].city = "Updated City"
     context.update_object.contained[1].address[0].state = "Updated State"
-    context.create_object = context.update_object
-    context.request = context.update_object.dict(exclude_none=True, exclude_unset=True)
-    context.response = requests.put(context.url + "/" + context.ImmsID, json=context.request, headers=context.headers)
-    print(f"Update Request is {json.dumps(context.request)}" )
-    
+    trigger_the_updated_request(context)
+      
 @given('created event is being updated twice')
 def created_event_is_being_updated_twice(context):
     send_update_for_immunization_event(context)
@@ -207,3 +203,10 @@ def send_delete_for_immunization_event_created(context):
     get_deleteURLHeader(context)
     print(f"\n Delete Request is {context.url}/{context.ImmsID}")
     context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
+    
+def trigger_the_updated_request(context):
+    context.expected_version = int(context.expected_version) + 1    
+    context.create_object = context.update_object
+    context.request = context.update_object.dict(exclude_none=True, exclude_unset=True)
+    context.response = requests.put(context.url + "/" + context.ImmsID, json=context.request, headers=context.headers)
+    print(f"Update Request is {json.dumps(context.request)}" )
