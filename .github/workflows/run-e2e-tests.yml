@@ -86,6 +86,7 @@ jobs:
           SONAR_client_Secret: ${{ secrets.SONAR_client_Secret }}
           baseUrl: ${{ vars.baseUrl }}
           aws_token_refresh: 'False'
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           echo "Activating virtual env"
           source venv/bin/activate
