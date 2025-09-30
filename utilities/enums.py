@@ -27,3 +27,19 @@ class ErrorName(Enum):
    invalid_expirationDate = "invalid_expirationDate"
    future_DateOfBirth = "future_DateOfBirth"
    
+   
+class SupplierNameWithODSCode(Enum):
+   MAVIS= "V0V8L"
+   SONAR= "8HK48"
+   RAVS = "X8E5B" 
+   PINNACLE = "8J1100001" 
+   EMIS = "YGJ"
+   TPP = "YGA" 
+   MEDICUS = "YGMYW" 
+   CEGEDIM = "YGM04"
+   
+class GenderCode(Enum):
+    male = "1"
+    female = "2"
+    unknown = "0"
+    other = "9"

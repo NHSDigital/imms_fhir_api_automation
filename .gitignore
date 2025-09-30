@@ -6,3 +6,4 @@ utilities/__pycache__
 mytest.py
 .env
 *.log
+batch_files_directory/

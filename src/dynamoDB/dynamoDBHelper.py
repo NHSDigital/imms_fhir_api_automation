@@ -2,10 +2,11 @@ import time
 import boto3
 from boto3.dynamodb.conditions import Attr
 from botocore.config import Config
-from utilities.FHIRImmunizationHelper import *
+from utilities.api_fhir_immunization_helper import *
 import pytest_check as check
 
-from src.objectModels.dataObjects import ImmunizationReadResponse_IntTable
+from src.objectModels.api_data_objects import ImmunizationReadResponse_IntTable
+from utilities.enums import GenderCode
 
 my_config = Config(
     region_name='eu-west-2',
@@ -83,7 +84,7 @@ def validate_imms_delta_record_with_created_event(context, create_obj, item, eve
         ("NHS_NUMBER", create_obj.contained[1].identifier[0].value, event.get("NHS_NUMBER")),
         ("PERSON_DOB", create_obj.contained[1].birthDate.replace("-", ""), event.get("PERSON_DOB")),
         ("PERSON_POSTCODE", create_obj.contained[1].address[0].postalCode, event.get("PERSON_POSTCODE")),
-        ("PERSON_GENDER_CODE", gender_map.get(create_obj.contained[1].gender), event.get("PERSON_GENDER_CODE")),
+        ("PERSON_GENDER_CODE", GenderCode[(create_obj.contained[1].gender)].value, event.get("PERSON_GENDER_CODE")),
         ("VACCINATION_PROCEDURE_CODE", create_obj.extension[0].valueCodeableConcept.coding[0].code, event.get("VACCINATION_PROCEDURE_CODE")),        
         ("VACCINATION_PROCEDURE_TERM", create_obj.extension[0].valueCodeableConcept.coding[0].extension[0].valueString, event.get("VACCINATION_PROCEDURE_TERM")),
         ("VACCINE_PRODUCT_TERM", create_obj.vaccineCode.coding[0].extension[0].valueString, event.get("VACCINE_PRODUCT_TERM")),
