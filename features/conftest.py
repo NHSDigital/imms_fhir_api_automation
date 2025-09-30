@@ -1,18 +1,16 @@
-import datetime
 import os
-from click import Path
 import pytest
-import requests
 import allure
+import requests
 from utilities.aws_token import *
+from utilities.api_fhir_immunization_helper import *
 from utilities.context import ScenarioContext
 from dotenv import load_dotenv
 from pathlib import Path
 from utilities.api_fhir_immunization_helper import empty_folder
-from utilities.enums import SupplierNameWithODSCode
-from datetime import datetime
 from utilities.api_gen_token import get_tokens
 from utilities.api_get_header import get_deleteURLHeader
+from utilities.enums import SupplierNameWithODSCode
 
 
 @pytest.hookimpl(tryfirst=True)
@@ -56,15 +54,14 @@ def context(request, global_context) -> ScenarioContext:
     env_vars = ["auth_url", "token_url", "callback_url", "baseUrl", "username", "scope", "S3_env"]
     for var in env_vars:
         setattr(ctx, var, os.getenv(var))
-    
+        
     project_root = Path(__file__).resolve().parents[2]  # adjust depth if needed
 
     # Define working_directory at root level
     working_dir = project_root / "batch_files_directory"
 
     working_dir.mkdir(exist_ok=True)
-    ctx.working_directory = str(working_dir)   
- 
+    ctx.working_directory = str(working_dir)
 
     for tag in tags:
         if tag.startswith('vaccine_type_'):
@@ -72,6 +69,8 @@ def context(request, global_context) -> ScenarioContext:
         if tag.startswith('patient_id_'):
             ctx.patient_id = tag.split('patient_id_')[1]
         if tag.startswith('supplier_name_'):
+            ctx.supplier_name = tag.split('supplier_name_')[1]           
+            get_tokens(ctx, ctx.supplier_name)
             ctx.supplier_name = tag.split('supplier_name_')[1]
             ctx.supplier_ods_code= SupplierNameWithODSCode[ctx.supplier_name].value            
     
@@ -81,10 +80,16 @@ def context(request, global_context) -> ScenarioContext:
 
 def pytest_bdd_after_scenario(request, feature, scenario):
     tags = set(getattr(scenario, 'tags', [])) | set(getattr(feature, 'tags', []))
-    if 'delete_cleanup' in tags:
-        context = request.getfixturevalue('context')
+    context = request.getfixturevalue('context')
+    get_deleteURLHeader(context)
+    
+    if 'Delete_cleanUp' in tags:
+        print(f"\n Delete Request is {context.url}/{context.ImmsID}")
+        context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
+        assert context.response.status_code == 204, f"Expected status code 204, but got {context.response.status_code}. Response: {context.response.json()}"
+
+    if 'delete_cleanup_batch' in tags:
         get_tokens(context, context.supplier_name)
-        get_deleteURLHeader(context)
         context.vaccine_df["IMMS_ID_CLEAN"] = context.vaccine_df["IMMS_ID"].astype(str).str.replace("Immunization#", "", regex=False)
         
         for imms_id in context.vaccine_df["IMMS_ID_CLEAN"].dropna().unique():
@@ -97,4 +102,4 @@ def pytest_bdd_after_scenario(request, feature, scenario):
                 f"Response: {response.text}"
             )
 
-        print("✅ All IMMS_IDs deleted successfully.")    
+        print("✅ All IMMS_IDs deleted successfully.")
