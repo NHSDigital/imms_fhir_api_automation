@@ -2,16 +2,18 @@ import datetime
 import os
 from click import Path
 import pytest
+import requests
 import allure
 from utilities.aws_token import *
 from utilities.context import ScenarioContext
 from dotenv import load_dotenv
 from pathlib import Path
 from utilities.api_fhir_immunization_helper import empty_folder
-from utilities.api_gen_token import get_tokens
-from utilities.api_get_header import get_deleteURLHeader
 from utilities.enums import SupplierNameWithODSCode
 from datetime import datetime
+from utilities.api_gen_token import get_tokens
+from utilities.api_get_header import get_deleteURLHeader
+
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_bdd_after_step(request, feature, scenario, step, step_func, step_func_args):
@@ -51,7 +53,7 @@ def context(request, global_context) -> ScenarioContext:
     node = request.node
     tags = [marker.name for marker in node.own_markers]
 
-    env_vars = ["S3_env"]
+    env_vars = ["auth_url", "token_url", "callback_url", "baseUrl", "username", "scope", "S3_env"]
     for var in env_vars:
         setattr(ctx, var, os.getenv(var))
     
@@ -77,12 +79,22 @@ def context(request, global_context) -> ScenarioContext:
   
     return ctx
 
-# def pytest_bdd_after_scenario(request, feature, scenario):
-#     tags = set(getattr(scenario, 'tags', [])) | set(getattr(feature, 'tags', []))
-#     if 'Delete_cleanUp' in tags:
-#         context = request.getfixturevalue('context')
-#         get_deleteURLHeader(context)
-#         print(f"\n Delete Request is {context.url}/{context.ImmsID}")
-#         context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
-#         assert context.response.status_code == 204, f"Expected status code 204, but got {context.response.status_code}. Response: {context.response.json()}"
-    
+def pytest_bdd_after_scenario(request, feature, scenario):
+    tags = set(getattr(scenario, 'tags', [])) | set(getattr(feature, 'tags', []))
+    if 'delete_cleanup' in tags:
+        context = request.getfixturevalue('context')
+        get_tokens(context, context.supplier_name)
+        get_deleteURLHeader(context)
+        context.vaccine_df["IMMS_ID_CLEAN"] = context.vaccine_df["IMMS_ID"].astype(str).str.replace("Immunization#", "", regex=False)
+        
+        for imms_id in context.vaccine_df["IMMS_ID_CLEAN"].dropna().unique():
+            delete_url = f"{context.url}/{imms_id}"
+            print(f"\Sending DELETE request to: {delete_url}")
+            response = requests.delete(delete_url, headers=context.headers)
+
+            assert response.status_code == 204, (
+                f" Failed to delete {imms_id}: expected 204, got {response.status_code}. "
+                f"Response: {response.text}"
+            )
+
+        print("✅ All IMMS_IDs deleted successfully.")    

@@ -41,4 +41,5 @@ class ScenarioContext:
         self.file_extension = "csv"
         self.supplier_ods_code = None
         self.working_directory = None
+        self.fileContent = None
 

@@ -99,7 +99,7 @@ def get_patient_details(context) -> Dict[str, str]:
 def generate_file_name(context) -> str:
     return f"{context.vaccine_type}_Vaccinations_v5_{context.supplier_ods_code}_{context.FileTimestamp}.{context.file_extension}"
 
-def build_batch_file(context) -> BatchVaccinationRecord:
+def build_batch_file(context, unique_id: str = None) -> BatchVaccinationRecord:
     patient = get_patient_details(context)
     location = build_location_site_identifier()
     procedure = build_procedure_code(context.vaccine_type)
@@ -108,7 +108,7 @@ def build_batch_file(context) -> BatchVaccinationRecord:
     site = build_site_of_vaccination()
     route = build_route_of_vaccination()
     dose = build_dose_details()
-    unique = build_unique_reference()
+    unique = build_unique_reference(unique_id)
 
     return BatchVaccinationRecord(
         NHS_NUMBER=patient["nhs_number"],
@@ -154,8 +154,9 @@ def save_record_to_batch_files_directory(context):
 
     with open(file_path, mode="w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file, delimiter="|", quoting=csv.QUOTE_ALL)
-        writer.writerow(df.columns.tolist())
-        writer.writerow(df.iloc[0].tolist())
+        writer.writerow(df.columns.tolist())  # Write header
+        for row in df.itertuples(index=False):
+            writer.writerow(row)
 
     print(f"✅ Pipe-delimited file saved to: {file_path}")
 
