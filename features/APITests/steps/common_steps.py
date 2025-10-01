@@ -113,7 +113,7 @@ def validateCreateHeader(context):
 @then(parsers.parse("The imms event table will be populated with the correct data for '{operation}' event"))
 def validate_imms_event_table_by_operation(context, operation: Operation):
     create_obj = context.create_object
-    table_query_response = fetch_immunization_events_detail(context.aws_profile_name, context.ImmsID)
+    table_query_response = fetch_immunization_events_detail(context.aws_profile_name, context.ImmsID, context.S3_env)
     assert "Item" in table_query_response, f"Item not found in response for ImmsID: {context.ImmsID}"
     item = table_query_response["Item"]
 

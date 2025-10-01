@@ -51,12 +51,11 @@ def context(request, global_context) -> ScenarioContext:
     node = request.node
     tags = [marker.name for marker in node.own_markers]
 
-    env_vars = ["auth_url", "token_url", "callback_url", "baseUrl", "username", "scope", "S3_env"]
+    env_vars = ["auth_url", "token_url", "callback_url", "baseUrl", "username", "scope", "S3_env", "LOCAL_RUN_WITHOUT_S3_UPLOAD"]
     for var in env_vars:
         setattr(ctx, var, os.getenv(var))
         
-    project_root = Path(__file__).resolve().parents[2]  # adjust depth if needed
-
+    project_root = Path(__file__).resolve().parents[1] 
     # Define working_directory at root level
     working_dir = project_root / "batch_files_directory"
 

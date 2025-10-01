@@ -31,8 +31,8 @@ class Identifier(BaseModel):
     period: Optional[Period] = None
 
 class Reference(BaseModel):
-    reference: str
-    type: str
+    reference: Optional[str] = None
+    type: Optional[str] = None
     identifier: Optional[Identifier] = None
 
 class HumanName(BaseModel):
@@ -40,16 +40,16 @@ class HumanName(BaseModel):
     given: List[str]
 
 class Address(BaseModel):
-    use: str
-    type: str
-    text: str
-    line: List[str]
-    city: str
-    district: str
-    state: str
+    use: Optional[str] = None
+    type: Optional[str] = None
+    text: Optional[str] = None
+    line: Optional[List[str]] = None
+    city: Optional[str] = None
+    district: Optional[str] = None
+    state: Optional[str] = None
     postalCode: str
-    country: str
-    period: Period
+    country: Optional[str] = None
+    period: Optional[Period]= None
 
 class Practitioner(BaseModel):
     resourceType: str = "Practitioner"
@@ -57,7 +57,7 @@ class Practitioner(BaseModel):
     name: List[HumanName]
 
 class Patient(BaseModel):
-    resourceType: str 
+    resourceType: str ="Patient"
     id: str
     identifier: List[Identifier]
     name: List[HumanName]
@@ -225,7 +225,7 @@ class ImmunizationReadResponse_IntTable(BaseModel):
     route: CodeableConcept
     doseQuantity: DoseQuantity
     performer: List[Performer]
-    reasonCode: List[ReasonCode]
+    reasonCode: Optional[List[ReasonCode]] = None
     protocolApplied: List[ProtocolApplied]
     occurrenceDateTime: str = ""
     recorded: str = ""

@@ -41,12 +41,12 @@ def wait_for_file_to_move_archive(context, timeout=120, interval=5):
     print(f"Timeout: File not found in archive after {timeout} seconds")
     return False
 
-def wait_and_read_forwarded_file(context, timeout=120, interval=5):
+def wait_and_read_ack_file(context, folderName: str, timeout=120, interval=5):
     s3 = boto3.client("s3")
     destination_bucket = f"immunisation-batch-{context.S3_env}-data-destinations"
     source_filename = context.filename
     base_name = source_filename.replace(f'.{context.file_extension}', "")
-    forwarded_prefix = f"forwardedFile/{base_name}"
+    forwarded_prefix = f"{folderName}/{base_name}"
 
     print(f"Waiting for file starting with '{forwarded_prefix}' in bucket: {destination_bucket}")
     elapsed = 0

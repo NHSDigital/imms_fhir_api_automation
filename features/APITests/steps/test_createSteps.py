@@ -114,7 +114,7 @@ def createValidJsonPayloadWithProcedureNoTextValueDisplay(context):
 @then('The imms event table will be populated with the correct data for created event')
 def validate_imms_event_table(context):
     create_obj = context.create_object
-    table_query_response = fetch_immunization_events_detail(context.aws_profile_name, context.ImmsID)
+    table_query_response = fetch_immunization_events_detail(context.aws_profile_name, context.ImmsID, context.S3_env)
     assert "Item" in table_query_response, f"Item not found in response for ImmsID: {context.ImmsID}"
     item = table_query_response["Item"]
 
@@ -150,7 +150,7 @@ def validate_imms_event_table(context):
 @then('The delta table will be populated with the correct data for created event')
 def validate_imms_delta_table_by_ImmsID(context):
     create_obj = context.create_object
-    item = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID)
+    item = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID, context.S3_env)
     assert item, f"Item not found in response for ImmsID: {context.ImmsID}"
      
     validate_imms_delta_record_with_created_event(context, create_obj, item, Operation.created.value, ActionFlag.created.value)    

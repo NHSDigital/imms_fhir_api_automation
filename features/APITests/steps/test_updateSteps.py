@@ -22,7 +22,7 @@ def send_update_for_immunization_event_by_supplier(context, Supplier):
 @then('The delta table will be populated with the correct data for updated event')
 def validate_delta_table_for_updated_event(context):
     create_obj = context.create_object
-    items = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID)
+    items = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID, context.S3_env)
     assert items, f"Items not found in response for ImmsID: {context.ImmsID}"
     delta_items = [i for i in items if i.get('Operation') == Operation.updated.value ]    
     assert delta_items, f"No item found for ImmsID: {context.ImmsID}"

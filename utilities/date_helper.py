@@ -9,11 +9,13 @@ def format_timestamp(timestamp):
         
         return f"{parts[0]}.{milliseconds}+{timezone}"
     
-def covert_to_expected_date_format(date_string):
+def covert_to_expected_date_format(date_string: str) -> str:
     try:
-        return datetime.fromisoformat(date_string.replace("Z", "+00:00"))
+        dt = datetime.fromisoformat(date_string.replace("Z", "+00:00"))
+        return dt.isoformat()
     except ValueError:
         return "Invalid format"
+
     
 def iso_to_compact(dt_str):
     dt = datetime.fromisoformat(dt_str.replace("Z", "+00:00"))
@@ -55,3 +57,9 @@ def generate_date(date_str: str) -> str:
             return ""
         case _:
             raise ValueError(f"Unknown date type: {date_str}")
+        
+def format_date_yyyymmdd(date_str: str) -> str:
+    try:
+        return datetime.strptime(date_str, "%Y%m%d").strftime("%Y-%m-%d")
+    except (ValueError, TypeError) as e:
+        raise ValueError(f"Invalid date format: {date_str}") from e

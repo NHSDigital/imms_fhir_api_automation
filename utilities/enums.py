@@ -37,6 +37,7 @@ class SupplierNameWithODSCode(Enum):
    TPP = "YGA" 
    MEDICUS = "YGMYW" 
    CEGEDIM = "YGM04"
+   Postman_Auth = "Postman_Auth"
    
 class GenderCode(Enum):
     male = "1"

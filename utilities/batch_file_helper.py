@@ -1,4 +1,4 @@
-def validate_forwarded_file(context) -> bool:
+def validate_bus_ack_file(context) -> bool:
     content = context.fileContent
     lines = content.strip().split("\n")
     header = lines[0].split("|")
@@ -32,6 +32,7 @@ def validate_forwarded_file(context) -> bool:
         response_display = fields[7]
         local_id = fields[10]
         imms_id = fields[11]
+        message_delivery = fields[13]
 
         if header_response_code != "OK":
             print(f"Row {i}: HEADER_RESPONSE_CODE is not OK")
@@ -54,7 +55,9 @@ def validate_forwarded_file(context) -> bool:
         if not imms_id:
             print(f"Row {i}: IMMS_ID is missing")
             row_valid = False
-
+        if message_delivery != "True":
+            print(f"Row {i}: MESSAGE_DELIVERY is not True")
+            row_valid = False
         if row_valid:
             local_to_imms[local_id] = imms_id
         else:
@@ -63,6 +66,70 @@ def validate_forwarded_file(context) -> bool:
     context.vaccine_df["LOCAL_ID"] = ( context.vaccine_df["UNIQUE_ID"].astype(str) + "^" + context.vaccine_df["UNIQUE_ID_URI"].astype(str) )
     context.vaccine_df["IMMS_ID"] = context.vaccine_df["LOCAL_ID"].map(local_to_imms)
 
-    print("🧬 IMMS_ID mapping:")
+    print("IMMS_ID mapping:")
     print(context.vaccine_df[["LOCAL_ID", "IMMS_ID"]])
     return overall_valid
+
+
+def validate_inf_ack_file(context, success: bool = True) -> bool:
+    content = context.fileContent
+    lines = content.strip().split("\n")
+    header = lines[0].split("|")
+    row = lines[1].split("|")
+    expected_columns = 12
+
+    if len(header) != expected_columns:
+        print(f"Header column count mismatch: expected {expected_columns}, got {len(header)}")
+        return False
+    
+    row_valid = True  # Reset for each row
+
+    if len(row) != expected_columns:
+        print(f"Row {i}: column count mismatch ({len(row)} fields)")
+        overall_valid = False
+        return False
+
+    header_response_code = row[1]
+    issue_severity = row[2]
+    issue_code = row[3]
+    response_code = row[6]
+    response_display = row[7]
+    message_delivery = row[11]
+    
+    if success:
+        expected_message_delivery = "True"
+        excepted_header_response_code = "Success"
+        excepted_issue_severity = "Information"
+        excepted_issue_code = "OK"  
+        excepted_response_code = "20013"
+        expected_response_display = "Success"
+    else:
+        expected_message_delivery = "False"
+        excepted_header_response_code = "Failure"
+        excepted_issue_severity = "Fatal"
+        excepted_issue_code = "Fatal Error"  
+        excepted_response_code = "10001"
+        expected_response_display
+
+    if header_response_code != excepted_header_response_code:
+        print(f"Row {i}: HEADER_RESPONSE_CODE is not {excepted_header_response_code}")
+        row_valid = False
+    if issue_severity != excepted_issue_severity:
+        print(f"Row {i}: ISSUE_SEVERITY is not {excepted_issue_severity}")
+        row_valid = False
+    if issue_code != excepted_issue_code:
+        print(f"Row {i}: ISSUE_CODE is not {excepted_issue_code}")
+        row_valid = False
+    if response_code != excepted_response_code:
+        print(f"Row {i}: RESPONSE_CODE is not {excepted_response_code}")
+        row_valid = False
+    if response_display != expected_response_display:
+        print(f"Row {i}: RESPONSE_DISPLAY is not {expected_response_display}")
+        row_valid = False
+    if message_delivery != expected_message_delivery:
+        print(f"Row {i}: MESSAGE_DELIVERY is not {expected_message_delivery}")
+        row_valid = False
+    
+    return row_valid
+
+
