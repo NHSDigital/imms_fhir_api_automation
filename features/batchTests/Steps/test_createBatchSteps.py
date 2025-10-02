@@ -51,7 +51,7 @@ def ignore_local_run_set_test_data(func):
                     quotechar='"',
                     dtype=str  # optional: ensures all columns are read as strings
                 )
-                print(f"📄 Loaded fallback vaccine_df from {file_name}")
+                print(f"Loaded fallback vaccine_df from {file_name}")
             except Exception as e:
                 print(f"Failed to load fallback file {file_name}: {e}")
                 context.vaccine_df = pd.DataFrame()  # fallback to empty
@@ -209,7 +209,7 @@ def validate_imms_event_table_for_all_records_in_batch_file(context, operation: 
         fields_to_compare = [
             ("Operation", Operation[operation].value, item.get("Operation")),
             ("SupplierSystem", context.supplier_name, item.get("SupplierSystem")),
-            ("PatientPK", f"Patient#{batch_record["NHS_NUMBER"]}", item.get("PatientPK")),
+            ("PatientPK", f'Patient#{batch_record["NHS_NUMBER"]}', item.get("PatientPK")),
             ("PatientSK", f"{context.vaccine_type.upper()}#{context.ImmsID}", item.get("PatientSK")),
             ("Version", int(context.expected_version), int(item.get("Version"))),
         ]
