@@ -3,8 +3,6 @@ name: FHIR API and Batch Automation - E2E Tests
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
   workflow_dispatch:
     inputs:
       environment:

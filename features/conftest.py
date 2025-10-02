@@ -93,7 +93,7 @@ def pytest_bdd_after_scenario(request, feature, scenario):
         
         for imms_id in context.vaccine_df["IMMS_ID_CLEAN"].dropna().unique():
             delete_url = f"{context.url}/{imms_id}"
-            print(f"\Sending DELETE request to: {delete_url}")
+            print(f"Sending DELETE request to: {delete_url}")
             response = requests.delete(delete_url, headers=context.headers)
 
             assert response.status_code == 204, (
