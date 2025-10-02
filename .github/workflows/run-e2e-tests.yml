@@ -87,6 +87,7 @@ jobs:
           baseUrl: ${{ vars.baseUrl }}
           aws_token_refresh: 'False'
           PYTHONPATH: ${{ github.workspace }}
+          S3_ENV: ${{ vars.S3_ENV }}
         run: |
           echo "Activating virtual env"
           source venv/bin/activate
