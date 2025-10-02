@@ -9,7 +9,7 @@ from pydantic import BaseModel
 import pytest_check as check
 from src.objectModels.api_data_objects import *
 from src.objectModels.api_operation_outcome import OperationOutcome
-from utilities.api_error_constants import ERROR_MAP
+from utilities.error_constants import ERROR_MAP
 from utilities.date_helper import *
 
 

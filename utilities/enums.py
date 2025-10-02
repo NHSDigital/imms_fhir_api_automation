@@ -26,7 +26,10 @@ class ErrorName(Enum):
    invalid_DateOfBirth = "invalid_DateOfBirth"
    invalid_expirationDate = "invalid_expirationDate"
    future_DateOfBirth = "future_DateOfBirth"
-   
+   invalid_DateFrom_Include = "invalid_DateFrom_Include"
+   invalid_include = "invalid_include" 
+   invalid_DateFrom_DateTo_Include = "invalid_DateFrom_DateTo_Include"
+   invalid_DateFrom_To = "invalid_DateFrom_To"   
    
 class SupplierNameWithODSCode(Enum):
    MAVIS= "V0V8L"

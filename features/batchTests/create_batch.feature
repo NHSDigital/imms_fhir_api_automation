@@ -13,8 +13,7 @@ Scenario: Verify that vaccination record will be created for different vaccine t
         | OldNHSNo          | OldNHSNo              |
     When batch file upload in s3 bucket
     Then file will be moved to destination bucket and inf ack file will be created
-    And all records are processed successfully in the inf ack file 
-    And file will be moved to destination bucket and buk ack file will be created
+    And inf ack file has success status for processed batch file
     And file will be moved to destination bucket and buk ack file will be created
     And all records are processed successfully in the bus ack file 
     And Audit table will have correct status and queue name for the processed batch file

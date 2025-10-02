@@ -117,7 +117,7 @@ def file_will_be_moved_to_destination_bucket(context):
     context.fileContent = wait_and_read_ack_file(context, "ack")
     assert context.fileContent, f"File not found in destination bucket after timeout: {context.forwarded_prefix}"
     
-@then("all records are processed successfully in the inf ack file")
+@then("inf ack file has success status for processed batch file")
 def all_records_are_processed_successfully_in_the_inf_ack_file(context):  
     all_valid = validate_inf_ack_file(context)
     assert all_valid, "One or more records failed validation checks"
@@ -202,12 +202,10 @@ def validate_imms_event_table_for_all_records_in_batch_file(context, operation: 
         except (TypeError, json.JSONDecodeError) as e:
             print(f"Failed to parse Resource from item: {e}")
             raise AssertionError("Failed to parse Resource from response item.")
-        
-        print(resource["patient"]["reference"]) 
 
         assert resource is not None, "Resource is None in the response"
         created_event = parse_imms_int_imms_event_response(resource)
-        print("1234              ---------"+ created_event.patient.reference)
+        
         fields_to_compare = [
             ("Operation", Operation[operation].value, item.get("Operation")),
             ("SupplierSystem", context.supplier_name, item.get("SupplierSystem")),

@@ -55,6 +55,7 @@ def TriggerSearchGetRequest(context):
 
 @when("Send a search request with POST method for Immunization event created")
 def TriggerSearchPostRequest(context):
+    
     get_search_postURLHeader(context)
     context.request = convert_to_form_data(set_request_data(context.patient.identifier[0].value, context.vaccine_type, datetime.today().strftime("%Y-%m-%d")))
     print(f"\n Search Post Request - \n {context.request}")
@@ -68,13 +69,9 @@ def TriggerSearchPostRequest(context):
 def send_invalid_param_get_request(context, NHSNumber, DiseaseType):
     get_search_getURLHeader(context)
 
-    if NHSNumber.lower() in ["none", "null", ""]:
-        NHSNumber = ""
-    if DiseaseType.lower() in ["none", "null", ""]:
-        DiseaseType = ""        
-
-    context.NHSNumber = NHSNumber
-    context.DiseaseType = DiseaseType
+    NHSNumber = normalize_param(NHSNumber)
+    DiseaseType = normalize_param(DiseaseType)
+         
     context.params = convert_to_form_data(set_request_data(NHSNumber, DiseaseType, datetime.today().strftime("%Y-%m-%d")))
     print(f"\n Search Get parameters - \n {context.params}")
     context.response = requests.get(context.url, params = context.params, headers = context.headers)
@@ -86,13 +83,9 @@ def send_invalid_param_get_request(context, NHSNumber, DiseaseType):
 def send_invalid_param_post_request(context, NHSNumber, DiseaseType):
     get_search_postURLHeader(context)
 
-    if NHSNumber.lower() in ["none", "null", ""]:
-        NHSNumber = ""
-    if DiseaseType.lower() in ["none", "null", ""]:
-        DiseaseType = ""        
+    NHSNumber = normalize_param(NHSNumber)
+    DiseaseType = normalize_param(DiseaseType)      
 
-    context.NHSNumber = NHSNumber
-    context.DiseaseType = DiseaseType
     context.request = convert_to_form_data(set_request_data(NHSNumber, DiseaseType, datetime.today().strftime("%Y-%m-%d")))
     print(f"\n Search Post request - \n {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
@@ -104,19 +97,12 @@ def send_invalid_param_post_request(context, NHSNumber, DiseaseType):
 def send_invalid_date_get_request(context, DateFrom, DateTo):
     get_search_getURLHeader(context)
 
-    if DateFrom.lower() in ["none", "null", ""]:
-        DateFrom = ""
-    if DateTo.lower() in ["none", "null", ""]:
-        DateTo = ""        
+    # DateFrom = normalize_param(DateFrom.lower())
+    # DateTo = normalize_param(DateTo.lower())      
 
-    context.DateFrom = DateFrom
-    context.DateTo = DateTo
-    context.DiseaseType = "RSV"
-    context.NHSNumber = load_patient_by_id("Random").identifier[0].value
-    context.params = convert_to_form_data(set_request_data(context.NHSNumber, context.DiseaseType, DateFrom, DateTo))
+    context.params = convert_to_form_data(set_request_data(9001066569, context.vaccine_type, DateFrom, DateTo))
     print(f"\n Search Get parameters - \n {context.params}")
     context.response = requests.get(context.url, params = context.params, headers = context.headers)
-
 
 @when(parsers.parse("Send a search request with POST method with invalid Date From '{DateFrom}' and valid Date To '{DateTo}'"))
 @when(parsers.parse("Send a search request with POST method with valid Date From '{DateFrom}' and invalid Date To '{DateTo}'"))
@@ -124,26 +110,17 @@ def send_invalid_date_get_request(context, DateFrom, DateTo):
 def send_invalid_param_post_request(context, DateFrom, DateTo):
     get_search_postURLHeader(context)
 
-    if DateFrom.lower() in ["none", "null", ""]:
-        DateFrom = ""
-    if DateTo.lower() in ["none", "null", ""]:
-        DateTo = ""        
+    # DateFrom = normalize_param(DateFrom.lower())
+    # DateTo = normalize_param(DateTo)          
 
-    context.DateFrom = DateFrom
-    context.DateTo = DateTo
-    context.DiseaseType = "COVID19"
-    context.NHSNumber = load_patient_by_id("Random").identifier[0].value
-    context.request = convert_to_form_data(set_request_data(context.NHSNumber, context.DiseaseType, DateFrom, DateTo))
+    context.request = convert_to_form_data(set_request_data(9001066569, context.vaccine_type, DateFrom, DateTo))
     print(f"\n Search Post request - \n {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
-
 
 @when(parsers.parse("Send a search request with GET method with valid NHS Number '{NHSNumber}' and Disease Type '{vaccine_type}' and Date From '{DateFrom}' and Date To '{DateTo}'"))
 def send_valid_param_get_request(context, NHSNumber, vaccine_type, DateFrom, DateTo):
     get_search_getURLHeader(context)
 
-    context.DateFrom = DateFrom
-    context.DateTo = DateTo
     context.params = convert_to_form_data(set_request_data(NHSNumber, vaccine_type, DateFrom, DateTo))
     print(f"\n Search Get parameters - \n {context.params}")
     context.response = requests.get(context.url, params = context.params, headers = context.headers)
@@ -152,17 +129,51 @@ def send_valid_param_get_request(context, NHSNumber, vaccine_type, DateFrom, Dat
 def send_valid_param_post_request(context, NHSNumber, vaccine_type, DateFrom, DateTo):
     get_search_postURLHeader(context)
 
-    context.DateFrom = DateFrom
-    context.DateTo = DateTo
     context.request = convert_to_form_data(set_request_data(NHSNumber, vaccine_type, DateFrom, DateTo))
     print(f"\n Search Get parameters - \n {context.request}") 
     context.response = requests.post(context.url, headers=context.headers, data=context.request)  
+ 
+@when(parsers.parse("Send a search request with GET method with valid NHS Number '{NHSNumber}' and valid Disease Type '{vaccine_type}' and invalid include '{include}'")) 
+def send_valid_param_get_request_with_include(context, NHSNumber, vaccine_type, include):
+    get_search_getURLHeader(context)
+    context.params = convert_to_form_data(set_request_data(NHSNumber, vaccine_type, include=include))
+    print(f"\n Search Get parameters - \n {context.params}")
+    context.response = requests.get(context.url, params = context.params, headers = context.headers)
+    
+@when(parsers.parse("Send a search request with POST method with valid NHS Number '{NHSNumber}' and valid Disease Type '{vaccine_type}' and invalid include '{include}'"))
+def send_valid_param_post_request_with_include(context, NHSNumber, vaccine_type, include):
+    get_search_postURLHeader(context)
+    context.request = convert_to_form_data(set_request_data(NHSNumber, vaccine_type, include=include))
+    print(f"\n Search Post parameters - \n {context.request}")
+    context.response = requests.post(context.url, headers=context.headers, data=context.request)
+      
+@when(parsers.parse("Send a search request with POST method with valid NHS Number '{NHSNumber}' and valid Disease Type '{vaccine_type}' and Date From '{DateFrom}' and Date To '{DateTo}' and include '{include}'"))
+def send_valid_param_post_request_with_include(context, NHSNumber, vaccine_type, DateFrom, DateTo, include):
+    get_search_postURLHeader(context)
+    context.request = convert_to_form_data(set_request_data(NHSNumber, vaccine_type, DateFrom, DateTo, include))
+    print(f"\n Search Post parameters - \n {context.request}")
+    context.response = requests.post(context.url, headers=context.headers, data=context.request)
 
+@when(parsers.parse("Send a search request with GET method with valid NHS Number '{NHSNumber}' and valid Disease Type '{vaccine_type}' and Date From '{DateFrom}' and Date To '{DateTo}' and include '{include}'"))
+def send_valid_param_get_request_with_include(context, NHSNumber, vaccine_type, DateFrom, DateTo, include):
+    get_search_getURLHeader(context)
+    context.params = convert_to_form_data(set_request_data(NHSNumber, vaccine_type, DateFrom, DateTo, include))
+    print(f"\n Search Get parameters - \n {context.params}")
+    context.response = requests.get(context.url, params = context.params, headers = context.headers)
 
 @then("The occurrenceDateTime of the immunization events should be within the Date From and Date To range")
 def validateDateRange(context):
     data = context.response.json()
     context.parsed_search_object = parse_FHIRImmunizationResponse(data)
+    
+    params = getattr(context, "params", getattr(context, "request", {}))
+    
+    if isinstance(params, str):
+        parsed = parse_qs(params)
+        params = {k: v[0] for k, v in parsed.items()} if parsed else {}
+        
+    dateFrom = params.get("-date.from")
+    dateTo = params.get("-date.to")
 
     assert context.parsed_search_object.entry, "No entries found in the search response."
     
@@ -171,10 +182,10 @@ def validateDateRange(context):
             occurrence_date = entry.resource.occurrenceDateTime
             id = entry.resource.id
             if occurrence_date:
-                if context.DateFrom and context.DateTo:
+                if dateFrom and dateTo:
                     occurrence_date = iso_to_compact(occurrence_date)
-                    date_from = iso_to_compact(context.DateFrom)
-                    date_to = iso_to_compact(context.DateTo)
+                    date_from = iso_to_compact(dateFrom)
+                    date_to = iso_to_compact(dateTo)
 
                     assert date_from <= occurrence_date <= date_to, (
                         f"Occurrence date {occurrence_date} is not within the range Date From {context.DateFrom} and Date To {context.DateTo}. Imms ID: {id}"

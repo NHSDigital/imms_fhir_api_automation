@@ -65,11 +65,40 @@ Scenario Outline: Verify that Search API will throw error if NHS Number is inval
     Then The request will be unsuccessful with the status code '400'
     And The Search Response JSONs should contain correct error message for invalid NHS Number
     Examples:
-      | NHSNumber  |        DiseaseType       |
-      |   ""       |        COVID19           |
-      | 1234567890 |        RSV               |
-      | 1          |        COVID19           |
-      | 10000000000 00001 | COVID19           |
+      | NHSNumber         | DiseaseType |
+      |   ""              | COVID19     |
+      | 1234567890        | RSV         |
+      | 1                 | COVID19     |
+      | 10000000000 00001 | COVID19      |
+
+
+@supplier_name_Postman_Auth 
+Scenario Outline: Verify that Search API will throw error if include is invalid
+    When Send a search request with GET method with valid NHS Number '<NHSNumber>' and valid Disease Type '<vaccine_type>' and invalid include '<include>'
+    Then The request will be unsuccessful with the status code '400' 
+    And The Search Response JSONs should contain correct error message for invalid include
+    When Send a search request with POST method with valid NHS Number '<NHSNumber>' and valid Disease Type '<vaccine_type>' and invalid include '<include>'
+    Then The request will be unsuccessful with the status code '400'
+    And The Search Response JSONs should contain correct error message for invalid include
+    Examples: 
+      |NHSNumber        | vaccine_type | include  |
+      |9728403348       | COVID19      | abc      |
+
+
+@supplier_name_Postman_Auth
+Scenario Outline: Verify that Search API will throw error if both different combination of dates and include is invalid
+    When Send a search request with GET method with valid NHS Number '<NHSNumber>' and valid Disease Type '<vaccine_type>' and Date From '<DateFrom>' and Date To '<DateTo>' and include '<include>'
+    Then The request will be unsuccessful with the status code '400' 
+    And The Search Response JSONs should contain correct error message for invalid Date From, Date To and include
+    When Send a search request with POST method with valid NHS Number '<NHSNumber>' and valid Disease Type '<vaccine_type>' and Date From '<DateFrom>' and Date To '<DateTo>' and include '<include>'
+    Then The request will be unsuccessful with the status code '400'
+    And The Search Response JSONs should contain correct error message for invalid Date From, Date To and include
+    Examples: 
+      |NHSNumber        | vaccine_type | DateFrom   |  DateTo    | include                   |
+      |9728403348       | COVID19      | 999-06-01  | 999-06-01  | abc                       |
+      |9728403348       | COVID19      | 2025-13-01 | 2025-12-01 | abc                       |
+      |9728403348       | COVID19      | 2025-05-12 | 2025-05-12 | abc                       |
+      |9728403348       | COVID19      | 999-06-01  | 999-06-01  | Immunization:patient      |
 
 @supplier_name_Postman_Auth
 Scenario Outline: Verify that Search API will throw error if Disease Type is invalid
@@ -89,16 +118,16 @@ Scenario Outline: Verify that Search API will throw error if Disease Type is inv
 Scenario Outline: Verify that Search API will throw error if both NHS Number and Disease Type are invalid
     When Send a search request with GET method with invalid NHS Number '<NHSNumber>' and invalid Disease Type '<DiseaseType>'
     Then The request will be unsuccessful with the status code '400'
-    And The Search Response JSONs should contain correct error message for invalid Disease Type
+    And The Search Response JSONs should contain correct error message for invalid NHS Number as higher priority
     When Send a search request with POST method with invalid NHS Number '<NHSNumber>' and invalid Disease Type '<DiseaseType>'
     Then The request will be unsuccessful with the status code '400'
-    And The Search Response JSONs should contain correct error message for invalid Disease Type
+    And The Search Response JSONs should contain correct error message for invalid NHS Number as higher priority
     Examples:
       | NHSNumber  |        DiseaseType       |
       | 1234567890 |        ABC               |
       |   ""       |        ""                |
 
-@supplier_name_MAVIS
+@supplier_name_MAVIS @vaccine_type_RSV
 Scenario Outline: Verify that Search API will throw error if date from is invalid
     When Send a search request with GET method with invalid Date From '<DateFrom>' and valid Date To '<DateTo>'
     Then The request will be unsuccessful with the status code '400'
@@ -112,7 +141,7 @@ Scenario Outline: Verify that Search API will throw error if date from is invali
       | 2025-13-01    |        2025-06-01   |    
       | 2025-05-32    |        2025-06-01   |    
 
-@supplier_name_RAVS
+@supplier_name_RAVS @vaccine_type_RSV
 Scenario Outline: Verify that Search API will throw error if date to is invalid
     When Send a search request with GET method with valid Date From '<DateFrom>' and invalid Date To '<DateTo>'
     Then The request will be unsuccessful with the status code '400'
@@ -126,7 +155,7 @@ Scenario Outline: Verify that Search API will throw error if date to is invalid
       | 2025-05-01    |        2025-13-01   |    
       | 2025-05-01    |        2025-05-32   |  
 
-@supplier_name_MAVIS
+@supplier_name_MAVIS @vaccine_type_RSV
 Scenario Outline: Verify that Search API will throw error if both date from and date to are invalid
     When Send a search request with GET method with invalid Date From '<DateFrom>' and invalid Date To '<DateTo>'
     Then The request will be unsuccessful with the status code '400'
