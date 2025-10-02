@@ -1,4 +1,4 @@
-name: FHIR API Automation - E2E Tests
+name: FHIR API and Batch Automation - E2E Tests
 
 on:
   push:
@@ -15,6 +15,14 @@ on:
         options:
           - pre-prod
           - int
+      testPath:
+        description: "Path to test folder"
+        required: true
+        default: "features/APITests"
+        type: choice
+        options:
+          - features/APITests
+          - features/batchTests
 
 jobs:
   test:
@@ -92,7 +100,7 @@ jobs:
           echo "Activating virtual env"
           source venv/bin/activate
           echo "Running Pytest-BDD tests"
-          pytest features/APITests --junitxml=output/test-results.xml
+          pytest ${{ inputs.testPath }} --junitxml=output/test-results.xml
           if [ $? -ne 0 ]; then
             echo "Pytest-BDD tests failed"
             exit 1
