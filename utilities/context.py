@@ -35,4 +35,11 @@ class ScenarioContext:
         self.aws_profile_name = None
         self.expected_version = 1
         self.eTag = None
+        self.S3_env = None
+        self.fileName = None
+        self.vaccine_df = None
+        self.file_extension = "csv"
+        self.supplier_ods_code = None
+        self.working_directory = None
+        self.fileContent = None
 

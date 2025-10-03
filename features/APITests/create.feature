@@ -1,7 +1,6 @@
 @Create_Feature 
 Feature: Create the immunization event for a patient
 
-
 @Delete_cleanUp
 Scenario Outline:  Verify that the POST Create API for different vaccine types
     Given Valid token is generated for the '<Supplier>'

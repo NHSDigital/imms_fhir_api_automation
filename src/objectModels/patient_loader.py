@@ -1,5 +1,5 @@
 import pandas as pd
-from src.objectModels.dataObjects import HumanName, Address, Identifier, Patient
+from src.objectModels.api_data_objects import HumanName, Address, Identifier, Patient
 
 csv_path = "input/testData.csv"
 

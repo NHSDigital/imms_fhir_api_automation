@@ -1,4 +1,4 @@
-from src.objectModels.dataObjects import *
+from src.objectModels.api_data_objects import *
 
 VACCINE_CODE_MAP = {
     "COVID19": [

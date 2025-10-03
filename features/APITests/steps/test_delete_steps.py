@@ -1,12 +1,12 @@
-from ..steps.test_searchSteps import TriggerSearchGetRequest, TriggerSearchPostRequest
-from src.dynamoDB.dynamoDBHelper import *
-from src.objectModels.immunization_builder import *
+from .test_search_steps import TriggerSearchGetRequest, TriggerSearchPostRequest
+from src.dynamoDB.dynamo_db_helper import *
+from src.objectModels.api_immunization_builder import *
 from utilities.enums import ActionFlag
-from utilities.getHeader import *
+from utilities.api_get_header import *
 import logging
 from pytest_bdd import scenarios, given, when, then, parsers
-from ..steps.common_steps import *
-
+from .common_steps import *
+from utilities.date_helper import *
 
 logging.basicConfig(filename='debugLog.log', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ scenarios('APITests/delete.feature')
 
 @when('Send a delete for Immunization event created with invalid Imms Id')
 def send_delete_for_immunization_event_created_invalid(context):
-    get_deleteURLHeader(context)
+    get_delete_url_header(context)
     context.ImmsID = str(uuid.uuid4())
     print(f"\n Delete Request is {context.url}/{context.ImmsID}")
     context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
@@ -30,7 +30,7 @@ def send_delete_for_immunization_event_by_supplier(context, Supplier):
 @then('The delta table will be populated with the correct data for deleted event')
 def validate_imms_delta_table_by_ImmsID(context):
     create_obj = context.create_object
-    items = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID)
+    items = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID, context.S3_env)
     assert items, f"Items not found in response for ImmsID: {context.ImmsID}"
 
     # Find the latest item where operation is DELETE
@@ -48,7 +48,7 @@ def validate_deleted_immunization_event_not_present(context):
     The_request_will_have_status_code(context, '200')
     
     data = context.response.json()
-    context.parsed_search_object = parse_FHIRImmunizationResponse(data)
+    context.parsed_search_object = parse_FHIR_immunization_response(data)
 
     context.created_event = find_entry_by_Imms_id(context.parsed_search_object, context.ImmsID)
    
@@ -60,7 +60,7 @@ def validate_deleted_immunization_event_not_present(context):
     The_request_will_have_status_code(context, '200')
     
     data = context.response.json()
-    context.parsed_search_object = parse_FHIRImmunizationResponse(data)
+    context.parsed_search_object = parse_FHIR_immunization_response(data)
 
     context.created_event = find_entry_by_Imms_id(context.parsed_search_object, context.ImmsID)
    

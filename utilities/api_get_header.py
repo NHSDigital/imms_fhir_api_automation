@@ -1,6 +1,6 @@
 import uuid
 
-def get_search_getURLHeader(context):
+def get_search_get_url_header(context):
     context.url = context.baseUrl + "/Immunization"
     context.headers =  {
         'X-Correlation-ID': str(uuid.uuid4()),
@@ -11,7 +11,7 @@ def get_search_getURLHeader(context):
     context.corrID = context.headers['X-Correlation-ID']
     context.reqID = context.headers['X-Request-ID']
 
-def get_search_postURLHeader(context):
+def get_search_post_url_header(context):
     context.url = context.baseUrl + "/Immunization/_search"
     context.headers =  {
         'X-Correlation-ID': str(uuid.uuid4()),
@@ -23,7 +23,7 @@ def get_search_postURLHeader(context):
     context.corrID = context.headers['X-Correlation-ID']
     context.reqID = context.headers['X-Request-ID']
     
-def get_create_postURLHeader(context):
+def get_create_post_url_header(context):
     context.url = context.baseUrl+ "/Immunization"    
     context.headers = {
         'X-Correlation-ID': str(uuid.uuid4()),
@@ -35,7 +35,7 @@ def get_create_postURLHeader(context):
     context.corrID = context.headers['X-Correlation-ID']
     context.reqID = context.headers['X-Request-ID']
     
-def get_deleteURLHeader(context):
+def get_delete_url_header(context):
     context.url = context.baseUrl + "/Immunization"    
     context.headers = {
         'X-Correlation-ID': str(uuid.uuid4()),
@@ -47,7 +47,7 @@ def get_deleteURLHeader(context):
     context.corrID = context.headers['X-Correlation-ID']
     context.reqID = context.headers['X-Request-ID']
     
-def get_updateURLHeader(context, tag:str):
+def get_update_url_header(context, tag:str):
     context.url = context.baseUrl + "/Immunization"    
     context.headers = {
         'X-Correlation-ID': str(uuid.uuid4()),
@@ -60,7 +60,7 @@ def get_updateURLHeader(context, tag:str):
     context.corrID = context.headers['X-Correlation-ID']
     context.reqID = context.headers['X-Request-ID']
     
-def get_readURLHeader(context):
+def get_read_url_header(context):
     context.url = context.baseUrl + f"/Immunization/{context.ImmsID}?_summary"    
     context.headers = {
         'X-Correlation-ID': str(uuid.uuid4()),

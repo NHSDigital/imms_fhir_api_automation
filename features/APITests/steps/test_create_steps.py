@@ -1,16 +1,15 @@
-from src.dynamoDB.dynamoDBHelper import *
-from src.objectModels.immunization_builder import *
+from src.dynamoDB.dynamo_db_helper import *
+from src.objectModels.api_immunization_builder import *
 from src.objectModels.patient_loader import load_patient_by_id
 from datetime import datetime, timedelta, timezone
-from utilities.FHIRImmunizationHelper import *
+from utilities.api_fhir_immunization_helper import *
 from utilities.enums import ActionFlag
-from utilities.getHeader import *
-from src.delta.dateValidation import *
-from src.delta.deltaHelper import *
+from utilities.api_get_header import *
+from utilities.date_helper import *
 import logging
 from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
-from ..steps.common_steps import *
+from .common_steps import *
 
 
 logging.basicConfig(filename='debugLog.log', level=logging.INFO)
@@ -115,7 +114,7 @@ def createValidJsonPayloadWithProcedureNoTextValueDisplay(context):
 @then('The imms event table will be populated with the correct data for created event')
 def validate_imms_event_table(context):
     create_obj = context.create_object
-    table_query_response = fetch_immunization_events_detail(context.aws_profile_name, context.ImmsID)
+    table_query_response = fetch_immunization_events_detail(context.aws_profile_name, context.ImmsID, context.S3_env)
     assert "Item" in table_query_response, f"Item not found in response for ImmsID: {context.ImmsID}"
     item = table_query_response["Item"]
 
@@ -146,12 +145,12 @@ def validate_imms_event_table(context):
                 f"Expected {name}: {expected}, Actual {actual}"
             )
         
-    validateToCompareRequestAndResponse(context, create_obj, created_event, True)
+    validate_to_compare_request_and_response(context, create_obj, created_event, True)
     
 @then('The delta table will be populated with the correct data for created event')
 def validate_imms_delta_table_by_ImmsID(context):
     create_obj = context.create_object
-    item = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID)
+    item = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID, context.S3_env)
     assert item, f"Item not found in response for ImmsID: {context.ImmsID}"
      
     validate_imms_delta_record_with_created_event(context, create_obj, item, Operation.created.value, ActionFlag.created.value)    
