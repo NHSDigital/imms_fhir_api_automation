@@ -299,7 +299,9 @@ def validateToCompareBatchRecordWithEventTableRecord(context, batch_record, crea
     check.is_true(response_patient is not None, "Patient not found in contained resources")
     check.is_true(response_practitioner is not None, "Practitioner not found in contained resources")
 
-    expected_occurrenceDateTime = f'{covert_to_expected_date_format(batch_record["DATE_AND_TIME"])}+00:00'
+    created_occurrence_date = batch_record["DATE_AND_TIME"]
+    trimmed_date = created_occurrence_date[:-2]
+    expected_occurrenceDateTime = f'{covert_to_expected_date_format(trimmed_date)}+00:00'
     expected_recorded = covert_to_expected_date_format(batch_record["RECORDED_DATE"])
     actual_occurrenceDateTime = covert_to_expected_date_format(created_event.occurrenceDateTime)
     actual_recorded = covert_to_expected_date_format(created_event.recorded)
