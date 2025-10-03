@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 from utilities.api_fhir_immunization_helper import empty_folder
 from utilities.api_gen_token import get_tokens
-from utilities.api_get_header import get_deleteURLHeader
+from utilities.api_get_header import get_delete_url_header
 from utilities.enums import SupplierNameWithODSCode
 
 
@@ -80,7 +80,7 @@ def context(request, global_context) -> ScenarioContext:
 def pytest_bdd_after_scenario(request, feature, scenario):
     tags = set(getattr(scenario, 'tags', [])) | set(getattr(feature, 'tags', []))
     context = request.getfixturevalue('context')
-    get_deleteURLHeader(context)
+    get_delete_url_header(context)
     
     if 'Delete_cleanUp' in tags:
         print(f"\n Delete Request is {context.url}/{context.ImmsID}")

@@ -293,7 +293,7 @@ def validate_imms_delta_record_with_batch_record(context, batch_record, item, ev
                 f"for ImmsID {context.ImmsID}  -- Expected {name}: {expected}, Actual {actual}"
             )  
         
-def validateToCompareBatchRecordWithEventTableRecord(context, batch_record, created_event):
+def validate_to_compare_batch_record_with_event_table_record(context, batch_record, created_event):
     response_patient, response_practitioner = extract_patient_and_practitioner(created_event.contained)
 
     check.is_true(response_patient is not None, "Patient not found in contained resources")

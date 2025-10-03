@@ -1,4 +1,4 @@
-from src.dynamoDB.dynamoDBHelper import *
+from src.dynamoDB.dynamo_db_helper import *
 from src.objectModels.api_immunization_builder import *
 from src.objectModels.patient_loader import load_patient_by_id
 from datetime import datetime, timedelta, timezone
@@ -9,7 +9,7 @@ from utilities.date_helper import *
 import logging
 from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
-from ..steps.common_steps import *
+from .common_steps import *
 
 
 logging.basicConfig(filename='debugLog.log', level=logging.INFO)
@@ -145,7 +145,7 @@ def validate_imms_event_table(context):
                 f"Expected {name}: {expected}, Actual {actual}"
             )
         
-    validateToCompareRequestAndResponse(context, create_obj, created_event, True)
+    validate_to_compare_request_and_response(context, create_obj, created_event, True)
     
 @then('The delta table will be populated with the correct data for created event')
 def validate_imms_delta_table_by_ImmsID(context):

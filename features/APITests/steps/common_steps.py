@@ -3,7 +3,7 @@ from urllib.parse import parse_qs
 from venv import logger
 import requests
 from pytest_bdd import given, when, then, parsers
-from src.dynamoDB.dynamoDBHelper import *
+from src.dynamoDB.dynamo_db_helper import *
 from src.objectModels.patient_loader import load_patient_by_id
 from src.objectModels.api_immunization_builder import *
 from utilities.api_fhir_immunization_helper import *
@@ -52,7 +52,7 @@ def valid_vaccination_record_is_created_by_supplier(context, Supplier):
     
 @when("Trigger the post create request")
 def Trigger_the_post_create_request(context):
-    get_create_postURLHeader(context)
+    get_create_post_url_header(context)
     context.create_object = context.immunization_object
     context.request = context.create_object.dict(exclude_none=True, exclude_unset=True)
     context.response = requests.post(context.url, json=context.request, headers=context.headers)
@@ -89,7 +89,7 @@ def validateCreateLocation(context):
 @then('The Search Response JSONs should contain correct error message for invalid Date From and Date To')
 @then('The Search Response JSONs should contain correct error message for invalid Date From, Date To and include')
 def operationOutcomeInvalidParams(context):
-    error_response = parse_errorResponse(context.response.json())
+    error_response = parse_error_response(context.response.json())
     params = getattr(context, "params", getattr(context, "request", {}))
     
     if isinstance(params, str):
@@ -129,7 +129,7 @@ def operationOutcomeInvalidParams(context):
         case _:
             raise ValueError("All parameters are valid, no error expected.")
 
-    validateErrorResponse(error_response, expected_error)
+    validate_error_response(error_response, expected_error)
     print(f"\n Error Response - \n {error_response}")
 # def operationOutcomeInvalidParams(context):
 #     error_response = parse_errorResponse(context.response.json())
@@ -195,14 +195,14 @@ def validate_imms_event_table_by_operation(context, operation: Operation):
                 f"Expected {name}: {expected}, Actual {actual}"
             )
         
-    validateToCompareRequestAndResponse(context, create_obj, created_event, True)
+    validate_to_compare_request_and_response(context, create_obj, created_event, True)
 
 @then(parsers.parse("The Response JSONs should contain correct error message for '{errorName}'"))
 @then(parsers.parse("The Response JSONs should contain correct error message for '{errorName}' access"))
 @then(parsers.parse("The Response JSONs should contain correct error message for Imms_id '{errorName}'"))
 def validateForbiddenAccess(context, errorName):
-    error_response = parse_errorResponse(context.response.json())
-    validateErrorResponse(error_response, ErrorName[errorName].value, context.ImmsID)
+    error_response = parse_error_response(context.response.json())
+    validate_error_response(error_response, ErrorName[errorName].value, context.ImmsID)
     print(f"\n Error Response - \n {error_response}")
     
 @then('The Etag in header will containing the latest event version')
@@ -214,7 +214,7 @@ def validate_etag_in_header(context):
     
 @when('Send a update for Immunization event created with vaccination detail being updated')
 def send_update_for_vaccination_detail(context):
-    get_updateURLHeader(context, str(context.expected_version))
+    get_update_url_header(context, str(context.expected_version))
     context.update_object = convert_to_update(context.immunization_object, context.ImmsID)
     context.expected_version = int(context.expected_version) + 1
     context.update_object.extension = [build_vaccine_procedure_extension(context.vaccine_type.upper())]
@@ -229,7 +229,7 @@ def send_update_for_vaccination_detail(context):
     
 @when('Send a update for Immunization event created with patient address being updated')
 def send_update_for_immunization_event(context):
-    get_updateURLHeader(context, str(context.expected_version))
+    get_update_url_header(context, str(context.expected_version))
     context.update_object = convert_to_update(context.immunization_object, context.ImmsID)
     context.update_object.contained[1].address[0].city = "Updated City"
     context.update_object.contained[1].address[0].state = "Updated State"
@@ -249,7 +249,7 @@ def created_event_is_being_deleted(context):
     
 @when('Send a delete for Immunization event created')
 def send_delete_for_immunization_event_created(context):
-    get_deleteURLHeader(context)
+    get_delete_url_header(context)
     print(f"\n Delete Request is {context.url}/{context.ImmsID}")
     context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
     

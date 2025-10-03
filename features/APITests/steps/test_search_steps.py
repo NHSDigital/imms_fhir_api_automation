@@ -7,7 +7,7 @@ from utilities.api_get_header import *
 import logging
 from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
-from ..steps.common_steps import *
+from .common_steps import *
 from datetime import datetime
 from utilities.api_fhir_immunization_helper import *
 from datetime import datetime
@@ -17,7 +17,7 @@ scenarios('APITests/search.feature')
 
 @when('Send a search request with Post method using identifier header for Immunization event created')  
 def send_search_post_request_with_identifier_header(context):
-    get_search_postURLHeader(context)
+    get_search_post_url_header(context)
     context.request =  {
              "identifier": f'{context.create_object.identifier[0].system}|{context.create_object.identifier[0].value}'
             }
@@ -26,7 +26,7 @@ def send_search_post_request_with_identifier_header(context):
     
 @when('Send a search request with Post method using identifier and _elements header for Immunization event created')
 def send_search_post_request_with_identifier_and_elements_header(context):
-    get_search_postURLHeader(context)
+    get_search_post_url_header(context)
     context.request =  {
              "identifier": f'{context.create_object.identifier[0].system}|{context.create_object.identifier[0].value}',
              "_elements": "meta,id"
@@ -36,7 +36,7 @@ def send_search_post_request_with_identifier_and_elements_header(context):
     
 @when('Send a search request with post method using invalid identifier header for Immunization event created')
 def send_search_post_request_with_invalid_identifier_header(context):
-    get_search_postURLHeader(context)
+    get_search_post_url_header(context)
     context.request =  {
              "identifier": f'https://www.ieds.england.nhs.uk/|{str(uuid.uuid4())}',
              "_elements": "meta,id"
@@ -46,7 +46,7 @@ def send_search_post_request_with_invalid_identifier_header(context):
 
 @when("Send a search request with GET method for Immunization event created")
 def TriggerSearchGetRequest(context):
-    get_search_getURLHeader(context)
+    get_search_get_url_header(context)
     context.params = convert_to_form_data(set_request_data(context.patient.identifier[0].value, context.vaccine_type, datetime.today().strftime("%Y-%m-%d")))
     print(f"\n Search Get Parameters - \n {context.params}")
     context.response = requests.get(context.url, params = context.params, headers = context.headers)
@@ -56,7 +56,7 @@ def TriggerSearchGetRequest(context):
 @when("Send a search request with POST method for Immunization event created")
 def TriggerSearchPostRequest(context):
     
-    get_search_postURLHeader(context)
+    get_search_post_url_header(context)
     context.request = convert_to_form_data(set_request_data(context.patient.identifier[0].value, context.vaccine_type, datetime.today().strftime("%Y-%m-%d")))
     print(f"\n Search Post Request - \n {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
@@ -67,7 +67,7 @@ def TriggerSearchPostRequest(context):
 @when(parsers.parse("Send a search request with GET method with valid NHS Number '{NHSNumber}' and invalid Disease Type '{DiseaseType}'"))
 @when(parsers.parse("Send a search request with GET method with invalid NHS Number '{NHSNumber}' and invalid Disease Type '{DiseaseType}'"))
 def send_invalid_param_get_request(context, NHSNumber, DiseaseType):
-    get_search_getURLHeader(context)
+    get_search_get_url_header(context)
 
     NHSNumber = normalize_param(NHSNumber)
     DiseaseType = normalize_param(DiseaseType)
@@ -81,7 +81,7 @@ def send_invalid_param_get_request(context, NHSNumber, DiseaseType):
 @when(parsers.parse("Send a search request with POST method with valid NHS Number '{NHSNumber}' and invalid Disease Type '{DiseaseType}'"))
 @when(parsers.parse("Send a search request with POST method with invalid NHS Number '{NHSNumber}' and invalid Disease Type '{DiseaseType}'"))
 def send_invalid_param_post_request(context, NHSNumber, DiseaseType):
-    get_search_postURLHeader(context)
+    get_search_post_url_header(context)
 
     NHSNumber = normalize_param(NHSNumber)
     DiseaseType = normalize_param(DiseaseType)      
@@ -95,7 +95,7 @@ def send_invalid_param_post_request(context, NHSNumber, DiseaseType):
 @when(parsers.parse("Send a search request with GET method with valid Date From '{DateFrom}' and invalid Date To '{DateTo}'"))
 @when(parsers.parse("Send a search request with GET method with invalid Date From '{DateFrom}' and invalid Date To '{DateTo}'"))
 def send_invalid_date_get_request(context, DateFrom, DateTo):
-    get_search_getURLHeader(context)
+    get_search_get_url_header(context)
 
     # DateFrom = normalize_param(DateFrom.lower())
     # DateTo = normalize_param(DateTo.lower())      
@@ -108,7 +108,7 @@ def send_invalid_date_get_request(context, DateFrom, DateTo):
 @when(parsers.parse("Send a search request with POST method with valid Date From '{DateFrom}' and invalid Date To '{DateTo}'"))
 @when(parsers.parse("Send a search request with POST method with invalid Date From '{DateFrom}' and invalid Date To '{DateTo}'"))
 def send_invalid_param_post_request(context, DateFrom, DateTo):
-    get_search_postURLHeader(context)
+    get_search_post_url_header(context)
 
     # DateFrom = normalize_param(DateFrom.lower())
     # DateTo = normalize_param(DateTo)          
@@ -119,7 +119,7 @@ def send_invalid_param_post_request(context, DateFrom, DateTo):
 
 @when(parsers.parse("Send a search request with GET method with valid NHS Number '{NHSNumber}' and Disease Type '{vaccine_type}' and Date From '{DateFrom}' and Date To '{DateTo}'"))
 def send_valid_param_get_request(context, NHSNumber, vaccine_type, DateFrom, DateTo):
-    get_search_getURLHeader(context)
+    get_search_get_url_header(context)
 
     context.params = convert_to_form_data(set_request_data(NHSNumber, vaccine_type, DateFrom, DateTo))
     print(f"\n Search Get parameters - \n {context.params}")
@@ -127,7 +127,7 @@ def send_valid_param_get_request(context, NHSNumber, vaccine_type, DateFrom, Dat
 
 @when(parsers.parse("Send a search request with POST method with valid NHS Number '{NHSNumber}' and Disease Type '{vaccine_type}' and Date From '{DateFrom}' and Date To '{DateTo}'"))
 def send_valid_param_post_request(context, NHSNumber, vaccine_type, DateFrom, DateTo):
-    get_search_postURLHeader(context)
+    get_search_post_url_header(context)
 
     context.request = convert_to_form_data(set_request_data(NHSNumber, vaccine_type, DateFrom, DateTo))
     print(f"\n Search Get parameters - \n {context.request}") 
@@ -135,28 +135,28 @@ def send_valid_param_post_request(context, NHSNumber, vaccine_type, DateFrom, Da
  
 @when(parsers.parse("Send a search request with GET method with valid NHS Number '{NHSNumber}' and valid Disease Type '{vaccine_type}' and invalid include '{include}'")) 
 def send_valid_param_get_request_with_include(context, NHSNumber, vaccine_type, include):
-    get_search_getURLHeader(context)
+    get_search_get_url_header(context)
     context.params = convert_to_form_data(set_request_data(NHSNumber, vaccine_type, include=include))
     print(f"\n Search Get parameters - \n {context.params}")
     context.response = requests.get(context.url, params = context.params, headers = context.headers)
     
 @when(parsers.parse("Send a search request with POST method with valid NHS Number '{NHSNumber}' and valid Disease Type '{vaccine_type}' and invalid include '{include}'"))
 def send_valid_param_post_request_with_include(context, NHSNumber, vaccine_type, include):
-    get_search_postURLHeader(context)
+    get_search_post_url_header(context)
     context.request = convert_to_form_data(set_request_data(NHSNumber, vaccine_type, include=include))
     print(f"\n Search Post parameters - \n {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
       
 @when(parsers.parse("Send a search request with POST method with valid NHS Number '{NHSNumber}' and valid Disease Type '{vaccine_type}' and Date From '{DateFrom}' and Date To '{DateTo}' and include '{include}'"))
 def send_valid_param_post_request_with_include(context, NHSNumber, vaccine_type, DateFrom, DateTo, include):
-    get_search_postURLHeader(context)
+    get_search_post_url_header(context)
     context.request = convert_to_form_data(set_request_data(NHSNumber, vaccine_type, DateFrom, DateTo, include))
     print(f"\n Search Post parameters - \n {context.request}")
     context.response = requests.post(context.url, headers=context.headers, data=context.request)
 
 @when(parsers.parse("Send a search request with GET method with valid NHS Number '{NHSNumber}' and valid Disease Type '{vaccine_type}' and Date From '{DateFrom}' and Date To '{DateTo}' and include '{include}'"))
 def send_valid_param_get_request_with_include(context, NHSNumber, vaccine_type, DateFrom, DateTo, include):
-    get_search_getURLHeader(context)
+    get_search_get_url_header(context)
     context.params = convert_to_form_data(set_request_data(NHSNumber, vaccine_type, DateFrom, DateTo, include))
     print(f"\n Search Get parameters - \n {context.params}")
     context.response = requests.get(context.url, params = context.params, headers = context.headers)
@@ -164,7 +164,7 @@ def send_valid_param_get_request_with_include(context, NHSNumber, vaccine_type, 
 @then("The occurrenceDateTime of the immunization events should be within the Date From and Date To range")
 def validateDateRange(context):
     data = context.response.json()
-    context.parsed_search_object = parse_FHIRImmunizationResponse(data)
+    context.parsed_search_object = parse_FHIR_immunization_response(data)
     
     params = getattr(context, "params", getattr(context, "request", {}))
     
@@ -195,7 +195,7 @@ def validateDateRange(context):
 @then('The Search Response JSONs should contain the detail of the immunization events created above')
 def validateImmsID(context):
     data = context.response.json()
-    context.parsed_search_object = parse_FHIRImmunizationResponse(data)
+    context.parsed_search_object = parse_FHIR_immunization_response(data)
     
     assert context.parsed_search_object.resourceType == "Bundle", f"expected resourceType to be 'Bundle' but got {context.parsed_search_object.resourceType}"
     assert context.parsed_search_object.type == "searchset", f"expected resourceType to be 'searchset' but got {context.parsed_search_object.type }"
@@ -220,7 +220,7 @@ def validateImmsID(context):
 def validateJsonImms(context):
     create_obj = context.create_object
     created_event= context.created_event.resource
-    validateToCompareRequestAndResponse(context, create_obj, created_event)
+    validate_to_compare_request_and_response(context, create_obj, created_event)
 
 @then('The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient')
 def validateJsonPat(context):        
@@ -252,7 +252,7 @@ def validateJsonPat(context):
 @then('correct immunization event is returned in the response')
 def validate_correct_immunization_event(context):
     data = context.response.json()
-    context.parsed_search_object = parse_FHIRImmunizationResponse(data)
+    context.parsed_search_object = parse_FHIR_immunization_response(data)
 
     context.created_event = context.parsed_search_object.entry[0] if context.parsed_search_object.entry else None
    

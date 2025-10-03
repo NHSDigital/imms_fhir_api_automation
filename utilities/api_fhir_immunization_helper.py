@@ -78,7 +78,7 @@ def is_valid_nhs_number(nhs_number: str) -> bool:
     return check_digit == digits[9]
 
 
-def validateErrorResponse(error_response, errorName: str, imms_id: str = ""):
+def validate_error_response(error_response, errorName: str, imms_id: str = ""):
     uuid_obj = uuid.UUID(error_response.id, version=4)
     check.is_true(isinstance(uuid_obj, uuid.UUID), f"Id is not UUID {error_response.id}")
 
@@ -106,16 +106,16 @@ def validateErrorResponse(error_response, errorName: str, imms_id: str = ""):
         )
 
 
-def parse_FHIRImmunizationResponse(json_data: dict) -> FHIRImmunizationResponse:
+def parse_FHIR_immunization_response(json_data: dict) -> FHIRImmunizationResponse:
     return FHIRImmunizationResponse.parse_obj(json_data)  
 
-def parse_readResponse(json_data: dict) -> ImmunizationReadResponse_IntTable:
+def parse_read_response(json_data: dict) -> ImmunizationReadResponse_IntTable:
     return ImmunizationReadResponse_IntTable.parse_obj(json_data)  
 
-def parse_errorResponse(json_data: dict) -> OperationOutcome:
+def parse_error_response(json_data: dict) -> OperationOutcome:
     return OperationOutcome.parse_obj(json_data) 
 
-def validateToCompareRequestAndResponse(context, create_obj, created_event, table_validation: bool =False):
+def validate_to_compare_request_and_response(context, create_obj, created_event, table_validation: bool =False):
     request_patient = create_obj.contained[1]
     response_patient = created_event.patient
 

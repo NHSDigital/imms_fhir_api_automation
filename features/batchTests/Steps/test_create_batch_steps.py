@@ -1,7 +1,7 @@
 import json
 import pandas as pd
 import os
-from src.dynamoDB.dynamoDBHelper import *
+from src.dynamoDB.dynamo_db_helper import *
 from src.objectModels.api_immunization_builder import *
 from src.objectModels.patient_loader import load_patient_by_id
 from datetime import datetime, timedelta, timezone
@@ -122,7 +122,7 @@ def all_records_are_processed_successfully_in_the_inf_ack_file(context):
     all_valid = validate_inf_ack_file(context)
     assert all_valid, "One or more records failed validation checks"
     
-@then("file will be moved to destination bucket and buk ack file will be created")
+@then("bus ack file will be created")
 def file_will_be_moved_to_destination_bucket(context):
     context.fileContent = wait_and_read_ack_file(context, "forwardedFile")
     assert context.fileContent, f"File not found in destination bucket after timeout: {context.forwarded_prefix}"
@@ -220,7 +220,7 @@ def validate_imms_event_table_for_all_records_in_batch_file(context, operation: 
                     f"Expected {name}: {expected}, Actual {actual}"
                 )
             
-        validateToCompareBatchRecordWithEventTableRecord(context, batch_record, created_event)
+        validate_to_compare_batch_record_with_event_table_record(context, batch_record, created_event)
     
             
 def normalize(value):

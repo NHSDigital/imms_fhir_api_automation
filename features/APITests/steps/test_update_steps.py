@@ -6,7 +6,7 @@ from utilities.enums import ActionFlag
 from utilities.api_get_header import *
 from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
-from ..steps.common_steps import *
+from .common_steps import *
 from utilities.api_fhir_immunization_helper import *
 from utilities.date_helper import *
 
@@ -31,14 +31,14 @@ def validate_delta_table_for_updated_event(context):
     
 @when(parsers.parse("Send a update for Immunization event created with occurrenceDateTime being updated to '{DateText}'"))
 def send_update_for_immunization_event_with_occurrenceDateTime(context, DateText):
-    get_updateURLHeader(context, str(context.expected_version))
+    get_update_url_header(context, str(context.expected_version))
     context.update_object = convert_to_update(context.immunization_object, context.ImmsID)
     context.update_object.occurrenceDateTime = generate_date(DateText)
     trigger_the_updated_request(context)
     
 @when(parsers.parse("Send a update for Immunization event created with recorded being updated to '{DateText}'"))
 def send_update_for_immunization_event_with_occurrenceDateTime(context, DateText):
-    get_updateURLHeader(context, str(context.expected_version))
+    get_update_url_header(context, str(context.expected_version))
     context.update_object = convert_to_update(context.immunization_object, context.ImmsID)
     context.update_object.recorded = generate_date(DateText)
     trigger_the_updated_request(context)
@@ -46,14 +46,14 @@ def send_update_for_immunization_event_with_occurrenceDateTime(context, DateText
     
 @when(parsers.parse("Send a update for Immunization event created with patient date of bith being updated to '{DateText}'"))
 def send_update_for_immunization_event_with_occurrenceDateTime(context, DateText):
-    get_updateURLHeader(context, str(context.expected_version))
+    get_update_url_header(context, str(context.expected_version))
     context.update_object = convert_to_update(context.immunization_object, context.ImmsID)
     context.update_object.contained[1].birthDate = generate_date(DateText)
     trigger_the_updated_request(context)
     
 @when(parsers.parse("Send a update for Immunization event created with expiration date being updated to '{DateText}'"))
 def send_update_for_immunization_event_with_occurrenceDateTime(context, DateText):
-    get_updateURLHeader(context, str(context.expected_version))
+    get_update_url_header(context, str(context.expected_version))
     context.update_object = convert_to_update(context.immunization_object, context.ImmsID)
     context.update_object.expirationDate = generate_date(DateText)
     trigger_the_updated_request(context)

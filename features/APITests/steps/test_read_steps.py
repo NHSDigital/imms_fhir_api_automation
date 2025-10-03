@@ -7,7 +7,7 @@ from utilities.api_get_header import *
 import logging
 from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
-from ..steps.common_steps import *
+from .common_steps import *
 from datetime import datetime
 from utilities.api_fhir_immunization_helper import *
 from datetime import datetime
@@ -20,7 +20,7 @@ scenarios('APITests/read.feature')
 
 @when("Send a read request for Immunization event created")
 def send_read_for_immunization_event_created(context):
-    get_readURLHeader(context)
+    get_read_url_header(context)
     print(f"\n Read Request is {context.url}")
     context.response = requests.get(f"{context.url}", headers=context.headers)
     
@@ -28,13 +28,13 @@ def send_read_for_immunization_event_created(context):
 def the_read_response_jsons_field_values_should_match_with_the_input_jsons_field_values(context):
     create_obj = context.create_object
     data = context.response.json()
-    context.created_event = parse_readResponse(data)
-    validateToCompareRequestAndResponse(context, create_obj, context.created_event , True)
+    context.created_event = parse_read_response(data)
+    validate_to_compare_request_and_response(context, create_obj, context.created_event , True)
     
     
 @when('Send a read request for Immunization event created with invalid Imms Id')
 def send_read_for_immunization_event_created_with_invalid_imms_id(context):
     context.ImmsID = str(uuid.uuid4())
-    get_readURLHeader(context)    
+    get_read_url_header(context)    
     print(f"\n Read Request is {context.url}")
     context.response = requests.get(f"{context.url}", headers=context.headers)
