@@ -96,21 +96,29 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
           S3_env: ${{ vars.S3_ENV }}
         run: |
-          if [ "${{ inputs.testPath }}" = "API&batchTests" ]; then
-            TEST_PATH="features"
-          else
-            TEST_PATH="features/${{ inputs.testPath }}"
+          run: |
+            TEST_PATH="${{ inputs.testPath }}"
 
-          echo "Activating virtual env"
-          source venv/bin/activate
-          echo "Running Pytest-BDD tests"
-          pytest "$TEST_PATH" --junitxml=output/test-results.xml
-          if [ $? -ne 0 ]; then
-            echo "Pytest-BDD tests failed"
-            exit 1
-          else
-            echo "Pytest-BDD tests passed"
-          fi
+            if [ "$TEST_PATH" = "API&batchTests" ]; then
+              TEST_PATH="features"
+            else
+              TEST_PATH="features/$TEST_PATH"
+            fi
+
+            echo "Using test path: $TEST_PATH"
+            echo "Activating virtual env"
+            source venv/bin/activate
+
+            echo "Running Pytest-BDD tests"
+            pytest "$TEST_PATH" --junitxml=output/test-results.xml
+
+            if [ $? -ne 0 ]; then
+              echo "Pytest-BDD tests failed"
+              exit 1
+            else  
+              echo "Pytest-BDD tests completed successfully"
+            fi
+
           
       - name: Publish test results to GitHub UI
         if: always()
