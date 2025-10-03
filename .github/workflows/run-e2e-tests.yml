@@ -19,8 +19,9 @@ on:
         default: "features/APITests"
         type: choice
         options:
-          - features/APITests
-          - features/batchTests
+          - APITests
+          - batchTests
+          - API&batchTests
 
 jobs:
   test:
@@ -73,7 +74,7 @@ jobs:
             exit 1
           }  
 
-      - name: Run Pytest-BDD tests
+      - name: Run Pytest-BDD tests for ${{ inputs.testPath }}
         env:
           auth_url: ${{ vars.auth_url }}
           token_url: ${{ vars.token_url }}
@@ -95,10 +96,15 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
           S3_env: ${{ vars.S3_ENV }}
         run: |
+          if [ "${{ inputs.testPath }}" = "API&batchTests" ]; then
+            TEST_PATH="features"
+          else
+            TEST_PATH="features/${{ inputs.testPath }}"
+
           echo "Activating virtual env"
           source venv/bin/activate
           echo "Running Pytest-BDD tests"
-          pytest ${{ inputs.testPath }} --junitxml=output/test-results.xml
+          pytest "$TEST_PATH" --junitxml=output/test-results.xml
           if [ $? -ne 0 ]; then
             echo "Pytest-BDD tests failed"
             exit 1

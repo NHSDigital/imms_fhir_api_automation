@@ -5,11 +5,11 @@ Feature: Create the immunization event for a patient through batch file
 @delete_cleanup_batch @vaccine_type_HPV  @supplier_name_MAVIS
 Scenario: Verify that vaccination record will be created for different vaccine types through batch file
     Given batch file is created for below data
-        | patient_id        | unique_id            |
-        | Random            | Valid_NHsNumber      |
-        | InvalidInPDS      | InvalidInPDS_NhsNUmber |
+        | patient_id        | unique_id             |
+        | Random            | Valid_NhsNumber       |
+        | InvalidInPDS      | InvalidInPDS_NhsNumber|
         | SFlag             | SFlag_NhsNumber       |
-        | Mod11_NHS         | Mod11_NHSNumber       |
+        | Mod11_NHS         | Mod11_NhSNumber       |
         | OldNHSNo          | OldNHSNo              |
     When batch file upload in s3 bucket
     Then file will be moved to destination bucket and inf ack file will be created
