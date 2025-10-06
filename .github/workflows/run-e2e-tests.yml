@@ -150,6 +150,7 @@ jobs:
 
       - name: Publish Allure report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
+        if: always()
         with:
           github_token: ${{ secrets.ALLURE_GITHUB_TOKEN }}
           publish_branch: gh-pages
@@ -157,6 +158,7 @@ jobs:
 
       - name: Add link to Allure report
         uses: actions/github-script@v6
+        if: always()
         with:
           script: |
             const url = `https://${context.repo.owner}.github.io/${context.repo.repo}/`;
