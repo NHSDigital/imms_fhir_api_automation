@@ -144,9 +144,12 @@ jobs:
         uses: simple-elf/allure-report-action@v1.7
         if: always()
         with:
-          allure_results: output/allure-results
-          allure_history: gh-pages/history  
-          report_dir: allure-report         
+          gh_pages: gh-pages
+          allure_history: allure-history
+          allure_results: output/allure-results 
+          
+      - name: List history contents
+        run: ls -R gh-pages/history || echo "No history found"
 
       - name: Publish Allure report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -154,7 +157,7 @@ jobs:
         with:
           github_token: ${{ secrets.ALLURE_GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: allure-report
+          publish_dir: allure-history
 
       - name: Add link to Allure report
         uses: actions/github-script@v6
