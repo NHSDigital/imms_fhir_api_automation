@@ -109,7 +109,7 @@ jobs:
           source venv/bin/activate
 
           echo "Running Pytest-BDD tests"
-          pytest "$TEST_PATH" --junitxml=output/test-results.xml
+          pytest "$TEST_PATH" --junitxml=output/test-results.xml --alluredir=output/allure-results
 
           if [ $? -ne 0 ]; then
             echo "Pytest-BDD tests failed"
@@ -126,3 +126,27 @@ jobs:
           path: '**/output/test-results.xml'
           reporter: java-junit
           fail-on-error: false
+
+      - name: Load test report history
+        uses: actions/checkout@v3
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Build test report
+        uses: simple-elf/allure-report-action@v1.7
+        if: always()
+        with:
+          gh_pages: gh-pages
+          allure_history: allure-history
+          allure_results: build/allure-results
+
+      - name: Publish test report
+        uses: peaceiris/actions-gh-pages@v3
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
