@@ -100,25 +100,12 @@ jobs:
           reporter: java-junit
           fail-on-error: false
 
-      - name: Load test report history
-        if: always()
-        continue-on-error: true
-        uses: actions/checkout@v3
-        with:
-          ref: gh-pages
-          path: gh-pages
-
       - name: Build Allure report
         if: always()
         uses: simple-elf/allure-report-action@v1.7
         with:
           allure_results: output/allure-results
-          allure_history: gh-pages/history
           allure_report: allure-report
-
-      - name: List history contents
-        if: always()
-        run: ls -R gh-pages/history || echo "No history found"
 
       - name: Publish Allure report to GitHub Pages
         if: always()
