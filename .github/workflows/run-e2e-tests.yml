@@ -23,6 +23,11 @@ on:
           - batchTests
           - API&batchTests
 
+permissions:  
+  contents: write
+  id-token: write
+  checks: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
