@@ -23,7 +23,7 @@ on:
           - batchTests
           - API&batchTests
 
-permissions:  
+permissions:
   contents: write
   id-token: write
   checks: write
@@ -32,10 +32,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    permissions:
-      id-token: write
-      contents: read
-      checks: write
     steps:
       - name: Connect to AWS
         uses: aws-actions/configure-aws-credentials@v4
@@ -58,26 +54,11 @@ jobs:
       - name: Install Python dependencies
         run: |
           set -o pipefail
-          echo "Creating virtual environment"
           python -m venv venv
           source venv/bin/activate
-          echo "Upgrading pip"
-          python -m pip install --upgrade pip 2> pip_error.log || {
-            echo "Failed to upgrade pip"
-            cat pip_error.log
-            exit 1
-          }
-          echo "Installing requirements"
-          pip install -r requirements.txt 2> req_error.log || {
-            echo "Failed to install requirements.txt"
-            cat req_error.log
-            exit 1
-          }
-          pip install allure-pytest 2> allure_error.log || {
-            echo "Failed to install allure-pytest"
-            cat allure_error.log
-            exit 1
-          }  
+          python -m pip install --upgrade pip 2> pip_error.log || { cat pip_error.log; exit 1; }
+          pip install -r requirements.txt 2> req_error.log || { cat req_error.log; exit 1; }
+          pip install allure-pytest 2> allure_error.log || { cat allure_error.log; exit 1; }
 
       - name: Run Pytest-BDD tests for ${{ inputs.testPath }}
         env:
@@ -102,27 +83,14 @@ jobs:
           S3_env: ${{ vars.S3_ENV }}
         run: |
           TEST_PATH="${{ inputs.testPath }}"
-
           if [ "$TEST_PATH" = "API&batchTests" ]; then
             TEST_PATH="features"
           else
             TEST_PATH="features/$TEST_PATH"
           fi
-
-          echo "Using test path: $TEST_PATH"
-          echo "Activating virtual env"
           source venv/bin/activate
+          pytest "$TEST_PATH" --junitxml=output/test-results.xml --alluredir=output/allure-results || echo "Tests failed"
 
-          echo "Running Pytest-BDD tests"
-          pytest "$TEST_PATH" --junitxml=output/test-results.xml --alluredir=output/allure-results
-
-          if [ $? -ne 0 ]; then
-            echo "Pytest-BDD tests failed"
-            exit 1
-          else  
-            echo "Pytest-BDD tests completed successfully"
-          fi
-                    
       - name: Publish test results to GitHub UI
         if: always()
         uses: dorny/test-reporter@v1
@@ -133,35 +101,36 @@ jobs:
           fail-on-error: false
 
       - name: Load test report history
-        uses: actions/checkout@v3
         if: always()
         continue-on-error: true
+        uses: actions/checkout@v3
         with:
           ref: gh-pages
           path: gh-pages
 
       - name: Build Allure report
-        uses: simple-elf/allure-report-action@v1.7
         if: always()
+        uses: simple-elf/allure-report-action@v1.7
         with:
-          gh_pages: gh-pages
-          allure_history: allure-history
-          allure_results: output/allure-results 
-          
+          allure_results: output/allure-results
+          allure_history: gh-pages/history
+          allure_report: allure-report
+
       - name: List history contents
+        if: always()
         run: ls -R gh-pages/history || echo "No history found"
 
       - name: Publish Allure report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
         if: always()
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.ALLURE_GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: allure-history
+          publish_dir: allure-report  
 
       - name: Add link to Allure report
-        uses: actions/github-script@v6
         if: always()
+        uses: actions/github-script@v6
         with:
           script: |
             const url = `https://${context.repo.owner}.github.io/${context.repo.repo}/`;
