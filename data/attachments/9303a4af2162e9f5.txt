@@ -1,7 +1,0 @@
-
- Read Request is https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization/2a95d95a-5b44-4cc2-a4e7-f0b8a2c3221c?_summary
-404
-404
-
- Error Response - 
- resourceType='OperationOutcome' id='aff19d91-eb97-4b4b-8417-9048decd9356' meta=Meta(profile=['https://simplifier.net/guide/UKCoreDevelopment2/ProfileUKCore-OperationOutcome']) issue=[Issue(severity='error', code='not-found', details=Details(coding=[Coding(system='https://fhir.nhs.uk/Codesystem/http-error-codes', code='NOT-FOUND')]), diagnostics='The requested resource was not found.')]
