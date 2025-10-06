@@ -138,9 +138,6 @@ jobs:
           allure_results: output/allure-results
           allure_report: allure-report
 
-      - name: List contents of allure-report
-        run: ls -R allure-report
-
       - name: Publish Allure report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
