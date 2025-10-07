@@ -1,5 +1,5 @@
 import os
-from utilities.awsToken import refresh_sso_token, set_aws_session_token
+from utilities.aws_token import refresh_sso_token, set_aws_session_token
 from urllib.parse import parse_qs, urlparse
 import requests
 import uuid

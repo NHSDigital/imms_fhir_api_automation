@@ -5,9 +5,25 @@ ERROR_MAP = {
         "system": "https://fhir.nhs.uk/Codesystem/http-error-codes",
         "severity": "error",
     },
+    "invalid_DateFrom_Include": {        
+        "code": "INVALID",
+        "diagnostics": "Search parameter -date.from must be in format: YYYY-MM-DD; Search parameter _include may only be 'Immunization:patient' if provided."
+    },
     "invalid_NHSNumber": {        
-        "code": "INVARIANT",
-        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].identifier[0].value does not exists."
+        "code": "INVALID",
+        "diagnostics": "Search parameter patient.identifier must be a valid NHS number."
+    },
+    "invalid_include": {        
+        "code": "INVALID",
+        "diagnostics": "Search parameter _include may only be 'Immunization:patient' if provided."
+    },
+    "invalid_DateFrom_To": {        
+        "code": "INVALID",
+        "diagnostics": "Search parameter -date.from must be in format: YYYY-MM-DD; Search parameter -date.to must be in format: YYYY-MM-DD"
+    },
+    "invalid_DateFrom_DateTo_Include": {        
+        "code": "INVALID",
+        "diagnostics": "Search parameter -date.from must be in format: YYYY-MM-DD; Search parameter -date.to must be in format: YYYY-MM-DD; Search parameter _include may only be 'Immunization:patient' if provided."
     },
     "invalid_DiseaseType": {
         "code": "INVALID",

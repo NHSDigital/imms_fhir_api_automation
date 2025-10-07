@@ -1,5 +1,4 @@
 from dataclasses import fields, is_dataclass
-from datetime import datetime, timedelta, timezone
 from logging import config
 import os
 import re
@@ -8,42 +7,16 @@ from typing import Type, Dict
 import uuid
 from pydantic import BaseModel
 import pytest_check as check
-from src.objectModels.dataObjects import *
-from src.objectModels.operation_outcome import OperationOutcome
+from src.objectModels.api_data_objects import *
+from src.objectModels.api_operation_outcome import OperationOutcome
 from utilities.error_constants import ERROR_MAP
+from utilities.date_helper import *
 
 
 def empty_folder(path):
     if os.path.exists(path):
         shutil.rmtree(path)
     os.makedirs(path)
-
-def format_timestamp(timestamp):
-    parts = timestamp.split(".")
-
-    if len(parts) == 2:
-        milliseconds, timezone = parts[1].split("+")
-        milliseconds = milliseconds.ljust(6, "0")
-        
-        return f"{parts[0]}.{milliseconds}+{timezone}"
-
-
-def covert_to_expected_date_format(date_string):
-    try:
-        return datetime.fromisoformat(date_string.replace("Z", "+00:00"))
-    except ValueError:
-        return "Invalid format"
-    
-def iso_to_compact(dt_str):
-    dt = datetime.fromisoformat(dt_str.replace("Z", "+00:00"))
-    return dt.strftime("%Y%m%dT%H%M%S00")
-
-gender_map = {
-    "male": "1",
-    "female": "2",
-    "unknown": "0",
-    "other": "9"
-}
 
 
 def find_entry_by_Imms_id(parsed_data, imms_id) -> Optional[object]:
@@ -85,14 +58,6 @@ def parse_entry(entry_data: dict) -> Entry:
         search=parsed_search
     )
 
-
-def is_valid_date(date_str: str) -> bool:
-    try:
-        datetime.strptime(date_str, "%Y-%m-%d")
-        return True
-    except ValueError:
-        return False
-
 def is_valid_disease_type(disease_type: str) -> bool:
     valid_types = {"COVID19", "FLU", "HPV", "MMR", "RSV"}
     return disease_type in valid_types
@@ -113,7 +78,7 @@ def is_valid_nhs_number(nhs_number: str) -> bool:
     return check_digit == digits[9]
 
 
-def validateErrorResponse(error_response, errorName: str, imms_id: str = ""):
+def validate_error_response(error_response, errorName: str, imms_id: str = ""):
     uuid_obj = uuid.UUID(error_response.id, version=4)
     check.is_true(isinstance(uuid_obj, uuid.UUID), f"Id is not UUID {error_response.id}")
 
@@ -141,16 +106,16 @@ def validateErrorResponse(error_response, errorName: str, imms_id: str = ""):
         )
 
 
-def parse_FHIRImmunizationResponse(json_data: dict) -> FHIRImmunizationResponse:
+def parse_FHIR_immunization_response(json_data: dict) -> FHIRImmunizationResponse:
     return FHIRImmunizationResponse.parse_obj(json_data)  
 
-def parse_readResponse(json_data: dict) -> ImmunizationReadResponse_IntTable:
+def parse_read_response(json_data: dict) -> ImmunizationReadResponse_IntTable:
     return ImmunizationReadResponse_IntTable.parse_obj(json_data)  
 
-def parse_errorResponse(json_data: dict) -> OperationOutcome:
+def parse_error_response(json_data: dict) -> OperationOutcome:
     return OperationOutcome.parse_obj(json_data) 
 
-def validateToCompareRequestAndResponse(context, create_obj, created_event, table_validation: bool =False):
+def validate_to_compare_request_and_response(context, create_obj, created_event, table_validation: bool =False):
     request_patient = create_obj.contained[1]
     response_patient = created_event.patient
 
@@ -205,19 +170,3 @@ def validateToCompareRequestAndResponse(context, create_obj, created_event, tabl
                 expected == actual,
                 f"Expected {name}: {expected}, Actual {actual}"
             )
-
-def generate_date(date_str: str) -> str:
-    if date_str == "future_occurrence":
-        future_date = datetime.now(timezone.utc) + timedelta(seconds=50)
-        return  str(future_date.isoformat(timespec='milliseconds'))
-    elif date_str == "future_date":
-        future_date = datetime.now(timezone.utc) + timedelta(days=1)
-        return str(future_date.date())
-    elif date_str == "invalid_format":
-        return "2023/23/01"
-    elif date_str == "nonexistent":
-        return "2023-02-30T10:00:00.000Z"
-    elif date_str == "empty":
-        return ""
-    else:
-        raise ValueError(f"Unknown date type: {date_str}")

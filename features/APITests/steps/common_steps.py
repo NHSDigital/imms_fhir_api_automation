@@ -1,15 +1,17 @@
 import json
+from urllib.parse import parse_qs
 from venv import logger
 import requests
 from pytest_bdd import given, when, then, parsers
-from src.dynamoDB.dynamoDBHelper import *
+from src.dynamoDB.dynamo_db_helper import *
 from src.objectModels.patient_loader import load_patient_by_id
-from src.objectModels.immunization_builder import *
-from utilities.FHIRImmunizationHelper import *
+from src.objectModels.api_immunization_builder import *
+from utilities.api_fhir_immunization_helper import *
 from utilities.enums import ErrorName, Operation
-from utilities.genToken import get_tokens
-from utilities.getHeader import *
+from utilities.api_gen_token import get_tokens
+from utilities.api_get_header import *
 import pytest_check as check
+from utilities.date_helper import *
 
     
 @given(parsers.parse("Valid token is generated for the '{Supplier}'"))
@@ -50,7 +52,7 @@ def valid_vaccination_record_is_created_by_supplier(context, Supplier):
     
 @when("Trigger the post create request")
 def Trigger_the_post_create_request(context):
-    get_create_postURLHeader(context)
+    get_create_post_url_header(context)
     context.create_object = context.immunization_object
     context.request = context.create_object.dict(exclude_none=True, exclude_unset=True)
     context.response = requests.post(context.url, json=context.request, headers=context.headers)
@@ -81,26 +83,73 @@ def validateCreateLocation(context):
 @then('The Search Response JSONs should contain correct error message for invalid NHS Number')   
 @then('The Search Response JSONs should contain correct error message for invalid Disease Type')   
 @then('The Search Response JSONs should contain correct error message for invalid Date From')
-@then('The Search Response JSONs should contain correct error message for invalid Date To') 
+@then('The Search Response JSONs should contain correct error message for invalid Date To')
+@then('The Search Response JSONs should contain correct error message for invalid NHS Number as higher priority') 
+@then('The Search Response JSONs should contain correct error message for invalid include')
+@then('The Search Response JSONs should contain correct error message for invalid Date From and Date To')
+@then('The Search Response JSONs should contain correct error message for invalid Date From, Date To and include')
 def operationOutcomeInvalidParams(context):
-    error_response = parse_errorResponse(context.response.json())
+    error_response = parse_error_response(context.response.json())
+    params = getattr(context, "params", getattr(context, "request", {}))
+    
+    if isinstance(params, str):
+        parsed = parse_qs(params)
+        params = {k: v[0] for k, v in parsed.items()} if parsed else {}
 
-    error_checks = [
-        (not is_valid_disease_type(context.DiseaseType), ErrorName.invalid_DiseaseType.value) if getattr(context, "DiseaseType", None) else (False, None),
-        (not is_valid_date(context.DateFrom), ErrorName.invalid_DateFrom.value) if getattr(context, "DateFrom", None) else (False, None),
-        (not is_valid_date(context.DateTo), ErrorName.invalid_DateTo.value) if getattr(context, "DateTo", None) else (False, None),
-        (not is_valid_nhs_number(context.NHSNumber), ErrorName.invalid_NHSNumber.value) if getattr(context, "NHSNumber", None) else (False, None),
-    ]
+    date_from_value = params.get("-date.from")
+    date_to_value = params.get("-date.to")
+    include_value = params.get("_include")
+    nhs_number= params.get("patient.identifier").replace("https://fhir.nhs.uk/Id/nhs-number|", "") 
+    disease_type= params.get("-immunization.target")
 
-    for failed, errorName in error_checks:
-        if failed:
-            break
-    else:
-        raise ValueError("All parameters are valid, no error expected.")
+    # Validation flags
+    nhs_invalid =  not is_valid_nhs_number(nhs_number)
+    disease_invalid =  not is_valid_disease_type(disease_type)
+    date_from_invalid = date_from_value and not is_valid_date(date_from_value)
+    date_to_invalid =  date_to_value and not is_valid_date(date_to_value)
+    include_invalid =  include_value != "Immunization:patient"
 
-    if errorName:
-        validateErrorResponse(error_response, errorName)
-        print(f"\n Error Response - \n {error_response}")    
+    match (nhs_invalid, disease_invalid, date_from_invalid, date_to_invalid, include_invalid):
+        case (True, _, _, _, _):
+            expected_error = ErrorName.invalid_NHSNumber.value
+        case (False, True, _, _, _):
+            expected_error = ErrorName.invalid_DiseaseType.value
+        case (False, False, True, True, False):
+            expected_error = ErrorName.invalid_DateFrom_To.value
+        case (False, False, True, True, True):
+            expected_error = ErrorName.invalid_DateFrom_DateTo_Include.value
+        case (False, False, True, _, True):
+            expected_error = ErrorName.invalid_DateFrom_Include.value
+        case (False, False, True, _, _):
+            expected_error = ErrorName.invalid_DateFrom.value
+        case (False, False, _, True, _):
+            expected_error = ErrorName.invalid_DateTo.value
+        case (False, False, _, _, True):
+            expected_error = ErrorName.invalid_include.value
+        case _:
+            raise ValueError("All parameters are valid, no error expected.")
+
+    validate_error_response(error_response, expected_error)
+    print(f"\n Error Response - \n {error_response}")
+# def operationOutcomeInvalidParams(context):
+#     error_response = parse_errorResponse(context.response.json())
+
+#     error_checks = [
+#         (not is_valid_disease_type(context.DiseaseType), ErrorName.invalid_DiseaseType.value) if getattr(context, "DiseaseType", None) else (False, None),
+#         (not is_valid_date(context.DateFrom), ErrorName.invalid_DateFrom.value) if getattr(context, "DateFrom", None) else (False, None),
+#         (not is_valid_date(context.DateTo), ErrorName.invalid_DateTo.value) if getattr(context, "DateTo", None) else (False, None),
+#         (not is_valid_nhs_number(context.NHSNumber), ErrorName.invalid_NHSNumber.value) if getattr(context, "NHSNumber", None) else (False, None),
+#     ]
+
+#     for failed, errorName in error_checks:
+#         if failed:
+#             break
+#     else:
+#         raise ValueError("All parameters are valid, no error expected.")
+
+#     if errorName:
+#         validateErrorResponse(error_response, errorName)
+#         print(f"\n Error Response - \n {error_response}")    
         
 @then('The X-Request-ID and X-Correlation-ID keys in header will populate correctly')
 def validateCreateHeader(context):
@@ -112,7 +161,7 @@ def validateCreateHeader(context):
 @then(parsers.parse("The imms event table will be populated with the correct data for '{operation}' event"))
 def validate_imms_event_table_by_operation(context, operation: Operation):
     create_obj = context.create_object
-    table_query_response = fetch_immunization_events_detail(context.aws_profile_name, context.ImmsID)
+    table_query_response = fetch_immunization_events_detail(context.aws_profile_name, context.ImmsID, context.S3_env)
     assert "Item" in table_query_response, f"Item not found in response for ImmsID: {context.ImmsID}"
     item = table_query_response["Item"]
 
@@ -146,14 +195,14 @@ def validate_imms_event_table_by_operation(context, operation: Operation):
                 f"Expected {name}: {expected}, Actual {actual}"
             )
         
-    validateToCompareRequestAndResponse(context, create_obj, created_event, True)
+    validate_to_compare_request_and_response(context, create_obj, created_event, True)
 
 @then(parsers.parse("The Response JSONs should contain correct error message for '{errorName}'"))
 @then(parsers.parse("The Response JSONs should contain correct error message for '{errorName}' access"))
 @then(parsers.parse("The Response JSONs should contain correct error message for Imms_id '{errorName}'"))
 def validateForbiddenAccess(context, errorName):
-    error_response = parse_errorResponse(context.response.json())
-    validateErrorResponse(error_response, ErrorName[errorName].value, context.ImmsID)
+    error_response = parse_error_response(context.response.json())
+    validate_error_response(error_response, ErrorName[errorName].value, context.ImmsID)
     print(f"\n Error Response - \n {error_response}")
     
 @then('The Etag in header will containing the latest event version')
@@ -165,7 +214,7 @@ def validate_etag_in_header(context):
     
 @when('Send a update for Immunization event created with vaccination detail being updated')
 def send_update_for_vaccination_detail(context):
-    get_updateURLHeader(context, str(context.expected_version))
+    get_update_url_header(context, str(context.expected_version))
     context.update_object = convert_to_update(context.immunization_object, context.ImmsID)
     context.expected_version = int(context.expected_version) + 1
     context.update_object.extension = [build_vaccine_procedure_extension(context.vaccine_type.upper())]
@@ -180,7 +229,7 @@ def send_update_for_vaccination_detail(context):
     
 @when('Send a update for Immunization event created with patient address being updated')
 def send_update_for_immunization_event(context):
-    get_updateURLHeader(context, str(context.expected_version))
+    get_update_url_header(context, str(context.expected_version))
     context.update_object = convert_to_update(context.immunization_object, context.ImmsID)
     context.update_object.contained[1].address[0].city = "Updated City"
     context.update_object.contained[1].address[0].state = "Updated State"
@@ -200,7 +249,7 @@ def created_event_is_being_deleted(context):
     
 @when('Send a delete for Immunization event created')
 def send_delete_for_immunization_event_created(context):
-    get_deleteURLHeader(context)
+    get_delete_url_header(context)
     print(f"\n Delete Request is {context.url}/{context.ImmsID}")
     context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
     
@@ -210,3 +259,6 @@ def trigger_the_updated_request(context):
     context.request = context.update_object.dict(exclude_none=True, exclude_unset=True)
     context.response = requests.put(context.url + "/" + context.ImmsID, json=context.request, headers=context.headers)
     print(f"Update Request is {json.dumps(context.request)}" )
+    
+def normalize_param(value: str) -> str:
+    return "" if value.lower() in {"none", "null", ""} else value

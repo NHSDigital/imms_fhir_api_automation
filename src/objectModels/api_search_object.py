@@ -9,11 +9,11 @@ class ImmunizationRequest:
     date_from: str 
     date_to: str 
 
-def set_request_data(nhs_number, target, date_from :str = None, date_to:str = None) -> ImmunizationRequest:
+def set_request_data(nhs_number, target, date_from :str = None, date_to:str = None, include:str = "Immunization:patient") -> ImmunizationRequest:
     return ImmunizationRequest(
         patient_identifier=f"https://fhir.nhs.uk/Id/nhs-number|{nhs_number}",
         immunization_target=target,
-        include="Immunization:patient",
+        include=include,
         date_from=date_from,
         date_to=date_to
 )
