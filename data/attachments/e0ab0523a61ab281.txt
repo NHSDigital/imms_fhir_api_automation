@@ -1,0 +1,3 @@
+❌ Step failed! **Valid vaccination record is created with Patient 'SupersedeNhsNo' and vaccine_type 'FLU'** 
+ Error: 
+ Expected status code: 201, but got: 429. Response: {'message': 'This API is currently receiving a high volume of requests and is being rate limited.', 'scope': 'proxy', 'policy': 'quota', 'message_id': 'rrt-2704453025730245268-c-geu2-2590243-44539044-1'} 
