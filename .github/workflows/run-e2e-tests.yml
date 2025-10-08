@@ -60,7 +60,7 @@ jobs:
           pip install -r requirements.txt 2> req_error.log || { cat req_error.log; exit 1; }
           pip install allure-pytest 2> allure_error.log || { cat allure_error.log; exit 1; }
           
-      - name: Run Pytest-BDD tests for ${{ inputs.testPath }}
+      - name: Run Pytest-BDD tests for ${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' }}
         env:
           auth_url: ${{ vars.auth_url }}
           token_url: ${{ vars.token_url }}
@@ -89,7 +89,9 @@ jobs:
             TEST_PATH="features/$TEST_PATH"
           fi
           source venv/bin/activate
-          pytest "$TEST_PATH" --junitxml=output/test-results.xml --alluredir=output/allure-results || echo "Tests failed"
+          pytest "$TEST_PATH" --junitxml=output/test-results.xml --alluredir=output/allure-results || TEST_EXIT_CODE=$?
+          echo "Tests completed. Continuing with remaining steps..."
+          echo "${TEST_EXIT_CODE:-0}" > .test_exit_code
 
       - name: Publish test results to GitHub UI
         if: always()
