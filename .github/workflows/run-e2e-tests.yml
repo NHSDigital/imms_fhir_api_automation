@@ -31,7 +31,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'int' }}
     steps:
       - name: Connect to AWS
         uses: aws-actions/configure-aws-credentials@v4
@@ -59,7 +59,7 @@ jobs:
           python -m pip install --upgrade pip 2> pip_error.log || { cat pip_error.log; exit 1; }
           pip install -r requirements.txt 2> req_error.log || { cat req_error.log; exit 1; }
           pip install allure-pytest 2> allure_error.log || { cat allure_error.log; exit 1; }
-
+          
       - name: Run Pytest-BDD tests for ${{ inputs.testPath }}
         env:
           auth_url: ${{ vars.auth_url }}
@@ -82,7 +82,7 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
           S3_env: ${{ vars.S3_ENV }}
         run: |
-          TEST_PATH="${{ inputs.testPath }}"
+          TEST_PATH="${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' }}"
           if [ "$TEST_PATH" = "API&batchTests" ]; then
             TEST_PATH="features"
           else
