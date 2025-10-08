@@ -18,14 +18,16 @@
     "."
   ],
   "cucumberautocomplete.steps": [
+    "features/**/*.py",
     "features/**/steps/*.py"
-  ],
-  "cucumberautocomplete.syncfeatures": "features/**/*.feature",
-  "cucumberautocomplete.strictGherkinCompletion": true,
-  "cucumberautocomplete.smartSnippets": true,
-  "cucumberautocomplete.snippets": {
-    "Given": "def step_impl(context):\n    raise NotImplementedError(u'STEP: Given ${1}')",
-    "When": "def step_impl(context):\n    raise NotImplementedError(u'STEP: When ${1}')",
-    "Then": "def step_impl(context):\n    raise NotImplementedError(u'STEP: Then ${1}')"
-  }
+],
+"cucumberautocomplete.strictGherkinCompletion": true,
+"cucumberautocomplete.smartSnippets": true,
+"cucumberautocomplete.skipDocStrings": true,
+"cucumberautocomplete.customParameters": [
+    {
+        "regex": "([A-Za-z0-9_]+)",
+        "stepParameterName": "param"
+    }
+  ]
 }

@@ -35,7 +35,7 @@ def generate_date(date_str: str) -> str:
     now = datetime.now(timezone.utc)
     match date_str:
         case "future_occurrence":
-            return (now + timedelta(seconds=160)).isoformat(timespec='milliseconds')
+            return (now + timedelta(seconds=500)).isoformat(timespec='milliseconds')
         case "past_occurrence":
             return (now - timedelta(seconds=5050)).isoformat(timespec='milliseconds')
         case "current_occurrence_with_milliseconds":
