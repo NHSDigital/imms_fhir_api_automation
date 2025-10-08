@@ -1,5 +1,0 @@
-
- Search Get parameters - 
- patient.identifier=https%3A%2F%2Ffhir.nhs.uk%2FId%2Fnhs-number|9001066569&-immunization.target=RSV&-date.from=2025-05-32&-date.to=2025-05-32&_include=Immunization:patient
-429
-400

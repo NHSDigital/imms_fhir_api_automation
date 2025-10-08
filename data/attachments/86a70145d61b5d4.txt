@@ -1,3 +1,0 @@
-❌ Step failed! **Valid vaccination record is created with Patient 'SFlag' and vaccine_type 'RSV'** 
- Error: 
- Expected status code: 201, but got: 429. Response: {'message': 'This API is currently receiving a high volume of requests and is being rate limited.', 'scope': 'proxy', 'policy': 'spikeArrest', 'message_id': 'rrt-7782222512798071608-a-geu2-1379777-43278849-1'} 

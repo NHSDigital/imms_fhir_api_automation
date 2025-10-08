@@ -1,3 +1,0 @@
-❌ Step failed! **Valid vaccination record is created with Patient 'Random' and vaccine_type 'COVID19'** 
- Error: 
- Expected status code: 201, but got: 429. Response: {'message': 'This API is currently receiving a high volume of requests and is being rate limited.', 'scope': 'proxy', 'policy': 'quota', 'message_id': 'rrt-6937280167955954486-c-geu2-3709790-42513985-1'} 
