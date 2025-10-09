@@ -21,28 +21,28 @@ def valid_batch_file_is_created_with_details(datatable, context):
 @ignore_if_local_run
 def valid_batch_file_is_created_with_invalid_date_and_time(datatable, context):  
     build_dataFrame_using_datatable(datatable, context)   
-    context.vaccine_df['DATE_AND_TIME'] = context.vaccine_df['UNIQUE_ID'].apply(lambda uid: get_date(uid.split('-')[1]))     
+    context.vaccine_df['DATE_AND_TIME'] = context.vaccine_df['UNIQUE_ID'].apply(lambda uid: get_batch_date(uid.split('-')[1]))     
     create_batch_file(context)   
     
 @given("batch file is created for below data where recorded field has invalid date")
 @ignore_if_local_run
 def valid_batch_file_is_created_with_invalid_recorded_date(datatable, context):  
     build_dataFrame_using_datatable(datatable, context)   
-    context.vaccine_df['RECORDED_DATE'] = context.vaccine_df['UNIQUE_ID'].apply(lambda uid: get_date(uid.split('-')[1]))     
+    context.vaccine_df['RECORDED_DATE'] = context.vaccine_df['UNIQUE_ID'].apply(lambda uid: get_batch_date(uid.split('-')[1]))     
     create_batch_file(context)  
   
 @given("batch file is created for below data where expiry field has invalid date")  
 @ignore_if_local_run
 def valid_batch_file_is_created_with_invalid_expiry_date(datatable, context):  
     build_dataFrame_using_datatable(datatable, context)   
-    context.vaccine_df['EXPIRY_DATE'] = context.vaccine_df['UNIQUE_ID'].apply(lambda uid: get_date(uid.split('-')[1]))     
+    context.vaccine_df['EXPIRY_DATE'] = context.vaccine_df['UNIQUE_ID'].apply(lambda uid: get_batch_date(uid.split('-')[1]))     
     create_batch_file(context) 
     
 @given("batch file is created for below data where Person date of birth field has invalid date")  
 @ignore_if_local_run
 def valid_batch_file_is_created_with_invalid_person_dateOfBirth_date(datatable, context):  
     build_dataFrame_using_datatable(datatable, context)   
-    context.vaccine_df['PERSON_DOB'] = context.vaccine_df['UNIQUE_ID'].apply(lambda uid: get_date(uid.split('-')[1]))     
+    context.vaccine_df['PERSON_DOB'] = context.vaccine_df['UNIQUE_ID'].apply(lambda uid: get_batch_date(uid.split('-')[1]))     
     create_batch_file(context) 
 
 @then("all records are rejected in the bus ack file and no imms id is generated")

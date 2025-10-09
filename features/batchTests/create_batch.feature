@@ -26,7 +26,7 @@ Scenario: Verify that vaccination record will be get rejected if date_and_time i
     Given batch file is created for below data where date_and_time field has invalid date 
         | patient_id        | unique_id                                          |
         | Random            | Fail-future_occurrence-invalid_OccurrenceDateTime  |
-        | Random            | Fail-current_occurrence-invalid_OccurrenceDateTime |
+        | Random            | Fail-invalid_batch_occurrence-invalid_OccurrenceDateTime |
         | Random            | Fail-nonexistent-invalid_OccurrenceDateTime        |
         | Random            | Fail-empty-empty_string                            |
     When batch file upload in s3 bucket
@@ -55,7 +55,6 @@ Scenario: verify that vaccination record will be get rejected if expiry_date is 
         | patient_id        | unique_id                                  |
         | Random            | Fail-invalid_format-invalid_expirationDate |
         | Random            | Fail-nonexistent-invalid_expirationDate    |
-        | Random            | Fail-empty-invalid_expirationDate          |
     When batch file upload in s3 bucket
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file

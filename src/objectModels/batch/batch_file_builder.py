@@ -39,7 +39,7 @@ def build_location_site_identifier(value: str = 'X99999') -> Dict[str, str]:
         "value": value
     }
 
-def get_date(date_str: str = "current_occurrence") -> str:
+def get_batch_date(date_str: str = "current_occurrence") -> str:
     raw_date = generate_date(date_str)
     cleaned_date = re.sub(r"[^\w]", "", raw_date)
     return cleaned_date
@@ -117,7 +117,7 @@ def build_batch_file(context, unique_id: str = None) -> BatchVaccinationRecord:
         PERSON_DOB=patient["birth_date"],
         PERSON_GENDER_CODE=patient["gender"],
         PERSON_POSTCODE=patient["postal_code"],
-        DATE_AND_TIME=get_date("current_occurrence_with_milliseconds"),
+        DATE_AND_TIME=get_batch_date("current_occurrence_with_milliseconds"),
         SITE_CODE=location["value"],
         SITE_CODE_TYPE_URI=location["system"],
         UNIQUE_ID=unique["unique_id"],
@@ -125,7 +125,7 @@ def build_batch_file(context, unique_id: str = None) -> BatchVaccinationRecord:
         ACTION_FLAG="NEW",
         PERFORMING_PROFESSIONAL_FORENAME=professional["performing_professional_forename"],
         PERFORMING_PROFESSIONAL_SURNAME=professional["performing_professional_surname"],
-        RECORDED_DATE=get_date("current_date"),
+        RECORDED_DATE=get_batch_date("current_date"),
         PRIMARY_SOURCE="TRUE",
         VACCINATION_PROCEDURE_CODE=procedure["code"],
         VACCINATION_PROCEDURE_TERM=procedure["term"],
