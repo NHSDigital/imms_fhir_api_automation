@@ -45,8 +45,8 @@ def valid_batch_file_is_created_with_invalid_person_dateOfBirth_date(datatable, 
     context.vaccine_df['PERSON_DOB'] = context.vaccine_df['UNIQUE_ID'].apply(lambda uid: get_date(uid.split('-')[1]))     
     create_batch_file(context) 
 
-@then(parsers.parse("all records are rejected in the bus ack file for '{field_name}' validation error"))
-def all_record_are_rejected_for_given_field_name(context, field_name):
-    all_valid = validate_bus_ack_file_for_error(context, field_name)
+@then("all records are rejected in the bus ack file and no imms id is generated")
+def all_record_are_rejected_for_given_field_name(context):
+    all_valid = validate_bus_ack_file_for_error(context)
     assert all_valid, "One or more records failed validation checks"
  

@@ -61,6 +61,7 @@ jobs:
           pip install allure-pytest 2> allure_error.log || { cat allure_error.log; exit 1; }
           
       - name: Run Pytest-BDD tests for ${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' }}
+        continue-on-error: true
         env:
           auth_url: ${{ vars.auth_url }}
           token_url: ${{ vars.token_url }}
@@ -89,9 +90,13 @@ jobs:
             TEST_PATH="features/$TEST_PATH"
           fi
           source venv/bin/activate
-          pytest "$TEST_PATH" --junitxml=output/test-results.xml --alluredir=output/allure-results || TEST_EXIT_CODE=$?
-          echo "Tests completed. Continuing with remaining steps..."
-          echo "${TEST_EXIT_CODE:-0}" > .test_exit_code
+          pytest "$TEST_PATH" --junitxml=output/test-results.xml --alluredir=output/allure-results 
+          if [ $? -ne 0 ]; then
+            echo "Pytest-BDD tests failed"
+            exit 1
+          else
+            echo "Pytest-BDD tests passed"
+          fi
 
       - name: Publish test results to GitHub UI
         if: always()
@@ -102,12 +107,22 @@ jobs:
           reporter: java-junit
           fail-on-error: false
 
+      - name: Load test report history
+        uses: actions/checkout@v3
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
       - name: Build Allure report
         if: always()
         uses: simple-elf/allure-report-action@v1.7
         with:
           allure_results: output/allure-results
+          gh_pages: gh-pages
           allure_report: allure-report
+          allure_history: allure-history
 
       - name: Publish Allure report to GitHub Pages
         if: always()
@@ -115,7 +130,7 @@ jobs:
         with:
           github_token: ${{ secrets.ALLURE_GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: allure-report  
+          publish_dir: allure-history
 
       - name: Add link to Allure report
         if: always()

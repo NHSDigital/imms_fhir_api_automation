@@ -44,10 +44,6 @@ ERROR_MAP = {
     "not_found": {
         "code": "NOT-FOUND",
         "diagnostics": f"Immunization resource does not exist."
-    },  
-    "read_not_found": {
-        "code": "NOT-FOUND",
-        "diagnostics": f"The requested resource was not found."
     },      
     "forbidden": {
         "code": "FORBIDDEN",
@@ -63,7 +59,7 @@ ERROR_MAP = {
     },
     "invalid_OccurrenceDateTime": {
         "code": "INVARIANT",
-        "diagnostics": "Validation errors: occurrenceDateTime must be a valid datetime in one of the following formats:- 'YYYY-MM-DD' — Full date only- 'YYYY-MM-DDThh:mm:ss%z' — Full date and time with timezone (e.g. +00:00 or +01:00)- 'YYYY-MM-DDThh:mm:ss.f%z' — Full date and time with milliseconds and timezone- Date must not be in the future.Only '+00:00' and '+01:00' are accepted as valid timezone offsets. Note that partial dates are not allowed for occurrenceDateTime in this service."
+        "diagnostics": "Validation errors: occurrenceDateTime must be a valid datetime in one of the following formats:- 'YYYY-MM-DD' — Full date only- 'YYYY-MM-DDThh:mm:ss%z' — Full date and time with timezone (e.g. +00:00 or +01:00)- 'YYYY-MM-DDThh:mm:ss.f%z' — Full date and time with milliseconds and timezone- Date must not be in the future.Only '+00:00' and '+01:00' are accepted as valid timezone offsets.Note that partial dates are not allowed for occurrenceDateTime in this service."
     },
     "invalid_recorded": {
         "code": "INVARIANT",

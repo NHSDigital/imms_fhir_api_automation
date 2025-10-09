@@ -33,7 +33,7 @@ Scenario: Verify that vaccination record will be get rejected if date_and_time i
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
     And bus ack file will be created
-    And all records are rejected in the bus ack file for 'occurrenceDateTime' validation error
+    And all records are rejected in the bus ack file and no imms id is generated
 
 @vaccine_type_hpv  @supplier_name_MAVIS
 Scenario: verify that vaccination record will be get rejected if recorded_date is invalid in batch file
@@ -47,7 +47,7 @@ Scenario: verify that vaccination record will be get rejected if recorded_date i
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
     And bus ack file will be created
-#     And all records are rejected in the bus ack file for 'occurrenceDateTime' validation error
+    And all records are rejected in the bus ack file and no imms id is generated
 
 @vaccine_type_hpv  @supplier_name_MAVIS
 Scenario: verify that vaccination record will be get rejected if expiry_date is invalid in batch file
@@ -60,7 +60,7 @@ Scenario: verify that vaccination record will be get rejected if expiry_date is 
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
     And bus ack file will be created
-#     And all records are rejected in the bus ack file for 'occurrenceDateTime' validation error
+    And all records are rejected in the bus ack file and no imms id is generated
 
 @vaccine_type_hpv  @supplier_name_MAVIS
 Scenario: verify that vaccination record will be get rejected if Person date of birth is invalid in batch file
@@ -74,4 +74,4 @@ Scenario: verify that vaccination record will be get rejected if Person date of 
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
     And bus ack file will be created
-#     And all records are rejected in the bus ack file for 'occurrenceDateTime' validation error
+    And all records are rejected in the bus ack file and no imms id is generated 
