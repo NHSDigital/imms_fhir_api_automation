@@ -74,7 +74,7 @@ def validateCreateLocation(context):
     assert  "E-Tag" in context.response.headers, f"E-Tag header is missing in the response with Status code: {context.response.statusCode}. Response: {context.response.json()}"
     context.ImmsID = location.split("/")[-1]
     context.eTag= eTag.strip('"')
-    print(f"\n Immunisation ID is {context.ImmsID} and Etag is {context.eTag} \n")
+    print(f"\n Immunization ID is {context.ImmsID} and Etag is {context.eTag} \n")
     check.is_true(
         context.ImmsID is not None, 
         f"Expected IdentifierPK: {context.patient.identifier[0].value}, Found: {context.ImmsID}"

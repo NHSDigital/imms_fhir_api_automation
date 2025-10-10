@@ -88,7 +88,8 @@ def validate_error_response(error_response, errorName: str, imms_id: str = ""):
         expected_diagnostics = ERROR_MAP["not_found"]["diagnostics"]+ f" ID: {imms_id}"
         fields_to_compare.append(("Diagnostics", expected_diagnostics, error_response.issue[0].diagnostics))
     else:
-        fields_to_compare.append(("Diagnostics", ERROR_MAP[errorName]["diagnostics"], error_response.issue[0].diagnostics))
+        actual_diagnostics = ( error_response.issue[0].diagnostics).replace('\n', '')
+        fields_to_compare.append(("Diagnostics", ERROR_MAP[errorName]["diagnostics"],actual_diagnostics))
 
     fields_to_compare.extend([
         ("ResourceType", ERROR_MAP["Common_field"]["resourceType"], error_response.resourceType),

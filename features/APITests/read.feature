@@ -33,12 +33,12 @@ Scenario: Deleted event returns 404 on read request
     And created event is being deleted
     When Send a read request for Immunization event created
     Then The request will be unsuccessful with the status code '404'
-    And The Response JSONs should contain correct error message for 'read_not_found'
+    And The Response JSONs should contain correct error message for 'not_found'
 
 @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
 Scenario: Verify that the Read event request will fail with Not found error with invalid Imms Id 
     When Send a read request for Immunization event created with invalid Imms Id 
     Then The request will be unsuccessful with the status code '404'
-    And The Response JSONs should contain correct error message for Imms_id 'read_not_found'
+    And The Response JSONs should contain correct error message for Imms_id 'not_found'
 
 

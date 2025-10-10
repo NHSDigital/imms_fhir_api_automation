@@ -72,9 +72,7 @@ def context(request, global_context) -> ScenarioContext:
             get_tokens(ctx, ctx.supplier_name)
             ctx.supplier_name = tag.split('supplier_name_')[1]
             ctx.supplier_ods_code= SupplierNameWithODSCode[ctx.supplier_name].value            
-    
-    ctx.FileTimestamp = datetime.now().strftime("%Y%m%dT%H%M%S") + f"{int(datetime.now().microsecond / 10000):02d}"
-  
+              
     return ctx
 
 def pytest_bdd_after_scenario(request, feature, scenario):
