@@ -11,11 +11,6 @@ from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
 from .common_steps import *
 
-
-logging.basicConfig(filename='debugLog.log', level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-
 scenarios('APITests/create.feature')
 
 @given(parsers.parse("Valid json payload is created where doseNumberPositiveInt is '{doseNumberPositiveInt}'"))
@@ -193,3 +188,40 @@ def validate_procedure_term_blank_in_delta_table(context):
     assert actual_terms["product_term"] == "", f"Expected product term text to be blank, but got '{actual_terms['product_term']}'"
     assert actual_terms["site_term"] == "", f"Expected site of vaccination term text to be blank, but got '{actual_terms['site_term']}'"
     assert actual_terms["route_term"] == "", f"Expected route of vaccination term text to be blank, but got '{actual_terms['route_term']}'"
+    
+    
+@given(parsers.parse("Valid json payload is created where Nhs number is invalid '{invalid_NhsNumber}'"))
+def create_request_with_invalid_Nhsnumber(context, invalid_NhsNumber):
+    valid_json_payload_is_created(context)
+    context.immunization_object.contained[1].identifier[0].value = invalid_NhsNumber
+    
+@given(parsers.parse("Valid json payload is created where patient forename is not array"))
+def create_request_with_empty_forename(context):
+    valid_json_payload_is_created(context)
+    context.immunization_object.contained[1].name[0].given = ""
+    
+@given("Valid json payload is created where patient forename is empty")
+def create_request_with_empty_array_forenamer(context):
+    valid_json_payload_is_created(context)
+    context.immunization_object.contained[1].name[0].given = [""]
+    
+@given("Valid json payload is created where patient surname is empty")
+def create_request_with_empty_forename(context):
+    valid_json_payload_is_created(context)
+    context.immunization_object.contained[1].name[0].family = ""
+    
+@given("Valid json payload is created where patient name is empty")
+def create_request_with_empty_nam(context):
+    valid_json_payload_is_created(context)
+    context.immunization_object.contained[1].name[0].given = [""]
+    context.immunization_object.contained[1].name[0].family = ""
+    
+@given("Valid json payload is created where patient gender is invalid")
+def create_request_with_invalid_gender(context):
+    valid_json_payload_is_created(context)
+    context.immunization_object.contained[1].gender = "9"
+    
+@given("Valid json payload is created where patient gender is empty")
+def create_request_with_invalid_gender(context):
+    valid_json_payload_is_created(context)
+    context.immunization_object.contained[1].gender = ""

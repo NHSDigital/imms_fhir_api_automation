@@ -44,6 +44,21 @@ def valid_batch_file_is_created_with_invalid_person_dateOfBirth_date(datatable, 
     build_dataFrame_using_datatable(datatable, context)   
     context.vaccine_df['PERSON_DOB'] = context.vaccine_df['UNIQUE_ID'].apply(lambda uid: get_batch_date(uid.split('-')[1]))     
     create_batch_file(context) 
+    
+@given("batch file is created for below data where Person detail has invalid data")
+@ignore_if_local_run
+def valid_batch_file_is_created_with_invalid_patient_data(datatable, context):
+    build_dataFrame_using_datatable(datatable, context) 
+    context.vaccine_df.loc[0,["NHS_NUMBER"]] = "12345678"
+    context.vaccine_df.loc[1,["NHS_NUMBER"]] = "1234567890"
+    context.vaccine_df.loc[2,["PERSON_FORENAME"]] = ""
+    context.vaccine_df.loc[3,["PERSON_FORENAME", "PERSON_SURNAME"]] = ""
+    context.vaccine_df.loc[4,["PERSON_SURNAME"]] = ""
+    context.vaccine_df.loc[5,["PERSON_GENDER_CODE"]] = "8"
+    context.vaccine_df.loc[6,["PERSON_GENDER_CODE"]] = "male"
+    context.vaccine_df.loc[7,["PERSON_GENDER_CODE"]] = ""
+    create_batch_file(context) 
+
 
 @then("all records are rejected in the bus ack file and no imms id is generated")
 def all_record_are_rejected_for_given_field_name(context):

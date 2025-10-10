@@ -76,6 +76,38 @@ ERROR_MAP = {
     "invalid_expirationDate": {
         "code": "INVARIANT",
         "diagnostics": 'Validation errors: expirationDate must be a valid date string in the format \"YYYY-MM-DD\"'
-    }  
+    },
+    "invalid_NHSNumber_length" : {
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].identifier[0].value must be 10 characters"
+    },
+    "empty_forename" : {
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].given must be an array of non-empty strings"
+    },
+    "no_forename" : {
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].given must be an array"
+    },
+    "empty_forename_surname" : {
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].given must be an array of non-empty strings; contained[?(@.resourceType=='Patient')].name[0].family must be a non-empty string"
+    },
+    "empty_surname" : {
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].family must be a non-empty string"
+    },
+    "invalid_gender" : {
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].gender must be one of the following: male, female, other, unknown"
+    },
+    "empty_gender" :{
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].gender must be a non-empty string"
+    },
+     "invalid_Mod11_NhsNumber" :{
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].identifier[0].value is not a valid NHS number"
+    }
 }
 

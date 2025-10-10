@@ -29,6 +29,14 @@ class ErrorName(Enum):
    invalid_include = "invalid_include" 
    invalid_DateFrom_DateTo_Include = "invalid_DateFrom_DateTo_Include"
    invalid_DateFrom_To = "invalid_DateFrom_To"   
+   invalid_Mod11_NhsNumber = "invalid_Mod11_NhsNumber"
+   empty_gender = "empty_gender"
+   invalid_gender = "invalid_gender"
+   empty_surname= "empty_surname"
+   no_forename = "no_forename"
+   empty_forename_surname = "empty_forename_surname"
+   empty_forename= "empty_forename"
+   invalid_NHSNumber_length = "invalid_NHSNumber_length"
    
 class SupplierNameWithODSCode(Enum):
    MAVIS= "V0V8L"

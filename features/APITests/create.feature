@@ -154,3 +154,56 @@ Scenario Outline: Verify that the POST Create API will fail if expiration date h
         | invalid_format        |
         | nonexistent           |
         | empty                 |
+
+@supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Random
+Scenario Outline: Verify that the POST Create API will fail if nhs number is invalid
+    Given Valid json payload is created where Nhs number is invalid '<invalid_NhsNumber>' 
+    When Trigger the post create request
+    Then The request will be unsuccessful with the status code '400'
+    And The Response JSONs should contain correct error message for '<error_type>'
+    Examples: 
+    |invalid_NhsNumber  |error_type                 |
+    |1234567890         |invalid_Mod11_NhsNumber    |
+    |12345678           |invalid_NHSNumber_length   |
+
+@supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Random
+Scenario: Verify that the POST Create API will fail if patient forename is empty
+    Given Valid json payload is created where patient forename is empty
+    When Trigger the post create request
+    Then The request will be unsuccessful with the status code '400'
+    And The Response JSONs should contain correct error message for 'empty_forename'
+
+@supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Random
+Scenario: Verify that the POST Create API will fail if patient forename array is not present
+    Given Valid json payload is created where patient forename is not array
+    When Trigger the post create request
+    Then The request will be unsuccessful with the status code '400'
+    And The Response JSONs should contain correct error message for 'no_forename'
+
+@supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Random
+Scenario: Verify that the POST Create API will fail if patient Surname is empty
+    Given Valid json payload is created where patient surname is empty
+    When Trigger the post create request
+    Then The request will be unsuccessful with the status code '400'
+    And The Response JSONs should contain correct error message for 'empty_surname'
+
+@supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Random
+Scenario: Verify that the POST Create API will fail if patient name is empty
+    Given Valid json payload is created where patient name is empty
+    When Trigger the post create request
+    Then The request will be unsuccessful with the status code '400'
+    And The Response JSONs should contain correct error message for 'empty_forename_surname'
+
+@supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Random
+Scenario: Verify that the POST Create API will fail if patient gender is invalid
+    Given Valid json payload is created where patient gender is invalid
+    When Trigger the post create request
+    Then The request will be unsuccessful with the status code '400'
+    And The Response JSONs should contain correct error message for 'invalid_gender'
+    
+@supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Random
+Scenario: Verify that the POST Create API will fail if patient gender is empty
+    Given Valid json payload is created where patient gender is empty
+    When Trigger the post create request
+    Then The request will be unsuccessful with the status code '400'
+    And The Response JSONs should contain correct error message for 'empty_gender'  
