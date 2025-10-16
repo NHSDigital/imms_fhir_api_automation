@@ -59,15 +59,27 @@ ERROR_MAP = {
     },
     "invalid_OccurrenceDateTime": {
         "code": "INVARIANT",
-        "diagnostics": "Validation errors: occurrenceDateTime must be a valid datetime in one of the following formats:- 'YYYY-MM-DD' — Full date only- 'YYYY-MM-DDThh:mm:ss%z' — Full date and time with timezone (e.g. +00:00 or +01:00)- 'YYYY-MM-DDThh:mm:ss.f%z' — Full date and time with milliseconds and timezone-  Date must not be in the future.Only '+00:00' and '+01:00' are accepted as valid timezone offsets.Note that partial dates are not allowed for occurrenceDateTime in this service."
+        "diagnostics": "Validation errors: occurrenceDateTime must be a valid datetime in one of the following formats:- 'YYYY-MM-DD' — Full date only- 'YYYY-MM-DDThh:mm:ss%z' — Full date and time with timezone (e.g. +00:00 or +01:00)- 'YYYY-MM-DDThh:mm:ss.f%z' — Full date and time with milliseconds and timezone- Date must not be in the future.Only '+00:00' and '+01:00' are accepted as valid timezone offsets. Note that partial dates are not allowed for occurrenceDateTime in this service."
+    },
+    "empty_OccurrenceDateTime": {
+        "code": "INVARIANT",
+        "diagnostics": "1 validation error for Immunization __root__ Expect any of field value from this list ['occurrenceDateTime', 'occurrenceString']. (type=value_error)"
     },
     "invalid_recorded": {
         "code": "INVARIANT",
-        "diagnostics": "Validation errors: recorded must be a valid datetime in one of the following formats:- 'YYYY-MM-DD' — Full date only- 'YYYY-MM-DDThh:mm:ss%z' — Full date and time with timezone (e.g. +00:00 or +01:00)- 'YYYY-MM-DDThh:mm:ss.f%z' — Full date and time with milliseconds and timezone-  Date must not be in the future."
+        "diagnostics": "Validation errors: recorded must be a valid datetime in one of the following formats:- 'YYYY-MM-DD' — Full date only- 'YYYY-MM-DDThh:mm:ss%z' — Full date and time with timezone (e.g. +00:00 or +01:00)- 'YYYY-MM-DDThh:mm:ss.f%z' — Full date and time with milliseconds and timezone- Date must not be in the future."
+    },
+    "empty_recorded": {
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: recorded is a mandatory field"
     },
     "future_DateOfBirth": {
         "code": "INVARIANT",
         "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].birthDate must not be in the future"
+    },
+    "missing_DateOfBirth": {
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].birthDate is a mandatory field"
     },
     "invalid_DateOfBirth": {
         "code": "INVARIANT",
@@ -81,17 +93,21 @@ ERROR_MAP = {
         "code": "INVARIANT",
         "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].identifier[0].value must be 10 characters"
     },
-    "empty_forename" : {
-        "code": "INVARIANT",
-        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].given must be an array of non-empty strings"
-    },
     "no_forename" : {
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].given is a mandatory field"
+    },
+    "empty_forename" : {
         "code": "INVARIANT",
         "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].given must be an array"
     },
+    "no_surname" : {
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].family is a mandatory field"
+    },
     "empty_forename_surname" : {
         "code": "INVARIANT",
-        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].given must be an array of non-empty strings; contained[?(@.resourceType=='Patient')].name[0].family must be a non-empty string"
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].given is a mandatory field; contained[?(@.resourceType=='Patient')].name[0].family is a mandatory field"
     },
     "empty_surname" : {
         "code": "INVARIANT",
@@ -105,9 +121,17 @@ ERROR_MAP = {
         "code": "INVARIANT",
         "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].gender must be a non-empty string"
     },
+    "missing_gender" :{
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].gender is a mandatory field"
+    },
      "invalid_Mod11_NhsNumber" :{
         "code": "INVARIANT",
         "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].identifier[0].value is not a valid NHS number"
+    },
+     "should_be_string" :{
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].gender must be a string"
     }
 }
 

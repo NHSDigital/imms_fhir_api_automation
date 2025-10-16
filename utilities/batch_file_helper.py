@@ -185,23 +185,18 @@ def validate_bus_ack_file_for_error(context) -> bool:
         if message_delivery != "False":
             print(f"Row {i}: MESSAGE_DELIVERY is not 'False'")
             row_valid = False
-        # need to wait for Batch file validation redesign to validate 
-        # if local_id in valid_ids:
-        #     try:
-        #         expected_error = local_id.split('-')[2]
-        #         if expected_error != "empty_string":
-        #             expected_diagnostic = ERROR_MAP.get(expected_error, {}).get("diagnostics")
-        #         else:
-        #             expected_diagnostic = (
-        #                 f"1 validation error for Immunization __root__ Expect any of field value from this list "
-        #                 f"['{field_name}', 'occurrenceString']. (type=value_error)"
-        #             )
-        #         if operation_outcome != expected_diagnostic:
-        #             print(f"Row {i}: OPERATION_OUTCOME does not match expected diagnostics for '{expected_error}'")
-        #             row_valid = False
-        #     except IndexError:
-        #         print(f"Row {i}: LOCAL_ID format invalid for error extraction")
-        #         row_valid = False
+            
+        if local_id in valid_ids:
+            try:
+                expected_error = local_id.split('-')[2]
+                expected_diagnostic =ERROR_MAP.get(expected_error, {}).get("diagnostics")
+                
+                if operation_outcome != expected_diagnostic:
+                    print(f"row {i}: operation_outcome does not match expected diagnostics for '{expected_error}'")
+                    row_valid = False
+            except IndexError:
+                print(f"row {i}: local_id format invalid for error extraction")
+                row_valid = False
 
         overall_valid = overall_valid and row_valid
 

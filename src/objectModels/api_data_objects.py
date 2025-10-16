@@ -36,8 +36,8 @@ class Reference(BaseModel):
     identifier: Optional[Identifier] = None
 
 class HumanName(BaseModel):
-    family: str
-    given: List[str]
+    family: Optional[str] =None
+    given: Optional[List[str]] = None
 
 class Address(BaseModel):
     use: Optional[str] = None

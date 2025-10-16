@@ -12,7 +12,6 @@ from src.objectModels.api_operation_outcome import OperationOutcome
 from utilities.error_constants import ERROR_MAP
 from utilities.date_helper import *
 
-
 def empty_folder(path):
     if os.path.exists(path):
         shutil.rmtree(path)
@@ -88,7 +87,7 @@ def validate_error_response(error_response, errorName: str, imms_id: str = ""):
         expected_diagnostics = ERROR_MAP["not_found"]["diagnostics"]+ f" ID: {imms_id}"
         fields_to_compare.append(("Diagnostics", expected_diagnostics, error_response.issue[0].diagnostics))
     else:
-        actual_diagnostics = ( error_response.issue[0].diagnostics).replace('\n', '')
+        actual_diagnostics = ( error_response.issue[0].diagnostics).replace('-  Date', '- Date').replace('offsets.\nNote', 'offsets. Note').replace('\n_', ' _').replace('_\n ', '_').replace('service.\n', 'service.').replace('\n','')
         fields_to_compare.append(("Diagnostics", ERROR_MAP[errorName]["diagnostics"],actual_diagnostics))
 
     fields_to_compare.extend([
@@ -171,3 +170,14 @@ def validate_to_compare_request_and_response(context, create_obj, created_event,
                 expected == actual,
                 f"Expected {name}: {expected}, Actual {actual}"
             )
+        
+def extract_practitioner_name(response_practitioner):
+    name_entry = next(iter(response_practitioner.name or []), None)
+
+    family = getattr(name_entry, "family", "") or ""
+    given = (getattr(name_entry, "given", []) or [""])[0]
+
+    return {
+        "Practitioner.name.family": family,
+        "Practitioner.name.given": given
+    }

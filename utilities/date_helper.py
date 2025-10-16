@@ -29,8 +29,6 @@ def is_valid_date(date_str: str) -> bool:
     except ValueError:
         return False
 
-from datetime import datetime, timedelta, timezone
-
 def generate_date(date_str: str) -> str:
     now = datetime.now(timezone.utc)
     match date_str:
@@ -57,6 +55,8 @@ def generate_date(date_str: str) -> str:
             return "2023-02-30T10:00:00.000Z"
         case "empty":
             return ""
+        case "none":
+            return None
         case _:
             raise ValueError(f"Unknown date type: {date_str}")
         

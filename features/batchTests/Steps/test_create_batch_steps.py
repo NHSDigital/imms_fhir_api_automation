@@ -55,10 +55,33 @@ def valid_batch_file_is_created_with_invalid_patient_data(datatable, context):
     context.vaccine_df.loc[3,["PERSON_FORENAME", "PERSON_SURNAME"]] = ""
     context.vaccine_df.loc[4,["PERSON_SURNAME"]] = ""
     context.vaccine_df.loc[5,["PERSON_GENDER_CODE"]] = "8"
-    context.vaccine_df.loc[6,["PERSON_GENDER_CODE"]] = "male"
+    context.vaccine_df.loc[6,["PERSON_GENDER_CODE"]] = "unknow"
     context.vaccine_df.loc[7,["PERSON_GENDER_CODE"]] = ""
+    #context.vaccine_df.loc[8,["PERSON_FORENAME"]] = " "
+    #context.vaccine_df.loc[9,["PERSON_SURNAME"]] = " "
     create_batch_file(context) 
-
+    
+@given("batch file is created for below data where performer detail has invalid data")
+@ignore_if_local_run
+def valid_batch_file_is_created_with_invalid_performer_data(datatable, context):
+    build_dataFrame_using_datatable(datatable, context) 
+    context.vaccine_df.loc[0,["PERFORMING_PROFESSIONAL_FORENAME"]] = ""
+    context.vaccine_df.loc[1,["PERFORMING_PROFESSIONAL_SURNAME"]] = ""
+    create_batch_file(context) 
+    
+@given("batch file is created for below data where gender field has different values")
+@ignore_if_local_run
+def valid_batch_file_is_created_with_different_values_gender(datatable, context):
+    build_dataFrame_using_datatable(datatable, context) 
+    context.vaccine_df.loc[0,["PERSON_GENDER_CODE"]] = "0"
+    context.vaccine_df.loc[1,["PERSON_GENDER_CODE"]] = "1"
+    context.vaccine_df.loc[2,["PERSON_GENDER_CODE"]] = "2"
+    context.vaccine_df.loc[3,["PERSON_GENDER_CODE"]] = "9"
+    context.vaccine_df.loc[4,["PERSON_GENDER_CODE"]] = "unknown"
+    context.vaccine_df.loc[5,["PERSON_GENDER_CODE"]] = "male"
+    context.vaccine_df.loc[6,["PERSON_GENDER_CODE"]] = "female"
+    context.vaccine_df.loc[7,["PERSON_GENDER_CODE"]] = "other"
+    create_batch_file(context)
 
 @then("all records are rejected in the bus ack file and no imms id is generated")
 def all_record_are_rejected_for_given_field_name(context):

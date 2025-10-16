@@ -23,7 +23,8 @@
 ],
 "cucumberautocomplete.strictGherkinCompletion": true,
 "cucumberautocomplete.smartSnippets": true,
-"cucumberautocomplete.skipDocStrings": true,
+ "cucumberautocomplete.skipDocStringsFormat": true,
+"cucumberautocomplete.formatOnSave": true,
 "cucumberautocomplete.customParameters": [
     {
         "regex": "([A-Za-z0-9_]+)",
