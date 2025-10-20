@@ -85,8 +85,8 @@ def valid_batch_file_is_created_with_different_values_gender(datatable, context)
     context.vaccine_df.loc[6,["PERSON_GENDER_CODE"]] = "female"
     context.vaccine_df.loc[7,["PERSON_GENDER_CODE"]] = "other"
     context.vaccine_df.loc[8,["PERSON_SURNAME"]] = get_text("name_length_35")
-    context.vaccine_df.loc[9,["PERSON_FORENAME"]] = f"{get_text("name_length_35")}"
-    context.vaccine_df.loc[10,["PERSON_FORENAME"]] = f"Elan {get_text("name_length_15")}"
+    context.vaccine_df.loc[9,["PERSON_FORENAME"]] = get_text("name_length_35")
+    context.vaccine_df.loc[10,["PERSON_FORENAME"]] = f'Elan {get_text("name_length_15")}'
     create_batch_file(context)
 
 @then("all records are rejected in the bus ack file and no imms id is generated")
