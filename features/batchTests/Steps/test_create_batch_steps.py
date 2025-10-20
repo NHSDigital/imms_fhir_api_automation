@@ -4,6 +4,7 @@ from src.objectModels.batch.batch_file_builder import *
 from utilities.batch_S3_buckets import *
 from utilities.batch_file_helper import *
 from utilities.date_helper import *
+from utilities.text_helper import get_text
 from utilities.vaccination_constants import *
 from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
@@ -57,8 +58,10 @@ def valid_batch_file_is_created_with_invalid_patient_data(datatable, context):
     context.vaccine_df.loc[5,["PERSON_GENDER_CODE"]] = "8"
     context.vaccine_df.loc[6,["PERSON_GENDER_CODE"]] = "unknow"
     context.vaccine_df.loc[7,["PERSON_GENDER_CODE"]] = ""
-    #context.vaccine_df.loc[8,["PERSON_FORENAME"]] = " "
-    #context.vaccine_df.loc[9,["PERSON_SURNAME"]] = " "
+    context.vaccine_df.loc[8,["PERSON_FORENAME"]] = " "
+    context.vaccine_df.loc[9,["PERSON_SURNAME"]] = " "
+    context.vaccine_df.loc[10,["PERSON_SURNAME"]] = get_text("name_length_36")
+    context.vaccine_df.loc[11,["PERSON_FORENAME"]] = f"{get_text("name_length_36")}"
     create_batch_file(context) 
     
 @given("batch file is created for below data where performer detail has invalid data")
@@ -69,7 +72,7 @@ def valid_batch_file_is_created_with_invalid_performer_data(datatable, context):
     context.vaccine_df.loc[1,["PERFORMING_PROFESSIONAL_SURNAME"]] = ""
     create_batch_file(context) 
     
-@given("batch file is created for below data where gender field has different values")
+@given("batch file is created for below data where person detail has valid values")
 @ignore_if_local_run
 def valid_batch_file_is_created_with_different_values_gender(datatable, context):
     build_dataFrame_using_datatable(datatable, context) 
@@ -81,6 +84,9 @@ def valid_batch_file_is_created_with_different_values_gender(datatable, context)
     context.vaccine_df.loc[5,["PERSON_GENDER_CODE"]] = "male"
     context.vaccine_df.loc[6,["PERSON_GENDER_CODE"]] = "female"
     context.vaccine_df.loc[7,["PERSON_GENDER_CODE"]] = "other"
+    context.vaccine_df.loc[8,["PERSON_SURNAME"]] = get_text("name_length_35")
+    context.vaccine_df.loc[9,["PERSON_FORENAME"]] = f"{get_text("name_length_35")}"
+    context.vaccine_df.loc[10,["PERSON_FORENAME"]] = f"Elan {get_text("name_length_15")}"
     create_batch_file(context)
 
 @then("all records are rejected in the bus ack file and no imms id is generated")

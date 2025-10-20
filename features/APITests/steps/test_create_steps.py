@@ -10,7 +10,7 @@ import logging
 from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
 
-from utilities.test_helper import get_text
+from utilities.text_helper import get_text
 from .common_steps import *
 
 scenarios('APITests/create.feature')
@@ -200,7 +200,19 @@ def create_request_with_invalid_Nhsnumber(context, invalid_NhsNumber):
 @given(parsers.parse("Valid json payload is created where patient forename is '{forename}'"))
 def create_request_with_invalid_forename(context, forename):
     valid_json_payload_is_created(context)
-    context.immunization_object.contained[1].name[0].given = get_text(forename)
+    if forename == 'single_value_max_len':
+        context.immunization_object.contained[1].name[0].given = [get_text("name_length_36")]
+    elif forename == 'max_len_array':
+        context.immunization_object.contained[1].name[0].given = [
+            get_text("name_length_15"),
+            get_text("name_length_5"),
+            get_text("name_length_5"),
+            get_text("name_length_10"),
+            get_text("name_length_10"),
+            get_text("name_length_10"),
+       ]
+    else:
+        context.immunization_object.contained[1].name[0].given = get_text(forename)
     
 @given(parsers.parse("Valid json payload is created where patient surname is '{surname}'"))
 def create_request_with_invalid_surname(context, surname):

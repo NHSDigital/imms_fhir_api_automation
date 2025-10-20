@@ -35,6 +35,7 @@ class ErrorName(Enum):
    invalid_Mod11_NhsNumber = "invalid_Mod11_NhsNumber"
    empty_gender = "empty_gender"
    invalid_gender = "invalid_gender"
+   missing_gender = "missing_gender"
    empty_surname= "empty_surname"
    no_surname= "no_surname"
    no_forename = "no_forename"
@@ -42,6 +43,10 @@ class ErrorName(Enum):
    empty_forename= "empty_forename"
    invalid_NHSNumber_length = "invalid_NHSNumber_length"
    should_be_string = "should_be_string"
+   max_len_forename = "max_len_forename"
+   max_len_surname = "max_len_surname"
+   max_item_forename = "max_item_forename"
+   empty_array_item_forename = "empty_array_item_forename"
    
 class SupplierNameWithODSCode(Enum):
    MAVIS= "V0V8L"

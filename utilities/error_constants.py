@@ -101,6 +101,10 @@ ERROR_MAP = {
         "code": "INVARIANT",
         "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].given must be an array"
     },
+    "empty_array_item_forename" : {
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].given[0] must be a non-empty string"
+    },
     "no_surname" : {
         "code": "INVARIANT",
         "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].family is a mandatory field"
@@ -132,6 +136,19 @@ ERROR_MAP = {
      "should_be_string" :{
         "code": "INVARIANT",
         "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].gender must be a string"
+    },
+     "max_len_surname":{
+        "code": "INVARIANT",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].family must be 35 or fewer characters"
+    },
+    "max_len_forename":{
+        "code": "INVARIANT",            
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].given[0] must be 35 or fewer characters"
+    },
+    "max_item_forename":{
+        "code": "INVARIANT",            
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].given must be an array of maximum length 5"
     }
+    
 }
 

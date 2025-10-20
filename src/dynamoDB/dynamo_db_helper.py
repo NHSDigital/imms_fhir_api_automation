@@ -112,9 +112,9 @@ def parse_imms_int_imms_event_response(resource: dict) -> ImmunizationReadRespon
     parsed_contained = []
 
     for item in contained_raw:
-        if item.get("resourceType").lower() == "patient":
+        if item.get("resourceType") == "Patient":
             parsed_contained.append(Patient.parse_obj(item))
-        elif item.get("resourceType").lower() == "practitioner":
+        elif item.get("resourceType") == "Practitioner":
             parsed_contained.append(Practitioner.parse_obj(item))
         else:
             parsed_contained.append(item)  # fallback or raise error
@@ -225,7 +225,7 @@ def validate_audit_table_record(context, item, expected_status: str, expected_er
         f"Expected queue_name '{expected_queue}', got '{item.get('queue_name')}'"
     )
     
-    actual_row_count = row_count = len(context.vaccine_df)
+    actual_row_count = len(context.vaccine_df)
     check.is_true(
         item.get("record_count") == actual_row_count,
         f"Expected record_count {actual_row_count}, got '{item.get('record_count')}'"

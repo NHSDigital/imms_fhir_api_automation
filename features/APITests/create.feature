@@ -176,10 +176,12 @@ Scenario Outline: Verify that the POST Create API will fail if patient forename 
     Then The request will be unsuccessful with the status code '400'
     And The Response JSONs should contain correct error message for '<error_type>'
     Examples:
-    | forename    | error_type     |
-    | empty       | empty_forename |
-    | missing     | no_forename    |
-    | white_space | no_forename    |
+    | forename              | error_type        |
+    | empty                 | empty_forename    |
+    | missing               | no_forename       |
+    | white_space_array     | empty_forename    |
+    | single_value_max_len  | max_len_forename  |
+    | max_len_array         | max_item_forename |
 
 @supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Random
 Scenario Outline: Verify that the POST Create API will fail if patient surname is invalid  
@@ -188,10 +190,11 @@ Scenario Outline: Verify that the POST Create API will fail if patient surname i
     Then The request will be unsuccessful with the status code '400'
     And The Response JSONs should contain correct error message for '<error_type>'
     Examples:
-    | surname     | error_type    |
-    | empty       | empty_surname |
-    | missing     | no_surname    |
-    | white_space | no_surname    |
+    | surname        | error_type      |
+    | empty          | empty_surname   |
+    | missing        | no_surname      |
+    | white_space    | empty_surname   |
+    | name_length_36 | max_len_surname |
 
 @supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Random
 Scenario: Verify that the POST Create API will fail if patient name is empty

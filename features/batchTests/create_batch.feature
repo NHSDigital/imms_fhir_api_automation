@@ -89,8 +89,10 @@ Scenario: verify that vaccination record will be get rejected if Person nhs numb
         | Random            | Fail-invalid_gender_code-invalid_gender          |  
         | Random            | Fail-invalid_gender-invalid_gender               |  
         | Random            | Fail-empty_gender-missing_gender                 | 
-      #  | Random            | Fail-white_space_forename-no_forename           |
-      #  | Random            | Fail-white_space_surname-no_surname             | 
+        | Random            | Fail-white_space_forename-empty_array_item_forename            |
+        | Random            | Fail-white_space_surname-empty_surname           | 
+        | Random            | Fail-name_length_36-max_len_surname              | 
+        | Random            | Fail-name_length_36-max_len_forename             | 
     When batch file is uploaded in s3 bucket
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
@@ -115,16 +117,19 @@ Scenario: verify that vaccination record will be get successful if performer is 
 
 @vaccine_type_FLU  @supplier_name_SONAR
 Scenario: verify that vaccination record will be get successful with different valid value in gender field
-    Given batch file is created for below data where gender field has different values
-        | patient_id        | unique_id                  |
-        | Random            | gender_value_0             |
-        | Random            | gender_value_1             |
-        | Random            | gender_value_2             |
-        | Random            | gender_value_9             |
-        | Random            | gender_value_Not-Known     |
-        | Random            | gender_value_male          |
-        | Random            | gender_value_female        |
-        | Random            | gender_value_not-Specified |
+    Given batch file is created for below data where person detail has valid values
+        | patient_id        | unique_id                   |
+        | Random            | gender_value_0              |
+        | Random            | gender_value_1              |
+        | Random            | gender_value_2              |
+        | Random            | gender_value_9              |
+        | Random            | gender_value_Not-Known      |
+        | Random            | gender_value_male           |
+        | Random            | gender_value_female         |
+        | Random            | gender_value_not-Specified  |
+        | Random            | patient_surname_max_length  |
+        | Random            | patient_forename_max_length |
+        | Random            | patient_forename_max_length_multiple_values |
     When batch file is uploaded in s3 bucket
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
