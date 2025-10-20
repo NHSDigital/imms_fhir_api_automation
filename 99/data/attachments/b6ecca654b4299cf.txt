@@ -1,0 +1,3 @@
+❌ Step failed! **The delta table will be populated with the correct data for created event** 
+ Error: Item not found in response for ImmsID: 9a464f8b-d95a-4e97-91b4-54044a805604
+assert []
