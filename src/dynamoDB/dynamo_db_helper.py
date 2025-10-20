@@ -81,18 +81,45 @@ def fetch_items_by_attribute(
     print(f"\n Scan response for {attribute_name} = {attribute_value}: {items}\n")
     return items
 
+
 def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name: str, ImmsID: str, env: str):
     db = DynamoDBHelper(aws_profile_name, env)
     tableImmsDelta = db.get_delta_table()
 
-    response = tableImmsDelta.query(
-        IndexName="ImmunisationIdIndex",
-        KeyConditionExpression=Key('ImmsID').eq(ImmsID)
-    )
+    max_attempts = 5
+    delay = 2  # seconds
 
-    items = response.get("Items", [])
-    print(f"\nImmunization Delta items for ImmsID={ImmsID}:\n{items}\n")
-    return items
+    for attempt in range(1, max_attempts + 1):
+        response = tableImmsDelta.query(
+            IndexName="ImmunisationIdIndex",
+            KeyConditionExpression=Key('ImmsID').eq(ImmsID)
+        )
+
+        items = response.get("Items", [])
+        print(f"Attempt {attempt}: Found {len(items)} items")
+
+        if items:
+            print(f"\nFound Immunization Delta items for ImmsID={ImmsID}\n")
+            return items
+
+        time.sleep(delay)
+        delay *= 2 
+
+    print(f"\n❌ No items found for ImmsID={ImmsID} after {max_attempts} attempts.\n")
+    return []
+
+# def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name: str, ImmsID: str, env: str):
+#     db = DynamoDBHelper(aws_profile_name, env)
+#     tableImmsDelta = db.get_delta_table()
+
+#     response = tableImmsDelta.query(
+#         IndexName="ImmunisationIdIndex",
+#         KeyConditionExpression=Key('ImmsID').eq(ImmsID)
+#     )
+
+#     items = response.get("Items", [])
+#     print(f"\nImmunization Delta items for ImmsID={ImmsID}:\n{items}\n")
+#     return items
 
 def fetch_batch_audit_table_detail(aws_profile_name:str, filename: str, env:str, max_retries: int = 3, wait_seconds: int = 3):
     items = fetch_items_by_attribute(
