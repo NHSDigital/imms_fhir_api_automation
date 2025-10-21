@@ -1,6 +1,6 @@
 import time
 import boto3
-from boto3.dynamodb.conditions import Attr
+from boto3.dynamodb.conditions import Attr, Key
 from botocore.config import Config
 from utilities.api_fhir_immunization_helper import *
 import pytest_check as check
@@ -82,18 +82,44 @@ def fetch_items_by_attribute(
     return items
 
 
-def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name:str, ImmsID: str, env:str, max_retries: int = 3, wait_seconds: int = 3):
-    items = fetch_items_by_attribute(
-        aws_profile_name=aws_profile_name,
-        env=env,
-        table_getter=DynamoDBHelper.get_delta_table,
-        attribute_name="ImmsID",
-        attribute_value=ImmsID,
-        max_retries=max_retries,
-        wait_seconds=wait_seconds
+def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name: str, ImmsID: str, env: str):
+    db = DynamoDBHelper(aws_profile_name, env)
+    tableImmsDelta = db.get_delta_table()
+
+    max_attempts = 5
+    delay = 2  # seconds
+
+    for attempt in range(1, max_attempts + 1):
+        response = tableImmsDelta.query(
+            IndexName="ImmunisationIdIndex",
+            KeyConditionExpression=Key('ImmsID').eq(ImmsID)
         )
 
-    return items
+        items = response.get("Items", [])
+        print(f"Attempt {attempt}: Found {len(items)} items")
+
+        if items:
+            print(f"\nFound Immunization Delta items for ImmsID={ImmsID}\n")
+            return items
+
+        time.sleep(delay)
+        delay *= 2 
+
+    print(f"\n❌ No items found for ImmsID={ImmsID} after {max_attempts} attempts.\n")
+    return []
+
+# def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name: str, ImmsID: str, env: str):
+#     db = DynamoDBHelper(aws_profile_name, env)
+#     tableImmsDelta = db.get_delta_table()
+
+#     response = tableImmsDelta.query(
+#         IndexName="ImmunisationIdIndex",
+#         KeyConditionExpression=Key('ImmsID').eq(ImmsID)
+#     )
+
+#     items = response.get("Items", [])
+#     print(f"\nImmunization Delta items for ImmsID={ImmsID}:\n{items}\n")
+#     return items
 
 def fetch_batch_audit_table_detail(aws_profile_name:str, filename: str, env:str, max_retries: int = 3, wait_seconds: int = 3):
     items = fetch_items_by_attribute(
@@ -113,9 +139,9 @@ def parse_imms_int_imms_event_response(resource: dict) -> ImmunizationReadRespon
     parsed_contained = []
 
     for item in contained_raw:
-        if item.get("resourcetype") == "patient":
+        if item.get("resourceType") == "Patient":
             parsed_contained.append(Patient.parse_obj(item))
-        elif item.get("resourcetype") == "practitioner":
+        elif item.get("resourceType") == "Practitioner":
             parsed_contained.append(Practitioner.parse_obj(item))
         else:
             parsed_contained.append(item)  # fallback or raise error
@@ -225,6 +251,12 @@ def validate_audit_table_record(context, item, expected_status: str, expected_er
         item.get("queue_name") == expected_queue,
         f"Expected queue_name '{expected_queue}', got '{item.get('queue_name')}'"
     )
+    
+    actual_row_count = len(context.vaccine_df)
+    check.is_true(
+        item.get("record_count") == actual_row_count,
+        f"Expected record_count {actual_row_count}, got '{item.get('record_count')}'"
+    )
 
     check.is_true(
         item.get("filename") == context.filename,
@@ -256,7 +288,7 @@ def validate_imms_delta_record_with_batch_record(context, batch_record, item, ev
         ("NHS_NUMBER", batch_record["NHS_NUMBER"], event.get("NHS_NUMBER")),
         ("PERSON_DOB", batch_record["PERSON_DOB"], event.get("PERSON_DOB")),
         ("PERSON_POSTCODE", batch_record["PERSON_POSTCODE"], event.get("PERSON_POSTCODE")),
-        ("PERSON_GENDER_CODE", batch_record["PERSON_GENDER_CODE"], event.get("PERSON_GENDER_CODE")),
+        ("PERSON_GENDER_CODE", get_gender_code(batch_record["PERSON_GENDER_CODE"]).value, event.get("PERSON_GENDER_CODE")),
         ("VACCINATION_PROCEDURE_CODE", batch_record["VACCINATION_PROCEDURE_CODE"], event.get("VACCINATION_PROCEDURE_CODE")),        
         ("VACCINATION_PROCEDURE_TERM", batch_record["VACCINATION_PROCEDURE_TERM"], event.get("VACCINATION_PROCEDURE_TERM")),
         ("VACCINE_PRODUCT_TERM", batch_record["VACCINE_PRODUCT_TERM"], event.get("VACCINE_PRODUCT_TERM")),
@@ -290,7 +322,7 @@ def validate_imms_delta_record_with_batch_record(context, batch_record, item, ev
     for name, expected, actual in fields_to_compare:
         check.is_true(
                 expected == actual,
-                f"for ImmsID {context.ImmsID}  -- Expected {name}: {expected}, Actual {actual}"
+                f"in Delta table - ImmsID {context.ImmsID}  -- Expected {name}: {expected}, Actual {actual}"
             )  
         
 def validate_to_compare_batch_record_with_event_table_record(context, batch_record, created_event):
@@ -305,6 +337,9 @@ def validate_to_compare_batch_record_with_event_table_record(context, batch_reco
     expected_recorded = covert_to_expected_date_format(batch_record["RECORDED_DATE"])
     actual_occurrenceDateTime = covert_to_expected_date_format(created_event.occurrenceDateTime)
     actual_recorded = covert_to_expected_date_format(created_event.recorded)
+    gender_code = get_gender_code(batch_record["PERSON_GENDER_CODE"])
+    expected_gender = GenderCode(gender_code).name.lower()
+    p_names =  extract_practitioner_name(response_practitioner)
         
     fields_to_compare = [
         ("patient.reference", "#Patient1", created_event.patient.reference),
@@ -334,13 +369,13 @@ def validate_to_compare_batch_record_with_event_table_record(context, batch_reco
         ("Patient.identifier.value", batch_record["NHS_NUMBER"], response_patient.identifier[0].value),
         ("Patient.identifier.system", "https://fhir.nhs.uk/Id/nhs-number", response_patient.identifier[0].system),
         ("Patient.birthdate", format_date_yyyymmdd(batch_record["PERSON_DOB"]), response_patient.birthDate),
-        ("Patient.Gender", GenderCode(batch_record["PERSON_GENDER_CODE"]).name.lower(), response_patient.gender),
+        ("Patient.Gender", expected_gender, response_patient.gender),
         ("Patient.name.family", batch_record["PERSON_SURNAME"], response_patient.name[0].family),
         ("Patient.name.given", batch_record["PERSON_FORENAME"], response_patient.name[0].given[0]),
         ("Patient.address.postalCode", batch_record["PERSON_POSTCODE"], response_patient.address[0].postalCode),
         ("Practitioner.id", "Practitioner1", response_practitioner.id),
-        ("Practitioner.name.family", batch_record["PERFORMING_PROFESSIONAL_SURNAME"], response_practitioner.name[0].family),
-        ("Practitioner.name.given", batch_record["PERFORMING_PROFESSIONAL_FORENAME"], response_practitioner.name[0].given[0]),
+        ("Practitioner.name.family", batch_record["PERFORMING_PROFESSIONAL_SURNAME"],  p_names["Practitioner.name.family"]),
+        ("Practitioner.name.given", batch_record["PERFORMING_PROFESSIONAL_FORENAME"], p_names["Practitioner.name.given"]),
         ("extension.url", "https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-VaccinationProcedure", created_event.extension[0].url),
         ("extension.valueCodeableConcept.coding.code", batch_record["VACCINATION_PROCEDURE_CODE"], created_event.extension[0].valueCodeableConcept.coding[0].code),
         ("extension.valueCodeableConcept.coding.system", "http://snomed.info/sct", created_event.extension[0].valueCodeableConcept.coding[0].system),
@@ -363,7 +398,7 @@ def validate_to_compare_batch_record_with_event_table_record(context, batch_reco
     for name, expected, actual in fields_to_compare:
         check.is_true(
                 expected == actual,
-                f"Expected {name}: {expected}, Actual {actual}"
+                f"Event table Expected {name}: {expected}, Actual {actual}"
             )   
         
 
@@ -405,3 +440,15 @@ def extract_patient_and_practitioner(contained):
 
     return patient, practitioner
 
+def get_gender_code(input: str) -> GenderCode:
+    normalized = input.strip().lower()
+    try:
+        return GenderCode[normalized]
+    except KeyError:
+        pass
+
+    for gender in GenderCode:
+        if gender.value == normalized:
+            return gender
+
+    raise ValueError(f"Invalid gender input: {input}")

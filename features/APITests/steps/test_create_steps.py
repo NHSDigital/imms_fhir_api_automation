@@ -9,12 +9,9 @@ from utilities.date_helper import *
 import logging
 from pytest_bdd import scenarios, given, when, then, parsers
 import pytest_check as check
+
+from utilities.text_helper import get_text
 from .common_steps import *
-
-
-logging.basicConfig(filename='debugLog.log', level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 
 scenarios('APITests/create.feature')
 
@@ -193,3 +190,41 @@ def validate_procedure_term_blank_in_delta_table(context):
     assert actual_terms["product_term"] == "", f"Expected product term text to be blank, but got '{actual_terms['product_term']}'"
     assert actual_terms["site_term"] == "", f"Expected site of vaccination term text to be blank, but got '{actual_terms['site_term']}'"
     assert actual_terms["route_term"] == "", f"Expected route of vaccination term text to be blank, but got '{actual_terms['route_term']}'"
+    
+    
+@given(parsers.parse("Valid json payload is created where Nhs number is invalid '{invalid_NhsNumber}'"))
+def create_request_with_invalid_Nhsnumber(context, invalid_NhsNumber):
+    valid_json_payload_is_created(context)
+    context.immunization_object.contained[1].identifier[0].value = invalid_NhsNumber
+    
+@given(parsers.parse("Valid json payload is created where patient forename is '{forename}'"))
+def create_request_with_invalid_forename(context, forename):
+    valid_json_payload_is_created(context)
+    if forename == 'single_value_max_len':
+        context.immunization_object.contained[1].name[0].given = [get_text("name_length_36")]
+    elif forename == 'max_len_array':
+        context.immunization_object.contained[1].name[0].given = [
+            get_text("name_length_15"),
+            get_text("name_length_5"),
+            get_text("name_length_5"),
+            get_text("name_length_10"),
+            get_text("name_length_10"),
+            get_text("name_length_10"),
+       ]
+    else:
+        context.immunization_object.contained[1].name[0].given = get_text(forename)
+    
+@given(parsers.parse("Valid json payload is created where patient surname is '{surname}'"))
+def create_request_with_invalid_surname(context, surname):
+    valid_json_payload_is_created(context)
+    context.immunization_object.contained[1].name[0].family = get_text(surname)
+
+@given(parsers.parse("Valid json payload is created where patient gender is '{gender}'"))
+def create_request_with_invalid_surname(context, gender):
+    valid_json_payload_is_created(context)
+    context.immunization_object.contained[1].gender = get_text(gender)
+    
+@given("Valid json payload is created where patient name is empty")
+def create_request_with_empty_nam(context):
+    valid_json_payload_is_created(context)
+    context.immunization_object.contained[1].name = None

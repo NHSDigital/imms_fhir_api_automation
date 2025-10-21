@@ -47,6 +47,8 @@ def wait_and_read_ack_file(context, folderName: str, timeout=120, interval=5):
     source_filename = context.filename
     base_name = source_filename.replace(f'.{context.file_extension}', "")
     forwarded_prefix = f"{folderName}/{base_name}"
+    
+    context.forwarded_prefix = forwarded_prefix
 
     print(f"Waiting for file starting with '{forwarded_prefix}' in bucket: {destination_bucket}")
     elapsed = 0

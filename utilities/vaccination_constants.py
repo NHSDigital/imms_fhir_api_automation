@@ -380,7 +380,7 @@ PROTOCOL_DISEASE_MAP = {
         {
             "system": "http://snomed.info/sct",
             "code": "6142004",
-            "display": "Influenza caused by Influenza virus (disorder)"
+            "display": "Influenza caused by seasonal influenza virus (disorder)"
         }
     ],
     "RSV": [

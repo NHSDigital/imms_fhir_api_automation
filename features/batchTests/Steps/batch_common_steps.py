@@ -68,7 +68,7 @@ def valid_batch_file_is_created(context):
     save_record_to_batch_files_directory(context)
     print(f"Batch file created: {context.filename}")
     
-@when("batch file upload in s3 bucket")
+@when("batch file is uploaded in s3 bucket")
 @ignore_local_run_set_test_data
 def batch_file_upload_in_s3_bucket(context):
     upload_file_to_S3(context)
@@ -79,7 +79,7 @@ def batch_file_upload_in_s3_bucket(context):
 @then("file will be moved to destination bucket and inf ack file will be created")
 def file_will_be_moved_to_destination_bucket(context):
     context.fileContent = wait_and_read_ack_file(context, "ack")
-    assert context.fileContent, f"File not found in destination bucket after timeout: {context.forwarded_prefix}"
+    assert context.fileContent, f"File not found in destination bucket after timeout:  {context.forwarded_prefix}"
     
 @then("inf ack file has success status for processed batch file")
 def all_records_are_processed_successfully_in_the_inf_ack_file(context):  
@@ -96,7 +96,7 @@ def all_records_are_processed_successfully_in_the_batch_file(context):
     all_valid = validate_bus_ack_file(context)
     assert all_valid, "One or more records failed validation checks"
     
-@then("Audit table will have correct status and queue name for the processed batch file")
+@then("Audit table will have correct status, queue name and record count for the processed batch file")
 def validate_imms_audit_table(context):
     table_query_response = fetch_batch_audit_table_detail(context.aws_profile_name, context.filename, context.S3_env)
 
