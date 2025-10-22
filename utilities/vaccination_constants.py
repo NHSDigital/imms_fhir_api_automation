@@ -373,7 +373,7 @@ PROTOCOL_DISEASE_MAP = {
         {
             "system": "http://snomed.info/sct",
             "code": "840539006",
-            "display": "Disease caused by severe acute respiratory syndrome coronavirus 2 (disorder)"
+            "display": "Disease caused by severe acute respiratory syndrome coronavirus 2"
         }
     ],
     "FLU": [
