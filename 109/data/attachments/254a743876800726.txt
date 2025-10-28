@@ -1,0 +1,5 @@
+
+ Search Get parameters - 
+ patient.identifier=https%3A%2F%2Ffhir.nhs.uk%2FId%2Fnhs-number|10000000000+00001&-immunization.target=COVID19&-date.from=2025-10-28&_include=Immunization:patient
+400
+400

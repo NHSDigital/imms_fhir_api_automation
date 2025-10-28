@@ -1,0 +1,2 @@
+❌ Step failed! **The Search Response JSONs should contain correct error message for invalid Disease Type** 
+ Error: unhashable type: 'dict'

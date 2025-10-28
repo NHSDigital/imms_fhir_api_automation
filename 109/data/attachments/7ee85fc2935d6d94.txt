@@ -1,0 +1,2 @@
+❌ Step failed! **The Response JSONs should contain correct error message for 'unauthorized_access' access** 
+ Error: unhashable type: 'dict'

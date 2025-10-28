@@ -1,0 +1,7 @@
+"Epic","Feature","Story","FAILED","BROKEN","PASSED","SKIPPED","UNKNOWN"
+"Immunization Service","Create the immunization event for a patient","","0","41","13","0","0"
+"Immunization Service","Search the immunization of a patient","","0","24","26","0","0"
+"Immunization Service","Update the immunization of a patient","","0","16","5","0","0"
+"Immunization Service","Create the immunization event for a patient through batch file","","0","0","10","0","0"
+"Immunization Service","Delete an immunization of a patient","","0","2","3","0","0"
+"Immunization Service","Read the immunization of a patient","","0","2","4","0","0"
