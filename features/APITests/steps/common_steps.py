@@ -183,7 +183,7 @@ def validate_imms_event_table_by_operation(context, operation: Operation):
 @then(parsers.parse("The Response JSONs should contain correct error message for Imms_id '{errorName}'"))
 def validateForbiddenAccess(context, errorName):
     error_response = parse_error_response(context.response.json())
-    validate_error_response(error_response, ERROR_MAP[errorName], context.ImmsID)
+    validate_error_response(error_response, errorName, context.ImmsID)
     print(f"\n Error Response - \n {error_response}")
     
 @then('The Etag in header will containing the latest event version')
