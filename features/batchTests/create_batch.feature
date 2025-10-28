@@ -81,8 +81,8 @@ Scenario: verify that vaccination record will be get rejected if Person date of 
 Scenario: verify that vaccination record will be get rejected if Person nhs number, name and gender is invalid in batch file
     Given batch file is created for below data where Person detail has invalid data
         | patient_id        | unique_id                                        |                               
-        | Random            | Fail-invalid_NhsNumber-invalid_NHSNumber_length  |
-        | Random            | Fail-not_MOD11_NhsNumber-invalid_Mod11_NhsNumber |
+        | Random            | Fail-invalid_NhsNumber-invalid_nhsnumber_length  |
+        | Random            | Fail-not_MOD11_NhsNumber-invalid_mod11_nhsnumber |
         | Random            | Fail-empty_patient_forename-no_forename          |
         | Random            | Fail-empty_patient_name-empty_forename_surname   |
         | Random            | Fail-empty_patient_surname-no_surname            |
@@ -138,3 +138,45 @@ Scenario: verify that vaccination record will be get successful with different v
     And Audit table will have correct status, queue name and record count for the processed batch file
     And The imms event table will be populated with the correct data for 'created' event for records in batch file
     And The delta table will be populated with the correct data for all records in batch file 
+
+@vaccine_type_HPV  @supplier_name_MAVIS
+Scenario: verify that vaccination record will be get rejected if mandatory field for site, location and unique identifiers are missing in batch file
+    Given batch file is created for below data where mandatory field for site, location and unique identifiers are missing 
+        | patient_id        | unique_id                                             |                               
+        | Random            | Fail-empty_site_code-empty_site_code                  |
+        | Random            | Fail-empty_site_Code_uri-empty_site_code_uri          |
+        | Random            | Fail-empty_location_code-empty_location_code          |
+        | Random            | Fail-empty_location_code_uri-empty_location_code_uri  |
+        | Random            | Fail-empty_unique_id-no_unique_identifiers            |
+        | Random            | Fail-empty_unique_id_uri-no_unique_identifiers        |
+        | Random            | Fail-empty_primary_source-empty_primary_source        |    
+        | Random            | Fail-empty_procedure_code-empty_procedure_code        | 
+        | Random            | Fail-white_space_site_code-no_site_code               |
+        | Random            | Fail-white_space_site_Code_uri-no_site_code_uri       |
+        | Random            | Fail-white_space_location_code-no_location_code       |
+        | Random            | Fail-white_space_location_Code_uri-no_location_code_uri|
+        | Random            | Fail-white_space_unique_id-no_unique_id               |
+        | Random            | Fail-white_space_unique_id_uri-no_unique_id_uri       | 
+        | Random            | Fail-white_space_primary_source-no_primary_source     |  
+        | Random            | Fail-white_space_procedure_code-no_procedure_code     | 
+        | Random            | Fail-invalid_primary_source-no_primary_source         |  
+    When batch file is uploaded in s3 bucket
+    Then file will be moved to destination bucket and inf ack file will be created
+    And inf ack file has success status for processed batch file
+    And bus ack file will be created
+    And all records are rejected in the bus ack file and no imms id is generated
+    And Audit table will have correct status, queue name and record count for the processed batch file 
+
+@vaccine_type_HPV  @supplier_name_MAVIS
+Scenario: verify that vaccination record will be get rejected if mandatory field for site, location and unique URI are invalid in batch file
+    Given batch file is created for below data where mandatory field for site, location and unique uri values are invalid
+        | patient_id        | unique_id                      |
+        | Random            | Fail-invalid_unique_id_uri-    |
+        | Random            | Fail-invalid_site_Code_uri-    |
+        | Random            | Fail-invalid_location_Code_uri |
+    When batch file is uploaded in s3 bucket
+    Then file will be moved to destination bucket and inf ack file will be created
+    And inf ack file has success status for processed batch file
+    And bus ack file will be created
+#     And all records are rejected in the bus ack file and no imms id is generated
+#     And Audit table will have correct status, queue name and record count for the processed batch file 

@@ -89,7 +89,7 @@ ERROR_MAP = {
         "code": "INVARIANT",
         "diagnostics": 'Validation errors: expirationDate must be a valid date string in the format \"YYYY-MM-DD\"'
     },
-    "invalid_NHSNumber_length" : {
+    "invalid_nhsnumber_length" : {
         "code": "INVARIANT",
         "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].identifier[0].value must be 10 characters"
     },
@@ -129,7 +129,7 @@ ERROR_MAP = {
         "code": "INVARIANT",
         "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].gender is a mandatory field"
     },
-     "invalid_Mod11_NhsNumber" :{
+     "invalid_mod11_nhsnumber" :{
         "code": "INVARIANT",
         "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].identifier[0].value is not a valid NHS number"
     },
@@ -148,7 +148,68 @@ ERROR_MAP = {
     "max_item_forename":{
         "code": "INVARIANT",            
         "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].name[0].given must be an array of maximum length 5"
-    }
+    },
+    "empty_site_code": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: performer[?(@.actor.type=='Organization')].actor.identifier.value is a mandatory field"
+    },
+    "no_site_code": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: performer[?(@.actor.type=='Organization')].actor.identifier.value must be a non-empty string"
+    },
+    "empty_site_code_uri": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: performer[?(@.actor.type=='Organization')].actor.identifier.system is a mandatory field"
+    },
+    "no_site_code_uri": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: performer[?(@.actor.type=='Organization')].actor.identifier.system must be a non-empty string"
+    },
+     "empty_location_code": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: location.identifier.value is a mandatory field"
+    },
+    "no_location_code": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: location.identifier.value must be a non-empty string"
+    },
+    "empty_location_code_uri": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: location.identifier.system is a mandatory field"
+    },
+    "no_location_code_uri": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: location.identifier.system must be a non-empty string"
+    },
+    "no_unique_identifiers": {
+        "code": "INVARIANT",    
+        "diagnostics": "UNIQUE_ID or UNIQUE_ID_URI is missing"
+    },
+    "no_unique_id":{
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: identifier[0].value must be a non-empty string"
+    },
+    "no_unique_id_uri":{
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: identifier[0].system must be a non-empty string"
+    },
+    "empty_primary_source": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: primarySource is a mandatory field"
+    },
+    "no_primary_source": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: primarySource must be a boolean"
+    },
+    "empty_procedure_code": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: extension[?(@.url=='https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-VaccinationProcedure')].valueCodeableConcept.coding[?(@.system=='http://snomed.info/sct')].code is a mandatory field"
+    },
+    "no_procedure_code": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: extension[?(@.url=='https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-VaccinationProcedure')].valueCodeableConcept.coding[?(@.system=='http://snomed.info/sct')].code must be a non-empty string"
+    },
     
+
 }
 
