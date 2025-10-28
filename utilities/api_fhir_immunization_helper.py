@@ -83,7 +83,7 @@ def validate_error_response(error_response, errorName: str, imms_id: str = ""):
 
     fields_to_compare = []
 
-    if errorName.lower() == "not_found":
+    if errorName == "not_found":
         expected_diagnostics = ERROR_MAP.get("not_found", {}).get("diagnostics", "") + f" ID: {imms_id}"
         fields_to_compare.append(("Diagnostics", expected_diagnostics, error_response.issue[0].diagnostics))
     else:

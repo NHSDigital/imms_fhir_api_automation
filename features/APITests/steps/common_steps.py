@@ -111,21 +111,21 @@ def operationOutcomeInvalidParams(context):
 
     match (nhs_invalid, disease_invalid, date_from_invalid, date_to_invalid, include_invalid):
         case (True, _, _, _, _):
-            expected_error = ERROR_MAP.get("invalid_NHSNumber", {})
+            expected_error = "invalid_NHSNumber"
         case (False, True, _, _, _):
-            expected_error = ERROR_MAP.get("invalid_DiseaseType", {})
+            expected_error = "invalid_DiseaseType"
         case (False, False, True, True, False):
-            expected_error = ERROR_MAP.get("invalid_DateFrom_To", {})
+            expected_error = "invalid_DateFrom_To"  
         case (False, False, True, True, True):
-            expected_error = ERROR_MAP.get("invalid_DateFrom_DateTo_Include", {})
+            expected_error = "invalid_DateFrom_DateTo_Include"
         case (False, False, True, _, True):
-            expected_error = ERROR_MAP.get("invalid_DateFrom_Include", {})  
+            expected_error = "invalid_DateFrom_Include"
         case (False, False, True, _, _):
-            expected_error = ERROR_MAP.get("invalid_DateFrom", {})
+            expected_error = "invalid_DateFrom"
         case (False, False, _, True, _):
-            expected_error = ERROR_MAP.get("invalid_DateTo", {})
+            expected_error = "invalid_DateTo"
         case (False, False, _, _, True):
-            expected_error = ERROR_MAP.get("invalid_include", {})
+            expected_error = "invalid_include"
         case _:
             raise ValueError("All parameters are valid, no error expected.")
 
