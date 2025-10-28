@@ -84,19 +84,19 @@ def validate_error_response(error_response, errorName: str, imms_id: str = ""):
     fields_to_compare = []
 
     if errorName == "not_found":
-        expected_diagnostics = ERROR_MAP["not_found"]["diagnostics"]+ f" ID: {imms_id}"
+        expected_diagnostics = ERROR_MAP.get("not_found", {}).get("diagnostics", "") + f" ID: {imms_id}"
         fields_to_compare.append(("Diagnostics", expected_diagnostics, error_response.issue[0].diagnostics))
     else:
         actual_diagnostics = ( error_response.issue[0].diagnostics).replace('-  Date', '- Date').replace('offsets.\nNote', 'offsets. Note').replace('\n_', ' _').replace('_\n ', '_').replace('service.\n', 'service.').replace('\n','')
-        fields_to_compare.append(("Diagnostics", ERROR_MAP[errorName]["diagnostics"],actual_diagnostics))
+        fields_to_compare.append(("Diagnostics", errorName.get("diagnostics", ""),actual_diagnostics))
 
     fields_to_compare.extend([
-        ("ResourceType", ERROR_MAP["Common_field"]["resourceType"], error_response.resourceType),
-        ("Meta_Profile", ERROR_MAP["Common_field"]["profile"], error_response.meta.profile[0]),
-        ("Issue_Code", ERROR_MAP[errorName]["code"].lower(), error_response.issue[0].code.lower()),
-        ("Coding_system", ERROR_MAP["Common_field"]["system"], error_response.issue[0].details.coding[0].system),
-        ("Coding_Code", ERROR_MAP[errorName]["code"].lower(), error_response.issue[0].details.coding[0].code.lower()),
-        ("severity", ERROR_MAP["Common_field"]["severity"], error_response.issue[0].severity),
+        ("ResourceType", ERROR_MAP.get("Common_field", {}).get("resourceType", ""), error_response.resourceType),
+        ("Meta_Profile", ERROR_MAP.get("Common_field", {}).get("profile", ""), error_response.meta.profile[0]),
+        ("Issue_Code", errorName.get("code", "").lower(), error_response.issue[0].code.lower()),
+        ("Coding_system", ERROR_MAP.get("Common_field", {}).get("system", ""), error_response.issue[0].details.coding[0].system),
+        ("Coding_Code", errorName.get("code", "").lower(), error_response.issue[0].details.coding[0].code.lower()),
+        ("severity", ERROR_MAP.get("Common_field", {}).get("severity", ""), error_response.issue[0].severity),
     ])
 
     for name, expected, actual in fields_to_compare:
