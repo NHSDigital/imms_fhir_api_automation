@@ -1,0 +1,2 @@
+❌ Step failed! **The Search Response JSONs should contain correct error message for invalid Date From, Date To and include** 
+ Error: 'dict' object has no attribute 'lower'
