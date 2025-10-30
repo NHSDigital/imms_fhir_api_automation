@@ -24,7 +24,7 @@ class Period(BaseModel):
     end: str
 
 class Identifier(BaseModel):
-    system: str
+    system: Optional[str] = None
     value: Optional[str] = None
     use: Optional[str] = None
     type: Optional[CodeableConcept] = None
@@ -59,7 +59,7 @@ class Practitioner(BaseModel):
 class Patient(BaseModel):
     resourceType: str ="Patient"
     id: str
-    identifier: List[Identifier]
+    identifier: Optional[List[Identifier]] = None
     name: List[HumanName]
     gender: str
     birthDate: str

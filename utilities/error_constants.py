@@ -13,6 +13,10 @@ ERROR_MAP = {
         "code": "INVALID",
         "diagnostics": "Search parameter patient.identifier must be a valid NHS number."
     },
+    "empty_NHSNumber": {        
+        "code": "INVALID",
+        "diagnostics": "Validation errors: contained[?(@.resourceType=='Patient')].identifier[0].value must be a non-empty string"
+    },
     "invalid_include": {        
         "code": "INVALID",
         "diagnostics": "Search parameter _include may only be 'Immunization:patient' if provided."
@@ -209,7 +213,44 @@ ERROR_MAP = {
         "code": "INVARIANT",    
         "diagnostics": "Validation errors: extension[?(@.url=='https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-VaccinationProcedure')].valueCodeableConcept.coding[?(@.system=='http://snomed.info/sct')].code must be a non-empty string"
     },
-    
-
+    "invalid_action_flag": {
+        "code": "INVARIANT",
+        "diagnostics": "Invalid ACTION_FLAG - ACTION_FLAG must be 'NEW', 'UPDATE' or 'DELETE'"
+    },
+    "empty_manufacturer": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: manufacturer.display must be a non-empty string"
+    },
+    "empty_lot_number": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: lotNumber must be a non-empty string"
+    },
+    "empty_site_code": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: site.coding[?(@.system=='http://snomed.info/sct')].code must be a non-empty string"
+    },
+    "empty_site_term": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: site.coding[?(@.system=='http://snomed.info/sct')].display must be a non-empty string"
+    },
+    "empty_route_code": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: route.coding[?(@.system=='http://snomed.info/sct')].code must be a non-empty string"
+    },
+    "empty_route_term": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: route.coding[?(@.system=='http://snomed.info/sct')].display must be a non-empty string"
+    },
+    "empty_doseQuantity_code": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: doseQuantity.code must be a non-empty string"
+    },
+    "empty_doseQuantity_term": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: doseQuantity.unit must be a non-empty string"
+    },
+    "empty_indication_code": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: reasonCode[0].coding[0].code must be a non-empty string"
+    }
 }
-
