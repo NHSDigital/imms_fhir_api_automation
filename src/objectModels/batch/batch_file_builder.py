@@ -144,7 +144,7 @@ def build_batch_file(context, unique_id: str = None) -> BatchVaccinationRecord:
         DOSE_AMOUNT=dose["dose_amount"],
         DOSE_UNIT_CODE=dose["dose_unit_code"],
         DOSE_UNIT_TERM=dose["dose_unit_term"],
-        INDICATION_CODE="",
+        INDICATION_CODE="443684005",
         LOCATION_CODE=location["value"],
         LOCATION_CODE_TYPE_URI=location["system"]
     )

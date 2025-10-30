@@ -329,7 +329,10 @@ def validate_to_compare_batch_record_with_event_table_record(context, batch_reco
     response_patient, response_practitioner = extract_patient_and_practitioner(created_event.contained)
 
     check.is_true(response_patient is not None, "Patient not found in contained resources")
-    check.is_true(response_practitioner is not None, "Practitioner not found in contained resources")
+    if batch_record["PERFORMING_PROFESSIONAL_FORENAME"] or batch_record["PERFORMING_PROFESSIONAL_SURNAME"]:
+        check.is_true(response_practitioner is not None, "Practitioner not found in contained resources")
+    else:
+        check.is_true(response_practitioner is None, "Practitioner should not be present in contained resources")
 
     created_occurrence_date = batch_record["DATE_AND_TIME"]
     trimmed_date = created_occurrence_date[:-2]
@@ -339,14 +342,12 @@ def validate_to_compare_batch_record_with_event_table_record(context, batch_reco
     actual_recorded = covert_to_expected_date_format(created_event.recorded)
     gender_code = get_gender_code(batch_record["PERSON_GENDER_CODE"])
     expected_gender = GenderCode(gender_code).name.lower()
-    p_names =  extract_practitioner_name(response_practitioner)
     fields_to_compare = []
     
     if batch_record["INDICATION_CODE"] :
         fields_to_compare.extend([
             ("reasonCode.coding.code", batch_record["INDICATION_CODE"] , created_event.reasonCode[0].coding[0].code),  
-            ("reasonCode.coding.system", "http://snomed.info/sct" , created_event.reasonCode[0].coding[0].system),  
-            ("reasonCode.text", created_event.reasonCode[0].text, created_event.reasonCode[0].text)
+            ("reasonCode.coding.system", "http://snomed.info/sct" , created_event.reasonCode[0].coding[0].system)
         ])
         
     if batch_record["NHS_NUMBER"] :
@@ -421,6 +422,23 @@ def validate_to_compare_batch_record_with_event_table_record(context, batch_reco
         fields_to_compare.append(("protocolApplied.doseNumberPositiveInt", 1, created_event.protocolApplied[0].doseNumberPositiveInt))
     else:
         fields_to_compare.append(("protocolApplied.doseNumberNotProvided", "Dose sequence not recorded", created_event.protocolApplied[0].doseNumberString))
+     
+    if batch_record["PERFORMING_PROFESSIONAL_FORENAME"] or batch_record["PERFORMING_PROFESSIONAL_SURNAME"]: 
+        p_names =  extract_practitioner_name(response_practitioner) 
+        fields_to_compare.extend([
+            ("Practitioner.id", "Practitioner1", response_practitioner.id),
+            ("performer.actor.reference", "#Practitioner1", created_event.performer[1].actor.reference)
+        ])
+        
+        if batch_record["PERFORMING_PROFESSIONAL_FORENAME"]:
+            fields_to_compare.append(
+                ("Practitioner.name.family", batch_record["PERFORMING_PROFESSIONAL_SURNAME"],  p_names["Practitioner.name.family"])
+            )
+            
+        if batch_record["PERFORMING_PROFESSIONAL_SURNAME"] :
+            fields_to_compare.append(
+                ("Practitioner.name.family", batch_record["PERFORMING_PROFESSIONAL_SURNAME"],  p_names["Practitioner.name.family"])
+            )
 
     fields_to_compare.extend([
         ("patient.reference", "#Patient1", created_event.patient.reference),
@@ -441,14 +459,10 @@ def validate_to_compare_batch_record_with_event_table_record(context, batch_reco
         ("Patient.name.family", batch_record["PERSON_SURNAME"], response_patient.name[0].family),
         ("Patient.name.given", batch_record["PERSON_FORENAME"], response_patient.name[0].given[0]),
         ("Patient.address.postalCode", batch_record["PERSON_POSTCODE"], response_patient.address[0].postalCode),
-        ("Practitioner.id", "Practitioner1", response_practitioner.id),
-        ("Practitioner.name.family", batch_record["PERFORMING_PROFESSIONAL_SURNAME"],  p_names["Practitioner.name.family"]),
-        ("Practitioner.name.given", batch_record["PERFORMING_PROFESSIONAL_FORENAME"], p_names["Practitioner.name.given"]),
         ("extension.url", "https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-VaccinationProcedure", created_event.extension[0].url),
         ("extension.valueCodeableConcept.coding.code", batch_record["VACCINATION_PROCEDURE_CODE"], created_event.extension[0].valueCodeableConcept.coding[0].code),
         ("extension.valueCodeableConcept.coding.system", "http://snomed.info/sct", created_event.extension[0].valueCodeableConcept.coding[0].system), 
         ("performer.actor.type", "Organization", created_event.performer[0].actor.type),
-        ("performer.actor.reference", "#Practitioner1", created_event.performer[1].actor.reference),
         ("performer.actor.identifier.value", batch_record["SITE_CODE"], created_event.performer[0].actor.identifier.value),
         ("performer.actor.identifier.system", batch_record["SITE_CODE_TYPE_URI"], created_event.performer[0].actor.identifier.system),        
         
