@@ -82,19 +82,14 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
           S3_env: ${{ vars.S3_ENV }}
         run: |
-          source venv/bin/activate
           TEST_PATH="${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' }}"
           if [ "$TEST_PATH" = "API&batchTests" ]; then
-            echo "Running API and batch tests in parallel..."
-            pytest features/APITests --junitxml=output/api-results.xml --alluredir=output/api-allure & 
-            pytest features/batchTests --junitxml=output/batch-results.xml --alluredir=output/batch-allure &
-            wait
+            TEST_PATH="features"
           else
-            echo "Running targeted test path: $TEST_PATH"
-            pytest "features/$TEST_PATH" --junitxml=output/test-results.xml --alluredir=output/allure-results
+            TEST_PATH="features/$TEST_PATH"
           fi
-         
-           
+          source venv/bin/activate
+          pytest "$TEST_PATH" --junitxml=output/test-results.xml --alluredir=output/allure-results 
           if [ $? -ne 0 ]; then
             echo "Pytest-BDD tests failed"
             exit 1
@@ -102,12 +97,14 @@ jobs:
             echo "Pytest-BDD tests passed"
           fi
 
-      - name: Merge Allure results
+      - name: Publish test results to GitHub UI
         if: always()
-        run: |
-          mkdir -p output/allure-results
-          cp -r output/api-allure/* output/allure-results/ || true
-          cp -r output/batch-allure/* output/allure-results/ || true
+        uses: dorny/test-reporter@v1
+        with:
+          name: BDD Test Summary
+          path: '**/output/test-results.xml'
+          reporter: java-junit
+          fail-on-error: false
 
       - name: Load test report history
         uses: actions/checkout@v3
