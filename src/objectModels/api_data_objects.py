@@ -12,11 +12,11 @@ class ExtensionItem(BaseModel):
 class Coding(BaseModel):
     extension: Optional[List[ExtensionItem]] = None
     system: str
-    code: str
+    code: Optional[str] = None
     display: Optional[str] = None
 
 class CodeableConcept(BaseModel):
-    coding: List[Coding]
+    coding: Optional[List[Coding]] = None
     text: Optional[str] = None 
 
 class Period(BaseModel):
@@ -77,14 +77,15 @@ class ReasonCode(BaseModel):
     text: Optional[str] = None
 
 class DoseQuantity(BaseModel):
-    value: float
-    unit: str
-    system: str
-    code: str
+    value: Optional[float] = None
+    unit: Optional[str] = None
+    system: Optional[str] = None
+    code: Optional[str] = None
 
 class ProtocolApplied(BaseModel):
     targetDisease: List[CodeableConcept]
-    doseNumberPositiveInt: int
+    doseNumberPositiveInt: Optional[int] = None
+    doseNumberString: Optional[str] = None
 
 class LocationIdentifier(BaseModel):
     system: str
@@ -218,12 +219,12 @@ class ImmunizationReadResponse_IntTable(BaseModel):
     status: str 
     vaccineCode: CodeableConcept
     patient: Reference
-    manufacturer: Dict[str, str]
+    manufacturer: Optional[Dict[str, str]] = None
     id: str
     location: Location  
     site: CodeableConcept
     route: CodeableConcept
-    doseQuantity: DoseQuantity
+    doseQuantity: Optional[DoseQuantity] = None
     performer: List[Performer]
     reasonCode: Optional[List[ReasonCode]] = None
     protocolApplied: List[ProtocolApplied]

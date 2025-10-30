@@ -159,7 +159,6 @@ Scenario: verify that vaccination record will be get rejected if mandatory field
         | Random            | Fail-white_space_unique_id_uri-no_unique_id_uri       | 
         | Random            | Fail-white_space_primary_source-no_primary_source     |  
         | Random            | Fail-white_space_procedure_code-no_procedure_code     | 
-        | Random            | Fail-invalid_primary_source-no_primary_source         |  
         | Random            | Fail-invalid_primary_source-no_primary_source         | 
         | Random            | Fail-empty_action_flag-invalid_action_flag            |
         | Random            | Fail-white_space_action_flag-invalid_action_flag      |
@@ -213,8 +212,8 @@ Scenario: verify that vaccination record will be get successful if action flag h
 #         | Random            | Fail-empty_product_term-empty_product_term       |
 #         | Random            | Fail-empty_VACCINE_MANUFACTURER-empty_manufacturer       |
 #         | Random            | Fail-empty_batch_number-empty_lot_number       |
-#         | Random            | Fail-empty_site_OF_vaccination-empty_site_code       |  
-#         | Random            | Fail-empty_site_OF_vaccination_term-empty_site_term       |
+#         | Random            | Fail-empty_site_OF_vaccination-empty_vaccine_site_code       |  
+#         | Random            | Fail-empty_site_OF_vaccination_term-empty_vaccine_site_term       |
 #         | Random            | Fail-empty_ROUTE_OF_vaccination-empty_route_code       |
 #         | Random            | Fail-empty_ROUTE_OF_vaccination_term-empty_route_term       |
 #         | Random            | Fail-empty_DOSE_SEQUENCE-doseNumberPositiveInt_PositiveInteger       | 
@@ -228,29 +227,29 @@ Scenario: verify that vaccination record will be get successful if action flag h
 #     And all records are rejected in the bus ack file and no imms id is generated
 #     And Audit table will have correct status, queue name and record count for the processed batch file  
 
-# @delete_cleanup_batch @vaccine_type_3in1  @supplier_name_MAVIS
-# Scenario: verify that vaccination record will be get successful if non mandatory fields are missing in batch file
-#     Given batch file is created for below data where non mandatory fields are missing
-#         | patient_id        | unique_id             |
-#         | Random            | no_NHS_Number       |
-#         | Random            | no_procedure_term       |
-#         | Random            | no_product_code       |
-#         | Random            | no_product_term       |
-#         | Random            | no_VACCINE_MANUFACTURER       |
-#         | Random            | no_batch_number       |
-#         | Random            | no_site_OF_vaccination       |
-#         | Random            | no_site_OF_vaccination_term       |
-#         | Random            | no_ROUTE_OF_vaccination       |
-#         | Random            | no_ROUTE_OF_vaccination_term      |
-#         | Random            | no_DOSE_SEQUENCE       |
-#         | Random            | no_dose_unit_code       |
-#         | Random            | no_dose_unit_term       |
-#         | Random            | no_indication_code       |
-#     When batch file is uploaded in s3 bucket
-#     Then file will be moved to destination bucket and inf ack file will be created
-#     And inf ack file has success status for processed batch file
-#     And bus ack file will be created
-#     And all records are processed successfully in the bus ack file 
-#     And Audit table will have correct status, queue name and record count for the processed batch file
-#     And The imms event table will be populated with the correct data for 'created' event for records in batch file
-#     And The delta table will be populated with the correct data for all records in batch file
+@delete_cleanup_batch @vaccine_type_3in1  @supplier_name_MAVIS
+Scenario: verify that vaccination record will be get successful if non mandatory fields are missing in batch file
+    Given batch file is created for below data where non mandatory fields are missing
+        | patient_id        | unique_id             |
+        | Random            | no_NHS_Number       |
+        | Random            | no_procedure_term       |
+        | Random            | no_product_code       |
+        | Random            | no_product_term       |
+        | Random            | no_VACCINE_MANUFACTURER       |
+        | Random            | no_batch_number       |
+        | Random            | no_site_OF_vaccination       |
+        | Random            | no_site_OF_vaccination_term       |
+        | Random            | no_ROUTE_OF_vaccination       |
+        | Random            | no_ROUTE_OF_vaccination_term      |
+        | Random            | no_DOSE_SEQUENCE       |
+        | Random            | no_dose_unit_code       |
+        | Random            | no_dose_unit_term       |
+        | Random            | no_indication_code       |
+    When batch file is uploaded in s3 bucket
+    Then file will be moved to destination bucket and inf ack file will be created
+    And inf ack file has success status for processed batch file
+    And bus ack file will be created
+    And all records are processed successfully in the bus ack file 
+    And Audit table will have correct status, queue name and record count for the processed batch file
+    And The imms event table will be populated with the correct data for 'created' event for records in batch file
+    And The delta table will be populated with the correct data for all records in batch file
