@@ -212,8 +212,8 @@ Scenario: verify that vaccination record will be get successful if action flag h
 #         | Random            | Fail-empty_product_term-empty_product_term       |
 #         | Random            | Fail-empty_VACCINE_MANUFACTURER-empty_manufacturer       |
 #         | Random            | Fail-empty_batch_number-empty_lot_number       |
-#         | Random            | Fail-empty_site_OF_vaccination-empty_site_code       |  
-#         | Random            | Fail-empty_site_OF_vaccination_term-empty_site_term       |
+#         | Random            | Fail-empty_site_OF_vaccination-empty_vaccine_site_code       |  
+#         | Random            | Fail-empty_site_OF_vaccination_term-empty_vaccine_site_term       |
 #         | Random            | Fail-empty_ROUTE_OF_vaccination-empty_route_code       |
 #         | Random            | Fail-empty_ROUTE_OF_vaccination_term-empty_route_term       |
 #         | Random            | Fail-empty_DOSE_SEQUENCE-doseNumberPositiveInt_PositiveInteger       | 

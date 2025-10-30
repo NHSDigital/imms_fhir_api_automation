@@ -225,11 +225,11 @@ ERROR_MAP = {
         "code": "INVARIANT",    
         "diagnostics": "Validation errors: lotNumber must be a non-empty string"
     },
-    "empty_site_code": {
+    "empty_vaccine_site_code": {
         "code": "INVARIANT",    
         "diagnostics": "Validation errors: site.coding[?(@.system=='http://snomed.info/sct')].code must be a non-empty string"
     },
-    "empty_site_term": {
+    "empty_vaccine_site_term": {
         "code": "INVARIANT",    
         "diagnostics": "Validation errors: site.coding[?(@.system=='http://snomed.info/sct')].display must be a non-empty string"
     },
