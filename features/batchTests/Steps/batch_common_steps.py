@@ -170,10 +170,12 @@ def validate_imms_event_table_for_all_records_in_batch_file(context, operation: 
         assert resource is not None, "Resource is None in the response"
         created_event = parse_imms_int_imms_event_response(resource)
         
+        nhs_number = batch_record.get("NHS_NUMBER") or "TBC"
+
         fields_to_compare = [
             ("Operation", Operation[operation].value, item.get("Operation")),
             ("SupplierSystem", context.supplier_name, item.get("SupplierSystem")),
-            ("PatientPK", f'Patient#{batch_record["NHS_NUMBER"]}', item.get("PatientPK")),
+            ("PatientPK", f'Patient#{nhs_number}', item.get("PatientPK")),
             ("PatientSK", f"{context.vaccine_type.upper()}#{context.ImmsID}", item.get("PatientSK")),
             ("Version", int(context.expected_version), int(item.get("Version"))),
         ]

@@ -248,7 +248,7 @@ def validate_audit_table_record(context, item, expected_status: str, expected_er
 
     expected_queue = f"{context.supplier_name}_{context.vaccine_type}"
     check.is_true(
-        item.get("queue_name") == expected_queue,
+        item.get("queue_name", "").upper() == expected_queue.upper(),
         f"Expected queue_name '{expected_queue}', got '{item.get('queue_name')}'"
     )
     
@@ -340,8 +340,89 @@ def validate_to_compare_batch_record_with_event_table_record(context, batch_reco
     gender_code = get_gender_code(batch_record["PERSON_GENDER_CODE"])
     expected_gender = GenderCode(gender_code).name.lower()
     p_names =  extract_practitioner_name(response_practitioner)
+    fields_to_compare = []
+    
+    if batch_record["INDICATION_CODE"] :
+        fields_to_compare.extend([
+            ("reasonCode.coding.code", batch_record["INDICATION_CODE"] , created_event.reasonCode[0].coding[0].code),  
+            ("reasonCode.coding.system", "http://snomed.info/sct" , created_event.reasonCode[0].coding[0].system),  
+            ("reasonCode.text", created_event.reasonCode[0].text, created_event.reasonCode[0].text)
+        ])
         
-    fields_to_compare = [
+    if batch_record["NHS_NUMBER"] :
+        fields_to_compare.extend([
+            ("Patient.identifier.value", batch_record["NHS_NUMBER"], response_patient.identifier[0].value),
+            ("Patient.identifier.system", "https://fhir.nhs.uk/Id/nhs-number", response_patient.identifier[0].system)
+        ])
+        
+    if batch_record["VACCINATION_PROCEDURE_TERM"] :
+         fields_to_compare.append(("extension.valueCodeableConcept.coding.extension.valueString", batch_record["VACCINATION_PROCEDURE_TERM"], created_event.extension[0].valueCodeableConcept.coding[0].display))
+         
+    if batch_record["SITE_OF_VACCINATION_CODE"] :
+        fields_to_compare.extend([
+            ("site.coding.code", batch_record["SITE_OF_VACCINATION_CODE"], created_event.site.coding[0].code),
+            ("site.coding.system", "http://snomed.info/sct", created_event.site.coding[0].system)
+        ])
+        
+    if batch_record["SITE_OF_VACCINATION_TERM"] :
+        fields_to_compare.extend([
+            ("site.coding.system", "http://snomed.info/sct", created_event.site.coding[0].system),
+            ("site.coding.extension.display", batch_record["SITE_OF_VACCINATION_TERM"], created_event.site.coding[0].display)
+        ])
+        
+    if batch_record["VACCINE_PRODUCT_TERM"] :
+        fields_to_compare.extend([
+            ("vaccineCode.coding.system", "http://snomed.info/sct", created_event.vaccineCode.coding[0].system),
+            ("vaccineCode.coding.extension.valueString", batch_record["VACCINE_PRODUCT_TERM"], created_event.vaccineCode.coding[0].display)
+        ])
+        
+    if batch_record["VACCINE_PRODUCT_CODE"] :
+        fields_to_compare.extend([
+            ("vaccineCode.coding.code", batch_record["VACCINE_PRODUCT_CODE"], created_event.vaccineCode.coding[0].code),
+            ("vaccineCode.coding.system", "http://snomed.info/sct", created_event.vaccineCode.coding[0].system)
+        ])
+        
+    if batch_record["ROUTE_OF_VACCINATION_CODE"] :
+        fields_to_compare.extend([
+            ("route.coding.code", batch_record["ROUTE_OF_VACCINATION_CODE"], created_event.route.coding[0].code),
+            ("route.coding.system", "http://snomed.info/sct", created_event.route.coding[0].system)
+        ])
+    
+    if batch_record["ROUTE_OF_VACCINATION_TERM"] :
+        fields_to_compare.extend([
+            ("route.coding.system", "http://snomed.info/sct", created_event.route.coding[0].system),
+            ("route.coding.display", batch_record["ROUTE_OF_VACCINATION_TERM"], created_event.route.coding[0].display),
+        ])
+    
+    if batch_record["VACCINE_MANUFACTURER"] :
+        fields_to_compare.append(("manufacturer", batch_record["VACCINE_MANUFACTURER"] , created_event.manufacturer["display"]))
+        
+    if batch_record["BATCH_NUMBER"] :
+        fields_to_compare.append(("lotNumber", batch_record["BATCH_NUMBER"], created_event.lotNumber))
+    
+    if batch_record["EXPIRY_DATE"] :
+        fields_to_compare.append(("expirationDate", format_date_yyyymmdd(batch_record["EXPIRY_DATE"]), created_event.expirationDate))
+
+    if batch_record["DOSE_AMOUNT"] :
+        fields_to_compare.append(("doseQuantity.value", float(batch_record["DOSE_AMOUNT"]), created_event.doseQuantity.value))
+
+    if batch_record["DOSE_UNIT_TERM"] :
+        fields_to_compare.extend([
+            ("doseQuantity.term",  batch_record["DOSE_UNIT_TERM"], created_event.doseQuantity.unit),
+        ])
+        
+    if batch_record["DOSE_UNIT_CODE"] :
+        fields_to_compare.extend([
+            ("doseQuantity.code", batch_record["DOSE_UNIT_CODE"], created_event.doseQuantity.code),
+            ("doseQuantity.system", "http://snomed.info/sct", created_event.doseQuantity.system),
+        ])
+        
+    if batch_record["DOSE_SEQUENCE"] :
+        fields_to_compare.append(("protocolApplied.doseNumberPositiveInt", 1, created_event.protocolApplied[0].doseNumberPositiveInt))
+    else:
+        fields_to_compare.append(("protocolApplied.doseNumberNotProvided", "Dose sequence not recorded", created_event.protocolApplied[0].doseNumberString))
+
+    fields_to_compare.extend([
         ("patient.reference", "#Patient1", created_event.patient.reference),
         ("Id", context.ImmsID, created_event.id),
         ("resourceType", "Immunization", created_event.resourceType),        
@@ -352,22 +433,9 @@ def validate_to_compare_batch_record_with_event_table_record(context, batch_reco
         ("Recorded", expected_recorded, actual_recorded),
         ("primarySource", str(batch_record["PRIMARY_SOURCE"]).lower(), str(created_event.primarySource).lower()),
         ("location.vale", batch_record["LOCATION_CODE"], created_event.location.identifier.value),
-        ("location.system", batch_record["LOCATION_CODE_TYPE_URI"], created_event.location.identifier.system),
-        ("manufacturer", batch_record["VACCINE_MANUFACTURER"] , created_event.manufacturer["display"]),
-        ("lotNumber", batch_record["BATCH_NUMBER"], created_event.lotNumber),
-        ("expirationDate", format_date_yyyymmdd(batch_record["EXPIRY_DATE"]), created_event.expirationDate),       
-        ("doseQuantity.value", float(batch_record["DOSE_AMOUNT"]), created_event.doseQuantity.value),
-        ("doseQuantity.term",  batch_record["DOSE_UNIT_TERM"], created_event.doseQuantity.unit),
-        ("doseQuantity.code", batch_record["DOSE_UNIT_CODE"], created_event.doseQuantity.code),
-        ("doseQuantity.system", "http://snomed.info/sct", created_event.doseQuantity.system),        
+        ("location.system", batch_record["LOCATION_CODE_TYPE_URI"], created_event.location.identifier.system),              
         ("protocolApplied", True, compare_protocol_codings_to_reference(created_event.protocolApplied,PROTOCOL_DISEASE_MAP.get(context.vaccine_type.upper(), []))),
-        ("protocolApplied.doseNumberPositiveInt", 1, created_event.protocolApplied[0].doseNumberPositiveInt),
-       # ("reasonCode.coding.code", batch_record["INDICATION_CODE"] , created_event.reasonCode[0].coding[0].code),  
-        #("reasonCode.coding.system", "http://snomed.info/sct" , created_event.reasonCode[0].coding[0].system),  
-       # ("reasonCode.text", created_event.reasonCode[0].text, created_event.reasonCode[0].text),  
-        ("Patient.id", "Patient1", response_patient.id),
-        ("Patient.identifier.value", batch_record["NHS_NUMBER"], response_patient.identifier[0].value),
-        ("Patient.identifier.system", "https://fhir.nhs.uk/Id/nhs-number", response_patient.identifier[0].system),
+        ("Patient.id", "Patient1", response_patient.id),        
         ("Patient.birthdate", format_date_yyyymmdd(batch_record["PERSON_DOB"]), response_patient.birthDate),
         ("Patient.Gender", expected_gender, response_patient.gender),
         ("Patient.name.family", batch_record["PERSON_SURNAME"], response_patient.name[0].family),
@@ -378,22 +446,13 @@ def validate_to_compare_batch_record_with_event_table_record(context, batch_reco
         ("Practitioner.name.given", batch_record["PERFORMING_PROFESSIONAL_FORENAME"], p_names["Practitioner.name.given"]),
         ("extension.url", "https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-VaccinationProcedure", created_event.extension[0].url),
         ("extension.valueCodeableConcept.coding.code", batch_record["VACCINATION_PROCEDURE_CODE"], created_event.extension[0].valueCodeableConcept.coding[0].code),
-        ("extension.valueCodeableConcept.coding.system", "http://snomed.info/sct", created_event.extension[0].valueCodeableConcept.coding[0].system),
-        ("extension.valueCodeableConcept.coding.extension.valueString", batch_record["VACCINATION_PROCEDURE_TERM"], created_event.extension[0].valueCodeableConcept.coding[0].display),
-        ("site.coding.code", batch_record["SITE_OF_VACCINATION_CODE"], created_event.site.coding[0].code),
-        ("site.coding.system", "http://snomed.info/sct", created_event.site.coding[0].system),
-        ("site.coding.extension.display", batch_record["SITE_OF_VACCINATION_TERM"], created_event.site.coding[0].display),
-        ("route.coding.code", batch_record["ROUTE_OF_VACCINATION_CODE"], created_event.route.coding[0].code),
-        ("route.coding.system", "http://snomed.info/sct", created_event.route.coding[0].system),
-        ("route.coding.display", batch_record["ROUTE_OF_VACCINATION_TERM"], created_event.route.coding[0].display),
+        ("extension.valueCodeableConcept.coding.system", "http://snomed.info/sct", created_event.extension[0].valueCodeableConcept.coding[0].system), 
         ("performer.actor.type", "Organization", created_event.performer[0].actor.type),
         ("performer.actor.reference", "#Practitioner1", created_event.performer[1].actor.reference),
         ("performer.actor.identifier.value", batch_record["SITE_CODE"], created_event.performer[0].actor.identifier.value),
         ("performer.actor.identifier.system", batch_record["SITE_CODE_TYPE_URI"], created_event.performer[0].actor.identifier.system),        
-        ("vaccineCode.coding.code", batch_record["VACCINE_PRODUCT_CODE"], created_event.vaccineCode.coding[0].code),
-        ("vaccineCode.coding.system", "http://snomed.info/sct", created_event.vaccineCode.coding[0].system),
-        ("vaccineCode.coding.extension.valueString", batch_record["VACCINE_PRODUCT_TERM"], created_event.vaccineCode.coding[0].display)
-    ]
+        
+    ])
 
     for name, expected, actual in fields_to_compare:
         check.is_true(
