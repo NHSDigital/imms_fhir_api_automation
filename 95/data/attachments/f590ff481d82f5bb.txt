@@ -1,1 +1,0 @@
-✅ Step Passed: **Audit table will have correct status and queue name for the processed batch file

@@ -1,0 +1,41 @@
+✅ Pipe-delimited file saved to: /home/runner/work/imms_fhir_api_automation/imms_fhir_api_automation/batch_files_directory/HPV_Vaccinations_v5_V0V8L_20251030T10552849.csv
+Batch file created: HPV_Vaccinations_v5_V0V8L_20251030T10552849.csv
+Upload successful: HPV_Vaccinations_v5_V0V8L_20251030T10552849.csv → immunisation-batch-int-data-sources
+Batch file uploaded to S3: HPV_Vaccinations_v5_V0V8L_20251030T10552849.csv
+Waiting for file in archive: s3://immunisation-batch-int-data-sources/archive/HPV_Vaccinations_v5_V0V8L_20251030T10552849.csv
+Still waiting... (0s)
+Still waiting... (5s)
+Still waiting... (10s)
+Still waiting... (15s)
+Still waiting... (20s)
+Still waiting... (25s)
+Still waiting... (30s)
+Still waiting... (35s)
+File found in archive: archive/HPV_Vaccinations_v5_V0V8L_20251030T10552849.csv
+Waiting for file starting with 'ack/HPV_Vaccinations_v5_V0V8L_20251030T10552849' in bucket: immunisation-batch-int-data-destinations
+File found: ack/HPV_Vaccinations_v5_V0V8L_20251030T10552849_InfAck_20251030T10552900.csv
+File contents loaded (299 bytes)
+Waiting for file starting with 'forwardedFile/HPV_Vaccinations_v5_V0V8L_20251030T10552849' in bucket: immunisation-batch-int-data-destinations
+File found: forwardedFile/HPV_Vaccinations_v5_V0V8L_20251030T10552849_BusAck_20251030T10552900.csv
+File contents loaded (739 bytes)
+IMMS_ID mapping:
+                                            LOCAL_ID                                            IMMS_ID
+0  empty_performer_forename-20251030T105528^https...  Immunization#d5df06ed-b191-4ad2-a242-a5e6554fb695
+1  empty_performer_Surname-20251030T105528^https:...  Immunization#e4e2cc3d-3582-497d-a160-95e27da2d82e
+
+ Scan response for filename = HPV_Vaccinations_v5_V0V8L_20251030T10552849.csv: [{'filename': 'HPV_Vaccinations_v5_V0V8L_20251030T10552849.csv', 'record_count': Decimal('2'), 'queue_name': 'MAVIS_HPV', 'status': 'Processed', 'timestamp': '20251030T10552900', 'message_id': 'd728f392-406c-433e-b75c-a6acf96d3de4', 'expires_at': Decimal('1767005729')}]
+
+
+ Imms Event response is {'Item': {'Operation': 'CREATE', 'SupplierSystem': 'MAVIS', 'Resource': '{"resourceType": "Immunization", "status": "completed", "protocolApplied": [{"targetDisease": [{"coding": [{"system": "http://snomed.info/sct", "code": "240532009", "display": "Human papillomavirus infection"}]}], "doseNumberPositiveInt": 1}], "recorded": "2025-10-30", "identifier": [{"value": "empty_performer_forename-20251030T105528", "system": "https://fhir.nhs.uk/Id/Automation-vaccine-administered-event-uk"}], "patient": {"reference": "#Patient1"}, "contained": [{"id": "Patient1", "resourceType": "Patient", "birthDate": "2006-03-26", "gender": "male", "address": [{"postalCode": "ZZ99 4QZ"}], "identifier": [{"system": "https://fhir.nhs.uk/Id/nhs-number", "value": "9000213398"}], "name": [{"family": "JOLIE", "given": ["BOTSFORD"]}]}, {"resourceType": "Practitioner", "id": "Practitioner1", "name": [{"family": "Tests"}]}], "vaccineCode": {"coding": [{"system": "http://snomed.info/sct", "code": "10880211000001104", "display": "Gardasil vaccine suspension for injection 0.5ml pre-filled syringes (Merck Sharp & Dohme (UK) Ltd) (product)"}]}, "manufacturer": {"display": "Merck Sharp & Dohme (UK) Ltd"}, "expirationDate": "2025-10-30", "lotNumber": "905633", "extension": [{"url": "https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-VaccinationProcedure", "valueCodeableConcept": {"coding": [{"system": "http://snomed.info/sct", "code": "761841000", "display": "Administration of vaccine product containing only Human papillomavirus antigen (procedure)"}]}}], "occurrenceDateTime": "2025-10-30T10:54:38+00:00", "primarySource": true, "site": {"coding": [{"system": "http://snomed.info/sct", "code": "368208006", "display": "Left upper arm structure"}]}, "route": {"coding": [{"system": "http://snomed.info/sct", "code": "78421000", "display": "Intramuscular"}]}, "doseQuantity": {"value": 0.5, "unit": "millilitre", "system": "http://snomed.info/sct", "code": "ml"}, "performer": [{"actor": {"type": "Organization", "identifier": {"system": "https://fhir.nhs.uk/Id/ods-organization-code", "value": "X99999"}}}, {"actor": {"reference": "#Practitioner1"}}], "location": {"identifier": {"value": "X99999", "system": "https://fhir.nhs.uk/Id/ods-organization-code"}}, "id": "d5df06ed-b191-4ad2-a242-a5e6554fb695"}', 'Version': Decimal('1'), 'IdentifierPK': 'https://fhir.nhs.uk/Id/Automation-vaccine-administered-event-uk#empty_performer_forename-20251030T105528', 'PatientSK': 'HPV#d5df06ed-b191-4ad2-a242-a5e6554fb695', 'PK': 'Immunization#d5df06ed-b191-4ad2-a242-a5e6554fb695', 'PatientPK': 'Patient#9000213398'}, 'ResponseMetadata': {'RequestId': '99AD4JCICEJI8VQCTK2FJOA7NRVV4KQNSO5AEMVJF66Q9ASUAAJG', 'HTTPStatusCode': 200, 'HTTPHeaders': {'server': 'Server', 'date': 'Thu, 30 Oct 2025 10:56:11 GMT', 'content-type': 'application/x-amz-json-1.0', 'content-length': '2880', 'connection': 'keep-alive', 'x-amzn-requestid': '99AD4JCICEJI8VQCTK2FJOA7NRVV4KQNSO5AEMVJF66Q9ASUAAJG', 'x-amz-crc32': '1431865246'}, 'RetryAttempts': 0}} 
+
+
+ Imms Event response is {'Item': {'Operation': 'CREATE', 'SupplierSystem': 'MAVIS', 'Resource': '{"resourceType": "Immunization", "status": "completed", "protocolApplied": [{"targetDisease": [{"coding": [{"system": "http://snomed.info/sct", "code": "240532009", "display": "Human papillomavirus infection"}]}], "doseNumberPositiveInt": 1}], "recorded": "2025-10-30", "identifier": [{"value": "empty_performer_Surname-20251030T105528", "system": "https://fhir.nhs.uk/Id/Automation-vaccine-administered-event-uk"}], "patient": {"reference": "#Patient1"}, "contained": [{"id": "Patient1", "resourceType": "Patient", "birthDate": "2006-08-03", "gender": "male", "address": [{"postalCode": "N8 7RE"}], "identifier": [{"system": "https://fhir.nhs.uk/Id/nhs-number", "value": "9000199085"}], "name": [{"family": "KIESHA", "given": ["TRANTOW"]}]}, {"resourceType": "Practitioner", "id": "Practitioner1", "name": [{"given": ["Automation"]}]}], "vaccineCode": {"coding": [{"system": "http://snomed.info/sct", "code": "10880211000001104", "display": "Gardasil vaccine suspension for injection 0.5ml pre-filled syringes (Merck Sharp & Dohme (UK) Ltd) (product)"}]}, "manufacturer": {"display": "Merck Sharp & Dohme (UK) Ltd"}, "expirationDate": "2025-10-30", "lotNumber": "214081", "extension": [{"url": "https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-VaccinationProcedure", "valueCodeableConcept": {"coding": [{"system": "http://snomed.info/sct", "code": "761841000", "display": "Administration of vaccine product containing only Human papillomavirus antigen (procedure)"}]}}], "occurrenceDateTime": "2025-10-30T10:54:38+00:00", "primarySource": true, "site": {"coding": [{"system": "http://snomed.info/sct", "code": "368208006", "display": "Left upper arm structure"}]}, "route": {"coding": [{"system": "http://snomed.info/sct", "code": "78421000", "display": "Intramuscular"}]}, "doseQuantity": {"value": 0.5, "unit": "millilitre", "system": "http://snomed.info/sct", "code": "ml"}, "performer": [{"actor": {"type": "Organization", "identifier": {"system": "https://fhir.nhs.uk/Id/ods-organization-code", "value": "X99999"}}}, {"actor": {"reference": "#Practitioner1"}}], "location": {"identifier": {"value": "X99999", "system": "https://fhir.nhs.uk/Id/ods-organization-code"}}, "id": "e4e2cc3d-3582-497d-a160-95e27da2d82e"}', 'Version': Decimal('1'), 'IdentifierPK': 'https://fhir.nhs.uk/Id/Automation-vaccine-administered-event-uk#empty_performer_Surname-20251030T105528', 'PatientSK': 'HPV#e4e2cc3d-3582-497d-a160-95e27da2d82e', 'PK': 'Immunization#e4e2cc3d-3582-497d-a160-95e27da2d82e', 'PatientPK': 'Patient#9000199085'}, 'ResponseMetadata': {'RequestId': '7SGER3NO6UFCUKSSS4DORPG35RVV4KQNSO5AEMVJF66Q9ASUAAJG', 'HTTPStatusCode': 200, 'HTTPHeaders': {'server': 'Server', 'date': 'Thu, 30 Oct 2025 10:56:11 GMT', 'content-type': 'application/x-amz-json-1.0', 'content-length': '2882', 'connection': 'keep-alive', 'x-amzn-requestid': '7SGER3NO6UFCUKSSS4DORPG35RVV4KQNSO5AEMVJF66Q9ASUAAJG', 'x-amz-crc32': '3716872576'}, 'RetryAttempts': 0}} 
+
+Attempt 1: Found 1 items
+
+Found Immunization Delta items for ImmsID=d5df06ed-b191-4ad2-a242-a5e6554fb695
+
+Attempt 1: Found 1 items
+
+Found Immunization Delta items for ImmsID=e4e2cc3d-3582-497d-a160-95e27da2d82e
+
