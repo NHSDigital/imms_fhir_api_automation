@@ -7,7 +7,7 @@ from src.dynamoDB.dynamo_db_helper import *
 from src.objectModels.patient_loader import load_patient_by_id
 from src.objectModels.api_immunization_builder import *
 from utilities.api_fhir_immunization_helper import *
-from utilities.enums import ErrorName, Operation
+from utilities.enums import Operation
 from utilities.api_gen_token import get_tokens
 from utilities.api_get_header import *
 import pytest_check as check
@@ -111,46 +111,27 @@ def operationOutcomeInvalidParams(context):
 
     match (nhs_invalid, disease_invalid, date_from_invalid, date_to_invalid, include_invalid):
         case (True, _, _, _, _):
-            expected_error = ErrorName.invalid_NHSNumber.value
+            expected_error = "invalid_NHSNumber"
         case (False, True, _, _, _):
-            expected_error = ErrorName.invalid_DiseaseType.value
+            expected_error = "invalid_DiseaseType"
         case (False, False, True, True, False):
-            expected_error = ErrorName.invalid_DateFrom_To.value
+            expected_error = "invalid_DateFrom_To"  
         case (False, False, True, True, True):
-            expected_error = ErrorName.invalid_DateFrom_DateTo_Include.value
+            expected_error = "invalid_DateFrom_DateTo_Include"
         case (False, False, True, _, True):
-            expected_error = ErrorName.invalid_DateFrom_Include.value
+            expected_error = "invalid_DateFrom_Include"
         case (False, False, True, _, _):
-            expected_error = ErrorName.invalid_DateFrom.value
+            expected_error = "invalid_DateFrom"
         case (False, False, _, True, _):
-            expected_error = ErrorName.invalid_DateTo.value
+            expected_error = "invalid_DateTo"
         case (False, False, _, _, True):
-            expected_error = ErrorName.invalid_include.value
+            expected_error = "invalid_include"
         case _:
             raise ValueError("All parameters are valid, no error expected.")
 
     validate_error_response(error_response, expected_error)
     print(f"\n Error Response - \n {error_response}")
-# def operationOutcomeInvalidParams(context):
-#     error_response = parse_errorResponse(context.response.json())
-
-#     error_checks = [
-#         (not is_valid_disease_type(context.DiseaseType), ErrorName.invalid_DiseaseType.value) if getattr(context, "DiseaseType", None) else (False, None),
-#         (not is_valid_date(context.DateFrom), ErrorName.invalid_DateFrom.value) if getattr(context, "DateFrom", None) else (False, None),
-#         (not is_valid_date(context.DateTo), ErrorName.invalid_DateTo.value) if getattr(context, "DateTo", None) else (False, None),
-#         (not is_valid_nhs_number(context.NHSNumber), ErrorName.invalid_NHSNumber.value) if getattr(context, "NHSNumber", None) else (False, None),
-#     ]
-
-#     for failed, errorName in error_checks:
-#         if failed:
-#             break
-#     else:
-#         raise ValueError("All parameters are valid, no error expected.")
-
-#     if errorName:
-#         validateErrorResponse(error_response, errorName)
-#         print(f"\n Error Response - \n {error_response}")    
-        
+     
 @then('The X-Request-ID and X-Correlation-ID keys in header will populate correctly')
 def validateCreateHeader(context):
     assert "X-Request-ID" in context.response.request.headers, "X-Request-ID missing in headers"
@@ -202,7 +183,7 @@ def validate_imms_event_table_by_operation(context, operation: Operation):
 @then(parsers.parse("The Response JSONs should contain correct error message for Imms_id '{errorName}'"))
 def validateForbiddenAccess(context, errorName):
     error_response = parse_error_response(context.response.json())
-    validate_error_response(error_response, ErrorName[errorName].value, context.ImmsID)
+    validate_error_response(error_response, errorName, context.ImmsID)
     print(f"\n Error Response - \n {error_response}")
     
 @then('The Etag in header will containing the latest event version')

@@ -166,8 +166,8 @@ Scenario Outline: Verify that the POST Create API will fail if nhs number is inv
     And The Response JSONs should contain correct error message for '<error_type>'
     Examples: 
     |invalid_NhsNumber  |error_type                 |
-    |1234567890         |invalid_Mod11_NhsNumber    |
-    |12345678           |invalid_NHSNumber_length   |
+    |1234567890         |invalid_mod11_nhsnumber    |
+    |12345678           |invalid_nhsnumber_length   |
 
 @supplier_name_Postman_Auth @vaccine_type_RSV @patient_id_Random
 Scenario Outline: Verify that the POST Create API will fail if patient forename is invalid  
