@@ -1,0 +1,23 @@
+✅ Pipe-delimited file saved to: /home/runner/work/imms_fhir_api_automation/imms_fhir_api_automation/batch_files_directory/HPV_Vaccinations_v5_V0V8L_20251030T15500145.csv
+Batch file created: HPV_Vaccinations_v5_V0V8L_20251030T15500145.csv
+Upload successful: HPV_Vaccinations_v5_V0V8L_20251030T15500145.csv → immunisation-batch-int-data-sources
+Batch file uploaded to S3: HPV_Vaccinations_v5_V0V8L_20251030T15500145.csv
+Waiting for file in archive: s3://immunisation-batch-int-data-sources/archive/HPV_Vaccinations_v5_V0V8L_20251030T15500145.csv
+Still waiting... (0s)
+Still waiting... (5s)
+Still waiting... (10s)
+Still waiting... (15s)
+Still waiting... (20s)
+Still waiting... (25s)
+Still waiting... (30s)
+Still waiting... (35s)
+File found in archive: archive/HPV_Vaccinations_v5_V0V8L_20251030T15500145.csv
+Waiting for file starting with 'ack/HPV_Vaccinations_v5_V0V8L_20251030T15500145' in bucket: immunisation-batch-int-data-destinations
+File found: ack/HPV_Vaccinations_v5_V0V8L_20251030T15500145_InfAck_20251030T15500200.csv
+File contents loaded (299 bytes)
+Waiting for file starting with 'forwardedFile/HPV_Vaccinations_v5_V0V8L_20251030T15500145' in bucket: immunisation-batch-int-data-destinations
+File found: forwardedFile/HPV_Vaccinations_v5_V0V8L_20251030T15500145_BusAck_20251030T15500200.csv
+File contents loaded (7177 bytes)
+
+ Scan response for filename = HPV_Vaccinations_v5_V0V8L_20251030T15500145.csv: [{'filename': 'HPV_Vaccinations_v5_V0V8L_20251030T15500145.csv', 'record_count': Decimal('19'), 'queue_name': 'MAVIS_HPV', 'status': 'Processed', 'timestamp': '20251030T15500200', 'message_id': '65f0307b-73d3-44e6-a6ab-b8c549d2f254', 'expires_at': Decimal('1767023402')}]
+

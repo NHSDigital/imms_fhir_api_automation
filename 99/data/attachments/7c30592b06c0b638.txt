@@ -1,2 +1,0 @@
-❌ Step failed! **The terms are mapped to the respective text fields in imms delta table** 
- Error: Item not found in response for ImmsID: 9460f5d1-b7ea-433e-8f75-8baca8ebf675
