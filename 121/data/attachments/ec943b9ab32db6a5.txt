@@ -1,0 +1,2 @@
+❌ Step failed! **batch file is uploaded in s3 bucket** 
+ Error: 'ScenarioContext' object has no attribute 'archive_key'
