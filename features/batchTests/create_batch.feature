@@ -168,7 +168,7 @@ Scenario: verify that vaccination record will be get rejected if mandatory field
         | Random            | Fail-empty_unique_id-no_unique_identifiers            |
         | Random            | Fail-empty_unique_id_uri-no_unique_identifiers        |
         | Random            | Fail-empty_primary_source-empty_primary_source        |    
-        | Random            | Fail-empty_procedure_code-empty_procedure_code        | 
+        | Random            | Fail-empty_procedure_code-no_procedure_code           | 
         | Random            | Fail-white_space_site_code-no_site_code               |
         | Random            | Fail-white_space_site_Code_uri-no_site_code_uri       |
         | Random            | Fail-white_space_location_code-no_location_code       |
@@ -176,7 +176,7 @@ Scenario: verify that vaccination record will be get rejected if mandatory field
         | Random            | Fail-white_space_unique_id-no_unique_id               |
         | Random            | Fail-white_space_unique_id_uri-no_unique_id_uri       | 
         | Random            | Fail-white_space_primary_source-no_primary_source     |  
-        | Random            | Fail-white_space_procedure_code-no_procedure_code     | 
+        | Random            | Fail-white_space_procedure_code-empty_procedure_code  | 
         | Random            | Fail-invalid_primary_source-no_primary_source         | 
         | Random            | Fail-empty_action_flag-invalid_action_flag            |
         | Random            | Fail-white_space_action_flag-invalid_action_flag      |

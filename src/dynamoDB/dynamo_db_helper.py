@@ -302,7 +302,11 @@ def validate_imms_delta_record_with_batch_record(context, batch_record, item, ev
         ("DOSE_UNIT_CODE", batch_record["DOSE_UNIT_CODE"], event.get("DOSE_UNIT_CODE")),         
         ("SITE_OF_VACCINATION_TERM", batch_record["SITE_OF_VACCINATION_TERM"], event.get("SITE_OF_VACCINATION_TERM")),
         ("SITE_OF_VACCINATION_CODE", batch_record["SITE_OF_VACCINATION_CODE"], event.get("SITE_OF_VACCINATION_CODE")),        
-        ("DOSE_AMOUNT", float(batch_record["DOSE_AMOUNT"]) , float(event.get("DOSE_AMOUNT"))),
+        (
+            "DOSE_AMOUNT",
+            float(batch_record["DOSE_AMOUNT"]) if batch_record["DOSE_AMOUNT"] != "" else '',
+            float(event.get("DOSE_AMOUNT")) if event.get("DOSE_AMOUNT") != "" else ''
+        ),
         ("PRIMARY_SOURCE", str(batch_record["PRIMARY_SOURCE"]).upper(), event.get("PRIMARY_SOURCE")),
         ("ROUTE_OF_VACCINATION_TERM", batch_record["ROUTE_OF_VACCINATION_TERM"], event.get("ROUTE_OF_VACCINATION_TERM")),
         ("ROUTE_OF_VACCINATION_CODE", batch_record["ROUTE_OF_VACCINATION_CODE"], event.get("ROUTE_OF_VACCINATION_CODE")),
