@@ -1,0 +1,2 @@
+❌ Step failed! **The delta table will be populated with the correct data for all records in batch file** 
+ Error: could not convert string to float: ''
