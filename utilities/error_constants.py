@@ -205,13 +205,25 @@ ERROR_MAP = {
         "code": "INVARIANT",    
         "diagnostics": "Validation errors: primarySource must be a boolean"
     },
-    "empty_procedure_code": {
+    "no_procedure_code": {
         "code": "INVARIANT",    
         "diagnostics": "Validation errors: extension[?(@.url=='https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-VaccinationProcedure')].valueCodeableConcept.coding[?(@.system=='http://snomed.info/sct')].code is a mandatory field"
     },
-    "no_procedure_code": {
+    "empty_procedure_code": {
         "code": "INVARIANT",    
         "diagnostics": "Validation errors: extension[?(@.url=='https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-VaccinationProcedure')].valueCodeableConcept.coding[?(@.system=='http://snomed.info/sct')].code must be a non-empty string"
+    },
+    "empty_product_term": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: vaccineCode.coding[?(@.system=='http://snomed.info/sct')].display must be a non-empty string"
+    },
+    "empty_product_code": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: vaccineCode.coding[?(@.system=='http://snomed.info/sct')].code must be a non-empty string"
+    },
+    "empty_procedure_term": {
+        "code": "INVARIANT",    
+        "diagnostics": "Validation errors: extension[?(@.url=='https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-VaccinationProcedure')].valueCodeableConcept.coding[?(@.system=='http://snomed.info/sct')].display must be a non-empty string"
     },
     "invalid_action_flag": {
         "code": "INVARIANT",
