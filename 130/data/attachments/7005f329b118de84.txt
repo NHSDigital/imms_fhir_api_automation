@@ -1,0 +1,19 @@
+✅ Pipe-delimited file saved to: /home/runner/work/imms_fhir_api_automation/imms_fhir_api_automation/batch_files_directory/COVID_Vaccinations_v5_YGJ_20251104T18202244.csv
+Batch file created: COVID_Vaccinations_v5_YGJ_20251104T18202244.csv
+Upload successful: COVID_Vaccinations_v5_YGJ_20251104T18202244.csv → immunisation-batch-int-data-sources
+Batch file uploaded to S3: COVID_Vaccinations_v5_YGJ_20251104T18202244.csv
+Waiting for file in archive: s3://immunisation-batch-int-data-sources/archive/COVID_Vaccinations_v5_YGJ_20251104T18202244.csv
+Still waiting... (0s)
+Still waiting... (5s)
+Still waiting... (10s)
+Still waiting... (15s)
+Still waiting... (20s)
+Still waiting... (25s)
+Still waiting... (30s)
+File found in archive: archive/COVID_Vaccinations_v5_YGJ_20251104T18202244.csv
+Waiting for file starting with 'ack/COVID_Vaccinations_v5_YGJ_20251104T18202244' in bucket: immunisation-batch-int-data-destinations
+File found: ack/COVID_Vaccinations_v5_YGJ_20251104T18202244_InfAck_20251104T18202300.csv
+File contents loaded (299 bytes)
+Waiting for file starting with 'forwardedFile/COVID_Vaccinations_v5_YGJ_20251104T18202244' in bucket: immunisation-batch-int-data-destinations
+File found: forwardedFile/COVID_Vaccinations_v5_YGJ_20251104T18202244_BusAck_20251104T18202300.csv
+File contents loaded (966 bytes)
