@@ -1,0 +1,2 @@
+❌ Step failed! **batch file is created for below data where action flag has different cases** 
+ Error: Exceeded 30 redirects.

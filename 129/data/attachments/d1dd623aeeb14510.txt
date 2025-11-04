@@ -1,0 +1,16 @@
+
+ Search Get parameters - 
+ patient.identifier=https%3A%2F%2Ffhir.nhs.uk%2FId%2Fnhs-number|9728403348&-immunization.target=COVID19&_include=abc
+400
+400
+
+ Error Response - 
+ resourceType='OperationOutcome' id='7a74b969-bd12-4fb3-9048-7d9cc9c3af7e' meta=Meta(profile=['https://simplifier.net/guide/UKCoreDevelopment2/ProfileUKCore-OperationOutcome']) issue=[Issue(severity='error', code='invalid', details=Details(coding=[Coding(system='https://fhir.nhs.uk/Codesystem/http-error-codes', code='INVALID')]), diagnostics='immunization-target must be one or more of the following: RSV, SHINGLES, MMR, MMRV, PCV13, MENACWY, COVID, FLU, HPV, PERTUSSIS, 3IN1')]
+
+ Search Post parameters - 
+ patient.identifier=https%3A%2F%2Ffhir.nhs.uk%2FId%2Fnhs-number|9728403348&-immunization.target=COVID19&_include=abc
+400
+400
+
+ Error Response - 
+ resourceType='OperationOutcome' id='3f2be1bd-f6b9-43d8-9dc6-4988731937d2' meta=Meta(profile=['https://simplifier.net/guide/UKCoreDevelopment2/ProfileUKCore-OperationOutcome']) issue=[Issue(severity='error', code='invalid', details=Details(coding=[Coding(system='https://fhir.nhs.uk/Codesystem/http-error-codes', code='INVALID')]), diagnostics='immunization-target must be one or more of the following: RSV, SHINGLES, MMR, MMRV, PCV13, MENACWY, COVID, FLU, HPV, PERTUSSIS, 3IN1')]
