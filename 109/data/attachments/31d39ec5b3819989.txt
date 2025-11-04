@@ -1,2 +1,0 @@
-❌ Step failed! **The Search Response JSONs should contain correct error message for invalid NHS Number** 
- Error: unhashable type: 'dict'

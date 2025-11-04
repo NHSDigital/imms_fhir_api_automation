@@ -1,2 +1,0 @@
-❌ Step failed! **The Response JSONs should contain correct error message for 'no_surname'** 
- Error: unhashable type: 'dict'

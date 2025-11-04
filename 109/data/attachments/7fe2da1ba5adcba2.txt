@@ -1,2 +1,0 @@
-❌ Step failed! **The Response JSONs should contain correct error message for 'should_be_string'** 
- Error: unhashable type: 'dict'
