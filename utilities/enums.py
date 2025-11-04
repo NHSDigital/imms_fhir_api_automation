@@ -15,7 +15,7 @@ class SupplierNameWithODSCode(Enum):
    SONAR= "8HK48"
    RAVS = "X8E5B" 
    PINNACLE = "8J1100001" 
-   EMIS = "YGJ"
+   OPTUM = "YGJ"
    TPP = "YGA" 
    MEDICUS = "YGMYW" 
    CEGEDIM = "YGM04"

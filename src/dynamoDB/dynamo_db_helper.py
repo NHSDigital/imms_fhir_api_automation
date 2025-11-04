@@ -153,10 +153,12 @@ def validate_imms_delta_record_with_created_event(context, create_obj, item, eve
     event = item[0].get("Imms")
     assert event, "Imms field missing in items."
     
+    expected_vaccine_type = context.vaccine_type.lower() if context.vaccine_type.lower() != "covid19" else "covid"
+    
     fields_to_compare = [
         ("Operation", event_type.upper(), item[0].get("Operation")),
         ("SupplierSystem", context.supplier_name.lower(), item[0].get("SupplierSystem").lower()),
-        ("VaccineType", f"{context.vaccine_type.lower()}", item[0].get("VaccineType").lower()),
+        ("VaccineType", expected_vaccine_type, item[0].get("VaccineType").lower()),
         ("Source", "IEDS", item[0].get("Source")),
         ("CONVERSION_ERRORS", [], event.get("CONVERSION_ERRORS")),
         ("PERSON_FORENAME", create_obj.contained[1].name[0].given[0], event.get("PERSON_FORENAME")),
@@ -454,7 +456,7 @@ def validate_to_compare_batch_record_with_event_table_record(context, batch_reco
         ("occurrenceDateTime", expected_occurrenceDateTime, actual_occurrenceDateTime),
         ("Recorded", expected_recorded, actual_recorded),
         ("primarySource", str(batch_record["PRIMARY_SOURCE"]).lower(), str(created_event.primarySource).lower()),
-        ("location.vale", batch_record["LOCATION_CODE"], created_event.location.identifier.value),
+        ("location.value", batch_record["LOCATION_CODE"], created_event.location.identifier.value),
         ("location.system", batch_record["LOCATION_CODE_TYPE_URI"], created_event.location.identifier.system),              
         ("protocolApplied", True, compare_protocol_codings_to_reference(created_event.protocolApplied,PROTOCOL_DISEASE_MAP.get(context.vaccine_type.upper(), []))),
         ("Patient.id", "Patient1", response_patient.id),        

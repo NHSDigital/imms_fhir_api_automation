@@ -126,12 +126,14 @@ def validate_imms_event_table(context):
 
     assert resource is not None, "Resource is None in the response"
     created_event = parse_imms_int_imms_event_response(resource)
+    
+    expected_vaccine_type = context.vaccine_type.lower() if context.vaccine_type.lower() != "covid19" else "covid"
 
     fields_to_compare = [
         ("IdentifierPK", f"{create_obj.identifier[0].system}#{create_obj.identifier[0].value}", item.get("IdentifierPK")),
         ("Operation", Operation.created.value, item.get("Operation")),
         ("PatientPK", f"Patient#{context.patient.identifier[0].value}", item.get("PatientPK")),
-        ("PatientSK", f"{context.vaccine_type}#{context.ImmsID}", item.get("PatientSK")),
+        ("PatientSK", f"{expected_vaccine_type}#{context.ImmsID}", item.get("PatientSK")),
         ("SupplierSystem", context.supplier_name.lower(), item.get("SupplierSystem").lower()),        
         ("Version", 1, item.get("Version")),
     ]

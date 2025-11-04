@@ -187,17 +187,17 @@ Scenario: verify that vaccination record will be get rejected if mandatory field
     And all records are rejected in the bus ack file and no imms id is generated
     And Audit table will have correct status, queue name and record count for the processed batch file 
 
-# @delete_cleanup_batch @vaccine_type_HPV  @supplier_name_MAVIS
-# Scenario: verify that vaccination record will be get rejected if mandatory field for site, location and unique URI are invalid in batch file
-#     Given batch file is created for below data where mandatory field for site, location and unique uri values are invalid
-#         | patient_id        | unique_id                      |
-#         | Random            | Fail-invalid_unique_id_uri-    |
-#         | Random            | Fail-invalid_site_Code_uri-    |
-#         | Random            | Fail-invalid_location_Code_uri |
-#     When batch file is uploaded in s3 bucket
-#     Then file will be moved to destination bucket and inf ack file will be created
-#     And inf ack file has success status for processed batch file
-#     And bus ack file will be created
+@delete_cleanup_batch @vaccine_type_COVID19  @supplier_name_OPTUM
+Scenario: verify that vaccination record will be get rejected if mandatory field for site, location and unique URI are invalid in batch file
+    Given batch file is created for below data where mandatory field for site, location and unique uri values are invalid
+        | patient_id        | unique_id                      |
+        | Random            | Fail-invalid_unique_id_uri-    |
+        | Random            | Fail-invalid_site_Code_uri-    |
+        | Random            | Fail-invalid_location_Code_uri |
+    When batch file is uploaded in s3 bucket
+    Then file will be moved to destination bucket and inf ack file will be created
+    And inf ack file has success status for processed batch file
+    And bus ack file will be created
 #      And all records are rejected in the bus ack file and no imms id is generated
 #     And Audit table will have correct status, queue name and record count for the processed batch file 
 

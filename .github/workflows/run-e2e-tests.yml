@@ -116,7 +116,7 @@ jobs:
 
       - name: Build Allure report
         if: always()
-        uses: simple-elf/allure-report-action@v1.7
+        uses: simple-elf/allure-report-action
         with:
           allure_results: output/allure-results
           gh_pages: gh-pages
