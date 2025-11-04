@@ -162,13 +162,12 @@ def validate_imms_event_table_by_operation(context, operation: Operation):
         f"Expected Version: {context.expected_version}, Found: {context.eTag}"
     )
     
-    expected_vaccine_type = context.vaccine_type.lower() if context.vaccine_type.lower() != "covid19" else "covid"
-
+    
     fields_to_compare = [
         ("Operation", Operation[operation].value, item.get("Operation")),
         ("SupplierSystem", context.supplier_name, item.get("SupplierSystem")),
         ("PatientPK", f"Patient#{context.patient.identifier[0].value}", item.get("PatientPK")),
-        ("PatientSK", f"{expected_vaccine_type.upper()}#{context.ImmsID}", item.get("PatientSK")),
+        ("PatientSK", f"{context.vaccine_type.upper()}#{context.ImmsID}", item.get("PatientSK")),
          ("Version", int(context.expected_version), int(item.get("Version"))),
     ]
     

@@ -153,12 +153,10 @@ def validate_imms_delta_record_with_created_event(context, create_obj, item, eve
     event = item[0].get("Imms")
     assert event, "Imms field missing in items."
     
-    expected_vaccine_type = context.vaccine_type.lower() if context.vaccine_type.lower() != "covid19" else "covid"
-    
     fields_to_compare = [
         ("Operation", event_type.upper(), item[0].get("Operation")),
         ("SupplierSystem", context.supplier_name.lower(), item[0].get("SupplierSystem").lower()),
-        ("VaccineType", expected_vaccine_type, item[0].get("VaccineType").lower()),
+        ("VaccineType", context.vaccine_type.lower(), item[0].get("VaccineType").lower()),
         ("Source", "IEDS", item[0].get("Source")),
         ("CONVERSION_ERRORS", [], event.get("CONVERSION_ERRORS")),
         ("PERSON_FORENAME", create_obj.contained[1].name[0].given[0], event.get("PERSON_FORENAME")),

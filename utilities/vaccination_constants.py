@@ -1,7 +1,7 @@
 from src.objectModels.api_data_objects import *
 
 VACCINE_CODE_MAP = {
-    "COVID19": [
+    "COVID": [
         {
             "system": "http://snomed.info/sct",
             "code": "43111411000001101",
@@ -155,13 +155,33 @@ VACCINE_CODE_MAP = {
             "idValue": "7374511000001107",
             "manufacturer": "Sanofi"
         },
-    ]
+    ],
+    "SHINGLES":[
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "7374511000001107",
+            "display": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes (Sanofi) 1 pre-filled disposable injection (product)",
+            "stringValue": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes ",
+            "idValue": "7374511000001107",
+            "manufacturer": "Sanofi"
+        },
+    ],
+    "PCV13":[
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "7374511000001107",
+            "display": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes (Sanofi) 1 pre-filled disposable injection (product)",
+            "stringValue": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes ",
+            "idValue": "7374511000001107",
+            "manufacturer": "Sanofi"
+        },
+    ],
 }
 
 
 
 VACCINATION_PROCEDURE_MAP = {
-    "COVID19": [
+    "COVID": [
         {
             "system": "http://snomed.info/sct",
             "code": "1362591000000103",
@@ -306,6 +326,15 @@ VACCINATION_PROCEDURE_MAP = {
             "stringValue": "Administration of vaccine product containing only Human alphaherpesvirus 3 antigen for shingles",
             "idValue": "4326365"
         },
+    ],
+     "PCV13": [
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "722215002",
+            "display": "Administration of vaccine product containing only Human alphaherpesvirus 3 antigen for shingles (procedure)",
+            "stringValue": "Administration of vaccine product containing only Human alphaherpesvirus 3 antigen for shingles",
+            "idValue": "4326365"
+        },
     ]
     
 }
@@ -369,7 +398,7 @@ REASON_CODE_MAP = [
 ]
 
 PROTOCOL_DISEASE_MAP = {
-    "COVID19": [
+    "COVID": [
         {
             "system": "http://snomed.info/sct",
             "code": "840539006",
@@ -394,7 +423,7 @@ PROTOCOL_DISEASE_MAP = {
         {
             "system": "http://snomed.info/sct",
             "code": "240532009",
-            "display": "Human papillomavirus infection"
+            "display": "Human papilloma virus infection"
         }
     ],
     "MMR": [

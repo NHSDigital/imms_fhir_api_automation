@@ -14,7 +14,7 @@ Scenario Outline: Verify that the Read method of API will be successful and fetc
       |Patient       | Vaccine_type|
       |Random        | RSV         |
       |Random        | FLU         |
-      |Random        | COVID19     |
+      |Random        | COVID      |
 
 
 @Delete_cleanUp @vaccine_type_FLU @patient_id_Random  @supplier_name_Postman_Auth

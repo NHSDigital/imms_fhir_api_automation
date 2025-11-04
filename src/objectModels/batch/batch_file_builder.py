@@ -97,8 +97,6 @@ def get_patient_details(context) -> Dict[str, str]:
     }
 
 def generate_file_name(context) -> str:
-    if context.vaccine_type.upper() == "COVID19":
-        return f"COVID_Vaccinations_v5_{context.supplier_ods_code}_{context.FileTimestamp}.{context.file_extension}"
     return f"{context.vaccine_type}_Vaccinations_v5_{context.supplier_ods_code}_{context.FileTimestamp}.{context.file_extension}"
 
 def build_batch_file(context, unique_id: str = None) -> BatchVaccinationRecord:
