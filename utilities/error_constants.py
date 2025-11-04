@@ -31,7 +31,7 @@ ERROR_MAP = {
     },
     "invalid_DiseaseType": {
         "code": "INVALID",
-        "diagnostics": "immunization-target must be one or more of the following: RSV, COVID19, MMR, MENACWY, FLU, HPV, 3IN1"
+        "diagnostics": "immunization-target must be one or more of the following: RSV, SHINGLES, MMR, MMRV, PCV13, MENACWY, COVID, FLU, HPV, PERTUSSIS, 3IN1"
     },
     "invalid_DateFrom": {
         "code": "INVALID",

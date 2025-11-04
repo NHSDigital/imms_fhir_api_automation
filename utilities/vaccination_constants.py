@@ -380,14 +380,14 @@ PROTOCOL_DISEASE_MAP = {
         {
             "system": "http://snomed.info/sct",
             "code": "6142004",
-            "display": "Influenza caused by seasonal influenza virus (disorder)"
+            "display": "Influenza"
         }
     ],
     "RSV": [
         {
             "system": "http://snomed.info/sct",
             "code": "55735004",
-            "display": "Respiratory syncytial virus infection (disorder)"
+            "display": "Respiratory syncytial virus infection"
         }
     ],
     "HPV": [
@@ -401,46 +401,46 @@ PROTOCOL_DISEASE_MAP = {
         {
             "system": "http://snomed.info/sct",
             "code": "14189004",
-            "display": "Measles (disorder)"
+            "display": "Measles"
         },
         {
             "system": "http://snomed.info/sct",
             "code": "36989005",
-            "display": "Mumps (disorder)"
+            "display": "Mumps"
         },
         {
             "system": "http://snomed.info/sct",
             "code": "36653000",
-            "display": "Rubella (disorder)"
+            "display": "Rubella"
         }        
     ],
     "MMRV": [
       {
             "system": "http://snomed.info/sct",
             "code": "14189004",
-            "display": "Measles (disorder)"
+            "display": "Measles"
       },
       {
            "system": "http://snomed.info/sct",
             "code": "36989005",
-            "display": "Mumps (disorder)"
+            "display": "Mumps"
       },
       {
             "system": "http://snomed.info/sct",
             "code": "36653000",
-            "display": "Rubella (disorder)"
+            "display": "Rubella"
       },
       {
             "system": "http://snomed.info/sct",
             "code": "38907003",
-            "display": "Varicella (disorder)"
+            "display": "Varicella"
       }
     ],
     "PERTUSSIS": [
       {
             "system": "http://snomed.info/sct",
             "code": "27836007",
-            "display": "Pertussis (disorder)"
+            "display": "Pertussis"
       }
     ],
      "SHINGLES": [
@@ -471,7 +471,7 @@ PROTOCOL_DISEASE_MAP = {
       {
         "system": "http://snomed.info/sct",
         "code": "76902006",
-        "display": "Tetanus (disorder)"
+        "display": "Tetanus"
       }
     ],
     "MENACWY": [
