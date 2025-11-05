@@ -152,10 +152,9 @@ def parse_imms_int_imms_event_response(resource: dict) -> ImmunizationReadRespon
 def validate_imms_delta_record_with_created_event(context, create_obj, item, event_type, action_flag):
     event = item[0].get("Imms")
     assert event, "Imms field missing in items."
-    expected_supplier_system= context.supplier_name.lower() if context.supplier_name != "OPTUM" else "emis"
     fields_to_compare = [
         ("Operation", event_type.upper(), item[0].get("Operation")),
-        ("SupplierSystem", expected_supplier_system, item[0].get("SupplierSystem").lower()),
+        ("SupplierSystem", context.supplier_name.lower(), item[0].get("SupplierSystem").lower()),
         ("VaccineType", context.vaccine_type.lower(), item[0].get("VaccineType").lower()),
         ("Source", "IEDS", item[0].get("Source")),
         ("CONVERSION_ERRORS", [], event.get("CONVERSION_ERRORS")),
