@@ -149,11 +149,19 @@ VACCINE_CODE_MAP = {
     "PERTUSSIS":[
         {   
             "system": "http://snomed.info/sct",
-            "code": "7374511000001107",
-            "display": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes (Sanofi) 1 pre-filled disposable injection (product)",
-            "stringValue": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes ",
-            "idValue": "7374511000001107",
+            "code": "8882411000001103",
+            "display": "Repevax vaccine suspension for injection 0.5ml pre-filled syringes (Sanofi) (product)",
+            "stringValue": "Repevax vaccine suspension for injection 0.5ml pre-filled syringes ",
+            "idValue": "8882411000001103",
             "manufacturer": "Sanofi"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "26267211000001100",
+            "display": "Boostrix-IPV suspension for injection 0.5ml pre-filled syringes (GlaxoSmithKline UK Ltd) (product)",
+            "stringValue": "Boostrix-IPV suspension for injection 0.5ml pre-filled syringes ",
+            "idValue": "26267211000001100",
+            "manufacturer": "GlaxoSmithKline UK Ltd"
         },
     ],
     "SHINGLES":[
@@ -321,10 +329,10 @@ VACCINATION_PROCEDURE_MAP = {
      "PERTUSSIS": [
         {   
             "system": "http://snomed.info/sct",
-            "code": "722215002",
-            "display": "Administration of vaccine product containing only Human alphaherpesvirus 3 antigen for shingles (procedure)",
-            "stringValue": "Administration of vaccine product containing only Human alphaherpesvirus 3 antigen for shingles",
-            "idValue": "4326365"
+            "code": "956951000000104",
+            "display": "Pertussis vaccination in pregnancy (procedure)",
+            "stringValue": "Pertussis vaccination in pregnancy",
+            "idValue": "1000000104"
         },
     ],
      "PCV13": [
