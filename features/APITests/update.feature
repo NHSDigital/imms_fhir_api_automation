@@ -1,6 +1,7 @@
-@Update_Feature
+@Update_Feature @functional
 Feature: Update the immunization of a patient
 
+@smoke
 @Delete_cleanUp @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
 Scenario: Verify that the Update API will be successful with all the valid parameters
     Given I have created a valid vaccination record
@@ -31,6 +32,7 @@ Scenario: verify that vaccination record can be updated with valid vaccination d
     And The delta table will be populated with the correct data for updated event   
 
 
+@smoke
 @Delete_cleanUp @vaccine_type_FLU @patient_id_Random  @supplier_name_Postman_Auth
 Scenario: Flu event is created and updated twice
     Given I have created a valid vaccination record 

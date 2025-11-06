@@ -22,6 +22,14 @@ on:
           - APITests
           - batchTests
           - API&batchTests
+      TestFilter:
+        description: "Tag filter for tests"
+        required: false
+        default: "functional"
+        type: choice
+        options:
+          - smoke
+          - functional
 
 permissions:
   contents: write
@@ -31,7 +39,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'int' }}
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'int'}}
     steps:
       - name: Connect to AWS
         uses: aws-actions/configure-aws-credentials@v4
@@ -60,7 +68,7 @@ jobs:
           pip install -r requirements.txt 2> req_error.log || { cat req_error.log; exit 1; }
           pip install allure-pytest 2> allure_error.log || { cat allure_error.log; exit 1; }
           
-      - name: Run Pytest-BDD tests for ${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' }}
+      - name: Run Pytest-BDD tests for ${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' && inputs.TestFilter || 'functional'}}
         env:
           auth_url: ${{ vars.auth_url }}
           token_url: ${{ vars.token_url }}
@@ -82,14 +90,14 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
           S3_env: ${{ vars.S3_ENV }}
         run: |
-          TEST_PATH="${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' }}"
+          TEST_PATH="${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' && inputs.TestFilter || 'functional'}}"
           if [ "$TEST_PATH" = "API&batchTests" ]; then
             TEST_PATH="features"
           else
             TEST_PATH="features/$TEST_PATH"
           fi
           source venv/bin/activate
-          pytest "$TEST_PATH" --junitxml=output/test-results.xml --alluredir=output/allure-results 
+          pytest "$TEST_PATH" -m "${{ inputs.TestFilter }}" --junitxml=output/test-results.xml --alluredir=output/allure-results 
           if [ $? -ne 0 ]; then
             echo "Pytest-BDD tests failed"
             exit 1

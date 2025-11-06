@@ -1,4 +1,4 @@
-@Create_Batch_Feature
+@Create_Batch_Feature @functional
 Feature: Create the immunization event for a patient through batch file
 
 @smoke

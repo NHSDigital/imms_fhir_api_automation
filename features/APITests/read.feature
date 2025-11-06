@@ -1,4 +1,4 @@
-@Read_Feature
+@Read_Feature @functional
 Feature: Read the immunization of a patient
 
 @Delete_cleanUp @supplier_name_Postman_Auth
