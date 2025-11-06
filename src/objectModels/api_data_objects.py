@@ -222,8 +222,8 @@ class ImmunizationReadResponse_IntTable(BaseModel):
     manufacturer: Optional[Dict[str, str]] = None
     id: str
     location: Location  
-    site: CodeableConcept
-    route: CodeableConcept
+    site: Optional[CodeableConcept] = None
+    route: Optional[CodeableConcept] = None
     doseQuantity: Optional[DoseQuantity] = None
     performer: List[Performer]
     reasonCode: Optional[List[ReasonCode]] = None

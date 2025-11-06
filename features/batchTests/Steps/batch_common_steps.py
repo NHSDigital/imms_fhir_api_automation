@@ -74,7 +74,7 @@ def batch_file_upload_in_s3_bucket(context):
     upload_file_to_S3(context)
     print(f"Batch file uploaded to S3: {context.filename}")
     fileIsMoved = wait_for_file_to_move_archive(context)
-    assert fileIsMoved, f"File not found in archive after timeout: {context.archive_key}"
+    assert fileIsMoved, f"File not found in archive after timeout"
     
 @then("file will be moved to destination bucket and inf ack file will be created")
 def file_will_be_moved_to_destination_bucket(context):

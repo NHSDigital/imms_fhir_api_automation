@@ -14,12 +14,16 @@ Scenario Outline:  Verify that the POST Create API for different vaccine types
 
     Examples: 
       | Patient  | vaccine_type| Supplier     |
-      |Random    | COVID19     | Postman_Auth |
+      |Random    | COVID       | Postman_Auth |
       |Random    | RSV         | RAVS         |
       |Random    | FLU         | MAVIS        |
       |Random    | MMR         | Postman_Auth |
       |Random    | MENACWY     | MAVIS        |
       |Random    | 3in1        | MAVIS        |
+      |Random    | MMRV        | EMIS         |
+      |Random    | PERTUSSIS   | EMIS         |
+      |Random    | SHINGLES    | EMIS         |
+      |Random    | PCV13       | EMIS         |
 
 @Delete_cleanUp @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
 Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_VACCINATION_TERM, ROUTE_OF_VACCINATION_TERM fields are mapped to respective text fields in imms delta table
