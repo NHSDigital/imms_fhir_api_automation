@@ -58,7 +58,7 @@ def parse_entry(entry_data: dict) -> Entry:
     )
 
 def is_valid_disease_type(disease_type: str) -> bool:
-    valid_types = {"COVID", "FLU", "HPV", "MMR", "RSV", "SHINGLES", "MMRV", "PCV13", "MENACWY", "PERTUSSIS", "3IN1"}
+    valid_types = {"COVID", "FLU", "HPV", "MMR", "RSV", "SHINGLES", "MMRV", "PNEUMOCOCCAL", "MENACWY", "PERTUSSIS", "3IN1"}
     return disease_type in valid_types
 
 def is_valid_nhs_number(nhs_number: str) -> bool:

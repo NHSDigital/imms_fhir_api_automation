@@ -1,7 +1,7 @@
 @Create_Feature 
 Feature: Create the immunization event for a patient
 
-@Delete_cleanUp
+@Delete_cleanUp 
 Scenario Outline:  Verify that the POST Create API for different vaccine types
     Given Valid token is generated for the '<Supplier>'
     And Valid json payload is created with Patient '<Patient>' and vaccine_type '<vaccine_type>'
@@ -23,7 +23,7 @@ Scenario Outline:  Verify that the POST Create API for different vaccine types
       |Random    | MMRV        | EMIS         |
       |Random    | PERTUSSIS   | EMIS         |
       |Random    | SHINGLES    | EMIS         |
-      |Random    | PCV13       | EMIS         |
+      |Random    | PNEUMOCOCCAL       | EMIS         |
 
 @Delete_cleanUp @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
 Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_VACCINATION_TERM, ROUTE_OF_VACCINATION_TERM fields are mapped to respective text fields in imms delta table

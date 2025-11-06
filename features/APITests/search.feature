@@ -23,7 +23,7 @@ Scenario Outline: Verify that the GET method of Search API will be successful wi
       |SupersedeNhsNo| COVID       |
       |Mod11_NHS     | RSV         |
       |Random        | SHINGLES    |
-      |Random        | PCV13       |
+      |Random        | PNEUMOCOCCAL       |
 
 @Delete_cleanUp @supplier_name_Postman_Auth
 Scenario Outline: Verify that the POST method of Search API will be successful with all the valid parameters 
