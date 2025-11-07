@@ -1,6 +1,7 @@
-@Create_Batch_Feature
+@Create_Batch_Feature @functional
 Feature: Create the immunization event for a patient through batch file
 
+@smoke
 @delete_cleanup_batch @vaccine_type_HPV  @supplier_name_MAVIS
 Scenario: Verify that full dataset vaccination record will be created through batch file
     Given batch file is created for below data as full dataset
@@ -19,7 +20,8 @@ Scenario: Verify that full dataset vaccination record will be created through ba
     And The imms event table will be populated with the correct data for 'created' event for records in batch file
     And The delta table will be populated with the correct data for all records in batch file  
 
-@delete_cleanup_batch @vaccine_type_MMR  @supplier_name_MAVIS
+@smoke
+@delete_cleanup_batch @vaccine_type_MMR  @supplier_name_MAVIS 
 Scenario: Verify that minimum dataset vaccination record will be created through batch file
     Given batch file is created for below data as minimum dataset
         | patient_id        | unique_id             |

@@ -31,7 +31,7 @@ ERROR_MAP = {
     },
     "invalid_DiseaseType": {
         "code": "INVALID",
-        "diagnostics": "immunization-target must be one or more of the following: RSV, SHINGLES, MMR, MMRV, PCV13, MENACWY, COVID, FLU, HPV, PERTUSSIS, 3IN1"
+        "diagnostics": "immunization-target must be one or more of the following: RSV, SHINGLES, MMR, MMRV, MENACWY, COVID, PNEUMOCOCCAL, FLU, HPV, PERTUSSIS, 3IN1"
     },
     "invalid_DateFrom": {
         "code": "INVALID",
@@ -47,7 +47,7 @@ ERROR_MAP = {
     },  
     "not_found": {
         "code": "NOT-FOUND",
-        "diagnostics": f"Immunization resource does not exist."
+        "diagnostics": f"Immunization resource does not exist. ID: <imms_id>"
     },      
     "forbidden": {
         "code": "FORBIDDEN",
@@ -264,5 +264,9 @@ ERROR_MAP = {
     "empty_indication_code": {
         "code": "INVARIANT",    
         "diagnostics": "Validation errors: reasonCode[0].coding[0].code must be a non-empty string"
+    },
+    "invalid_etag": {
+        "code": "INVARIANT",  
+        "diagnostics": "Validation errors: Immunization resource version:<version> in the request headers is invalid."
     }
 }

@@ -1,6 +1,7 @@
-@Update_Feature
+@Update_Feature @functional
 Feature: Update the immunization of a patient
 
+@smoke
 @Delete_cleanUp @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
 Scenario: Verify that the Update API will be successful with all the valid parameters
     Given I have created a valid vaccination record
@@ -31,6 +32,7 @@ Scenario: verify that vaccination record can be updated with valid vaccination d
     And The delta table will be populated with the correct data for updated event   
 
 
+@smoke
 @Delete_cleanUp @vaccine_type_FLU @patient_id_Random  @supplier_name_Postman_Auth
 Scenario: Flu event is created and updated twice
     Given I have created a valid vaccination record 
@@ -103,7 +105,7 @@ Scenario Outline: Scenario Outline name: Verify that the Update API will be fail
         | empty                 |
 
 @Delete_cleanUp @vaccine_type_RSV @patient_id_Mod11_NHS @supplier_name_Postman_Auth
-Scenario Outline: Scenario Outline name: Verify that the Update API will be fails if patient's date of birth has future or invalid formatted date
+Scenario Outline: Verify that the Update API will be fails if patient's date of birth has future or invalid formatted date
     Given I have created a valid vaccination record
     When Send a update for Immunization event created with patient date of bith being updated to '<Date>'
     Then The request will be unsuccessful with the status code '400'
@@ -114,3 +116,20 @@ Scenario Outline: Scenario Outline name: Verify that the Update API will be fail
         | invalid_format        | invalid_DateOfBirth   |
         | nonexistent           | invalid_DateOfBirth   |
         | empty                 | invalid_DateOfBirth   |
+
+@vaccine_type_3in1 @patient_id_Random  @supplier_name_Postman_Auth
+Scenario: Verify that the update request will fail for invalid immunization id
+    When Send an update request for invalid immunization id
+    Then The request will be unsuccessful with the status code '404'
+    And The Response JSONs should contain correct error message for 'not_found'
+
+@vaccine_type_3in1 @patient_id_Random  @supplier_name_Postman_Auth
+Scenario Outline: Verify that the update request will fail for invalid Etag value
+    When Send an update request for invalid Etag <Etag>
+    Then The request will be unsuccessful with the status code '400'
+    And The Response JSONs should contain correct error message for etag 'invalid_etag'
+        Examples:
+        | Etag  |
+        | 0     |
+        | -1    |
+        | abcde |

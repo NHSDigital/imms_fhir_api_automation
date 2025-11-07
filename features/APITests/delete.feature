@@ -1,4 +1,4 @@
-@Delete_Feature 
+@Delete_Feature @functional
 Feature: Delete an immunization of a patient
 
 @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS

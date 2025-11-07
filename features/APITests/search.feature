@@ -1,7 +1,7 @@
-@Search_Feature
+@Search_Feature @functional
 Feature: Search the immunization of a patient
 
-# Positive Scenarios
+@smoke
 @Delete_cleanUp @supplier_name_Postman_Auth
 Scenario Outline: Verify that the GET method of Search API will be successful with all the valid parameters
     Given Valid vaccination record is created with Patient '<Patient>' and vaccine_type '<Vaccine_type>'
@@ -11,20 +11,21 @@ Scenario Outline: Verify that the GET method of Search API will be successful wi
     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
     Examples: 
-      |Patient       | Vaccine_type|
-      |Random        | MMRV        |
-      |SFlag         | RSV         |
-      |SupersedeNhsNo| RSV         |
-      |Random        | FLU         |
-      |SFlag         | FLU         |
-      |SupersedeNhsNo| FLU         |
-      |Random        | COVID       |
-      |SFlag         | PERTUSSIS   |
-      |SupersedeNhsNo| COVID       |
-      |Mod11_NHS     | RSV         |
-      |Random        | SHINGLES    |
-      |Random        | PCV13       |
+      |Patient       | Vaccine_type |
+      |Random        | MMRV         |
+      |SFlag         | RSV          |
+      |SupersedeNhsNo| RSV          |
+      |Random        | FLU          |
+      |SFlag         | FLU          |
+      |SupersedeNhsNo| FLU          |
+      |Random        | COVID        |
+      |SFlag         | PERTUSSIS    |
+      |SupersedeNhsNo| COVID        |
+      |Mod11_NHS     | RSV          |
+      |Random        | SHINGLES     |
+      |Random        | PNEUMOCOCCAL |
 
+@smoke
 @Delete_cleanUp @supplier_name_Postman_Auth
 Scenario Outline: Verify that the POST method of Search API will be successful with all the valid parameters 
     Given Valid vaccination record is created with Patient '<Patient>' and vaccine_type '<Vaccine_type>'
@@ -182,7 +183,7 @@ Scenario Outline: Verify that Search API will throw error supplier is not author
     And The Response JSONs should contain correct error message for 'unauthorized_access' access
     Examples:
       | NHSNumber   | DiseaseType |
-      |  9449304424 | COVID     |
+      |  9449304424 | COVID       |
 
     
 @Delete_cleanUp @vaccine_type_FLU @patient_id_Random  @supplier_name_Postman_Auth

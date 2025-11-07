@@ -57,4 +57,26 @@ def send_update_for_immunization_event_with_occurrenceDateTime(context, DateText
     context.update_object = convert_to_update(context.immunization_object, context.ImmsID)
     context.update_object.expirationDate = generate_date(DateText)
     trigger_the_updated_request(context)
+
+@when("Send an update request for invalid immunization id")
+def send_update_request_for_invalid_immunization_id(context):
+    valid_json_payload_is_created(context)
+    context.ImmsID = str(uuid.uuid4())
+    get_update_url_header(context, str(context.expected_version))
+    context.update_object = convert_to_update(context.immunization_object, context.ImmsID)
+    trigger_the_updated_request(context) 
     
+@when(parsers.parse("Send an update request for invalid Etag {Etag}"))
+def send_update_request_for_invalid_etag(context, Etag):
+    valid_json_payload_is_created(context)
+    context.ImmsID = str(uuid.uuid4())
+    context.version= Etag
+    get_update_url_header(context, Etag)
+    context.update_object = convert_to_update(context.immunization_object, context.ImmsID)
+    trigger_the_updated_request(context)
+
+@then(parsers.parse("The Response JSONs should contain correct error message for etag '{errorName}'"))
+def validateForbiddenAccess(context, errorName):
+    error_response = parse_error_response(context.response.json())
+    validate_error_response(error_response, errorName, version=context.version)
+    print(f"\n Error Response - \n {error_response}")
