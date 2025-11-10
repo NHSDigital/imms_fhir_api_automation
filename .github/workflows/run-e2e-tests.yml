@@ -22,7 +22,7 @@ on:
           - APITests
           - batchTests
           - API&batchTests
-      TestFilter:
+      testFilter:
         description: "Tag filter for tests"
         required: false
         default: "functional"
@@ -68,7 +68,7 @@ jobs:
           pip install -r requirements.txt 2> req_error.log || { cat req_error.log; exit 1; }
           pip install allure-pytest 2> allure_error.log || { cat allure_error.log; exit 1; }
           
-      - name: Run Pytest-BDD tests for ${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' && inputs.TestFilter || 'functional'}}
+      - name: Run Pytest-BDD tests for ${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' }} with filter ${{ github.event_name == 'workflow_dispatch' && inputs.testFilter || 'functional' }}
         env:
           auth_url: ${{ vars.auth_url }}
           token_url: ${{ vars.token_url }}
@@ -90,14 +90,16 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
           S3_env: ${{ vars.S3_ENV }}
         run: |
-          TEST_PATH="${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' && inputs.TestFilter || 'functional'}}"
+          env:
+          TEST_PATH: ${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' }}
+          TEST_FILTER: ${{ github.event_name == 'workflow_dispatch' && inputs.TestFilter || 'functional' }}
           if [ "$TEST_PATH" = "API&batchTests" ]; then
             TEST_PATH="features"
           else
             TEST_PATH="features/$TEST_PATH"
           fi
           source venv/bin/activate
-          pytest "$TEST_PATH" -m "${{ inputs.TestFilter }}" --junitxml=output/test-results.xml --alluredir=output/allure-results 
+          pytest "$TEST_PATH" -m "$TEST_FILTER" --junitxml=output/test-results.xml --alluredir=output/allure-results 
           if [ $? -ne 0 ]; then
             echo "Pytest-BDD tests failed"
             exit 1
