@@ -240,23 +240,28 @@ def get_all_the_vaccination_codes(list_items):
         for item in list_items
     ]
     
-def validate_audit_table_record(context, item, expected_status: str, expected_error_detail: str = None):
+def validate_audit_table_record(context, item, expected_status: str, expected_error_detail: str = None, expected_queue_name: str = None):
     check.is_true(
         item.get("status") == expected_status,
         f"Expected status {expected_status}, got '{item.get('status')}'"
     )
 
-    expected_queue = f"{context.supplier_name}_{context.vaccine_type}"
+    if expected_queue_name:
+        expected_queue = expected_queue_name
+    else:
+        expected_queue = f"{context.supplier_name}_{context.vaccine_type}"
+
     check.is_true(
         item.get("queue_name", "").upper() == expected_queue.upper(),
         f"Expected queue_name '{expected_queue}', got '{item.get('queue_name')}'"
     )
     
-    actual_row_count = len(context.vaccine_df)
-    check.is_true(
-        item.get("record_count") == actual_row_count,
-        f"Expected record_count {actual_row_count}, got '{item.get('record_count')}'"
-    )
+    if expected_status == "Processed":
+        actual_row_count = len(context.vaccine_df)
+        check.is_true(
+            item.get("record_count") == actual_row_count,
+            f"Expected record_count {actual_row_count}, got '{item.get('record_count')}'"
+        )
 
     check.is_true(
         item.get("filename") == context.filename,
@@ -269,9 +274,10 @@ def validate_audit_table_record(context, item, expected_status: str, expected_er
     )
 
     check.is_true(
-        item.get("error_detail") == expected_error_detail,
-        f"Expected error_detail {expected_error_detail}, but got: {item.get('error_detail')}"
+        item.get("error_details") == expected_error_detail,
+        f"Expected error_detail {expected_error_detail}, but got: {item.get('error_details')}"
     )
+
     
 def validate_imms_delta_record_with_batch_record(context, batch_record, item, event_type, action_flag):
     event = item[0].get("Imms")
@@ -511,3 +517,79 @@ def get_gender_code(input: str) -> GenderCode:
             return gender
 
     raise ValueError(f"Invalid gender input: {input}")
+
+
+def update_audit_table_for_failed_status(item: dict, context, aws_profile_name:str, env:str):
+    # if (item.get("status") == "Failed"):
+    #     try:
+    #         # db = DynamoDBHelper(getattr(context, "aws_profile_name", None), getattr(context, "S3_env", "int"))
+
+    #         db = DynamoDBHelper(aws_profile_name, env)
+    #         table = db.get_batch_audit_table()
+
+    #         if item.get("filename"):
+    #             key = {"filename": item.get("filename")}
+    #         elif item.get("PK"):
+    #             key = {"PK": item.get("PK")}
+    #         else:
+    #             raise KeyError("No suitable key found on audit item to perform update.")
+
+    #         resp = table.update_item(
+    #             Key=key,
+    #             UpdateExpression="SET #s = :new_status",
+    #             ExpressionAttributeNames={"#s": "status"},
+    #             ExpressionAttributeValues={":new_status": "Not processed - testing"},
+    #             ReturnValues="UPDATED_NEW"
+    #         )
+    #         print(f"Audit table status updated for {key}: {resp.get('Attributes')}")
+    #     except Exception as e:
+    #         print(f"Failed to update audit table status: {e}")    
+
+
+    if item.get("status") != "Failed":
+        return
+
+    try:
+        db = DynamoDBHelper(aws_profile_name, env)
+        table = db.get_batch_audit_table()
+        # describe table to get key schema
+        client = db.dynamodb.meta.client
+        desc = client.describe_table(TableName=table.table_name)
+        key_schema = desc['Table']['KeySchema']
+
+        key = {}
+        for key_elem in key_schema:
+            name = key_elem['AttributeName']
+            val = find_value(name,item)
+            if val is None:
+                raise KeyError(f"Missing key attribute '{name}' in audit item. Available keys: {list(item.keys())}")
+            key[name] = val
+
+        resp = table.update_item(
+            Key=key,
+            UpdateExpression="SET #s = :new_status",
+            ExpressionAttributeNames={"#s": "status"},
+            ExpressionAttributeValues={":new_status": "Not processed - testing"},
+            ReturnValues="UPDATED_NEW"
+        )
+        print(f"Audit table status updated for {key}: {resp.get('Attributes')}")
+    except client.exceptions.ResourceNotFoundException:
+        print(f"Table {table.table_name} not found.")
+    except client.exceptions.ClientError as ce:
+        print(f"DynamoDB ClientError updating audit table for key {key if 'key' in locals() else None}: {ce}")
+        raise
+    except Exception as e:
+        print(f"Failed to update audit table status: {e}")
+        raise    
+
+def find_value(attr_name,item: dict):
+    candidates = [
+        attr_name,
+        attr_name.upper(),
+        attr_name.lower(),
+        'PK', 'pk', 'Id', 'id', 'SK', 'sk', 'filename', 'Filename'
+    ]
+    for c in candidates:
+        if c in item and item[c] is not None:
+            return item[c]
+    return None

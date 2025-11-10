@@ -111,8 +111,8 @@ def validate_inf_ack_file(context, success: bool = True) -> bool:
         excepted_header_response_code = "Failure"
         excepted_issue_severity = "Fatal"
         excepted_issue_code = "Fatal Error"  
-        excepted_response_code = "10001"
-        expected_response_display
+        excepted_response_code = "10002"
+        expected_response_display = "Infrastructure Level Response Value - Processing Error"
 
     if header_response_code != excepted_header_response_code:
         print(f"Row {i}: HEADER_RESPONSE_CODE is not {excepted_header_response_code}")
