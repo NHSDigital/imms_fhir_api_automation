@@ -1,0 +1,22 @@
+✅ Pipe-delimited file saved to: /home/runner/work/imms_fhir_api_automation/imms_fhir_api_automation/batch_files_directory/3in1_Vaccinations_v5_V0V8L_20251110T10093560.csv
+Batch file created: 3in1_Vaccinations_v5_V0V8L_20251110T10093560.csv
+Upload successful: 3in1_Vaccinations_v5_V0V8L_20251110T10093560.csv → immunisation-batch-int-data-sources
+Batch file uploaded to S3: 3in1_Vaccinations_v5_V0V8L_20251110T10093560.csv
+Waiting for file in archive: s3://immunisation-batch-int-data-sources/archive/3in1_Vaccinations_v5_V0V8L_20251110T10093560.csv
+Still waiting... (0s)
+Still waiting... (5s)
+Still waiting... (10s)
+Still waiting... (15s)
+Still waiting... (20s)
+Still waiting... (25s)
+Still waiting... (30s)
+File found in archive: archive/3in1_Vaccinations_v5_V0V8L_20251110T10093560.csv
+Waiting for file starting with 'ack/3in1_Vaccinations_v5_V0V8L_20251110T10093560' in bucket: immunisation-batch-int-data-destinations
+File found: ack/3in1_Vaccinations_v5_V0V8L_20251110T10093560_InfAck_20251110T10093700.csv
+File contents loaded (299 bytes)
+Waiting for file starting with 'forwardedFile/3in1_Vaccinations_v5_V0V8L_20251110T10093560' in bucket: immunisation-batch-int-data-destinations
+File found: forwardedFile/3in1_Vaccinations_v5_V0V8L_20251110T10093560_BusAck_20251110T10093700.csv
+File contents loaded (5718 bytes)
+
+ Scan response for filename = 3in1_Vaccinations_v5_V0V8L_20251110T10093560.csv: [{'filename': '3in1_Vaccinations_v5_V0V8L_20251110T10093560.csv', 'record_count': Decimal('14'), 'queue_name': 'MAVIS_3IN1', 'status': 'Processed', 'timestamp': '20251110T10093700', 'message_id': 'a564725e-2db1-462f-a237-f02b231ae8b8', 'expires_at': Decimal('1767953377')}]
+
