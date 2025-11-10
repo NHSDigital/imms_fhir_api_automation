@@ -58,7 +58,7 @@ def parse_entry(entry_data: dict) -> Entry:
     )
 
 def is_valid_disease_type(disease_type: str) -> bool:
-    valid_types = {"COVID19", "FLU", "HPV", "MMR", "RSV"}
+    valid_types = {"COVID", "FLU", "HPV", "MMR", "RSV", "SHINGLES", "MMRV", "PNEUMOCOCCAL", "MENACWY", "PERTUSSIS", "3IN1"}
     return disease_type in valid_types
 
 def is_valid_nhs_number(nhs_number: str) -> bool:
@@ -77,18 +77,32 @@ def is_valid_nhs_number(nhs_number: str) -> bool:
     return check_digit == digits[9]
 
 
-def validate_error_response(error_response, errorName: str, imms_id: str = ""):
+def validate_error_response(error_response, errorName: str, imms_id: str = "", version: str = ""):
     uuid_obj = uuid.UUID(error_response.id, version=4)
     check.is_true(isinstance(uuid_obj, uuid.UUID), f"Id is not UUID {error_response.id}")
 
     fields_to_compare = []
 
-    if errorName == "not_found":
-        expected_diagnostics = ERROR_MAP.get("not_found", {}).get("diagnostics", "") + f" ID: {imms_id}"
-        fields_to_compare.append(("Diagnostics", expected_diagnostics, error_response.issue[0].diagnostics))
-    else:
-        actual_diagnostics = ( error_response.issue[0].diagnostics).replace('-  Date', '- Date').replace('offsets.\nNote', 'offsets. Note').replace('\n_', ' _').replace('_\n ', '_').replace('service.\n', 'service.').replace('\n','')
-        fields_to_compare.append(("Diagnostics", ERROR_MAP.get(errorName, {}).get("diagnostics", ""),actual_diagnostics))
+    match errorName:
+        case "not_found":
+            expected_diagnostics = ERROR_MAP.get("not_found", {}).get("diagnostics", "").replace("<imms_id>", imms_id)
+            fields_to_compare.append(("Diagnostics", expected_diagnostics, error_response.issue[0].diagnostics))
+
+        case "invalid_etag":
+            expected_diagnostics = ERROR_MAP.get("invalid_etag", {}).get("diagnostics", "").replace("<version>", version)
+            fields_to_compare.append(("Diagnostics", expected_diagnostics, error_response.issue[0].diagnostics))
+        case _:
+            actual_diagnostics = (
+                error_response.issue[0].diagnostics
+                .replace('-  Date', '- Date')
+                .replace('offsets.\nNote', 'offsets. Note')
+                .replace('\n_', ' _')
+                .replace('_\n ', '_')
+                .replace('service.\n', 'service.')
+                .replace('\n', '')
+            )
+            expected_diagnostics = ERROR_MAP.get(errorName, {}).get("diagnostics", "")
+            fields_to_compare.append(("Diagnostics", expected_diagnostics, actual_diagnostics))
 
     fields_to_compare.extend([
         ("ResourceType", ERROR_MAP.get("Common_field", {}).get("resourceType", ""), error_response.resourceType),

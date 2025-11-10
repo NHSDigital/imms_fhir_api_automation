@@ -1,7 +1,7 @@
 from src.objectModels.api_data_objects import *
 
 VACCINE_CODE_MAP = {
-    "COVID19": [
+    "COVID": [
         {
             "system": "http://snomed.info/sct",
             "code": "43111411000001101",
@@ -129,39 +129,99 @@ VACCINE_CODE_MAP = {
     "MMR":[
         {   
             "system": "http://snomed.info/sct",
-            "code": "7374511000001107",
-            "display": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes (Sanofi) 1 pre-filled disposable injection (product)",
-            "stringValue": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes ",
-            "idValue": "7374511000001107",
-            "manufacturer": "Sanofi"
+            "code": "13968211000001108",
+            "display": "M-M-RVAXPRO vaccine powder and solvent for suspension for injection 0.5ml pre-filled syringes (Merck Sharp & Dohme (UK) Ltd)",
+            "stringValue": "M-M-RVAXPRO vaccine powder and solvent for suspension for injection 0.5ml pre-filled syringes",
+            "idValue": "13968211000001108",
+            "manufacturer": "Merck Sharp & Dohme (UK) Ltd"
         },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "34925111000001104",
+            "display": "Priorix vaccine powder and solvent for solution for injection 0.5ml pre-filled syringes (GlaxoSmithKline UK Ltd)",
+            "stringValue": "Priorix vaccine powder and solvent for solution for injection 0.5ml pre-filled syringes",
+            "idValue": "34925111000001104",
+            "manufacturer": "GlaxoSmithKline UK Ltd"
+        }
     ],
     "MMRV":[
         {   
             "system": "http://snomed.info/sct",
-            "code": "7374511000001107",
-            "display": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes (Sanofi) 1 pre-filled disposable injection (product)",
-            "stringValue": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes ",
-            "idValue": "7374511000001107",
-            "manufacturer": "Sanofi"
+            "code": "45525711000001102",
+            "display": "Priorix Tetra vaccine powder and solvent for solution for injection 0.5ml pre-filled syringes (GlaxoSmithKline UK Ltd)",
+            "stringValue": "Priorix Tetra vaccine powder and solvent for solution for injection 0.5ml pre-filled syringes",
+            "idValue": "45525711000001102",
+            "manufacturer": "GlaxoSmithKline UK Ltd"
         },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "45480711000001107",
+            "display": "ProQuad vaccine powder and solvent for suspension for injection 0.5ml pre-filled syringes (Merck Sharp & Dohme (UK) Ltd)",
+            "stringValue": "ProQuad vaccine powder and solvent for suspension for injection 0.5ml pre-filled syringes",
+            "idValue": "45480711000001107",
+            "manufacturer": "Merck Sharp & Dohme (UK) Ltd"
+        }
     ],
     "PERTUSSIS":[
         {   
             "system": "http://snomed.info/sct",
-            "code": "7374511000001107",
-            "display": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes (Sanofi) 1 pre-filled disposable injection (product)",
-            "stringValue": "Revaxis vaccine suspension for injection 0.5ml pre-filled syringes ",
-            "idValue": "7374511000001107",
+            "code": "42707511000001109",
+            "display": "Adacel vaccine suspension for injection 0.5ml pre-filled syringes (Sanofi)",
+            "stringValue": "Adacel vaccine suspension for injection 0.5ml pre-filled syringes",
+            "idValue": "42707511000001109",
             "manufacturer": "Sanofi"
         },
-    ]
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "26267211000001100",
+            "display": "Boostrix-IPV suspension for injection 0.5ml pre-filled syringes (GlaxoSmithKline UK Ltd) (product)",
+            "stringValue": "Boostrix-IPV suspension for injection 0.5ml pre-filled syringes ",
+            "idValue": "26267211000001100",
+            "manufacturer": "GlaxoSmithKline UK Ltd"
+        },
+    ],
+    "SHINGLES":[
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "39655511000001105",
+            "display": "Shingrix (Herpes Zoster) adjuvanted recombinant vaccine powder and suspension for suspension for injection 0.5ml vials (GlaxoSmithKline UK Ltd)",
+            "stringValue": "Shingrix (Herpes Zoster) adjuvanted recombinant vaccine powder and suspension for suspension for injection 0.5ml vials",
+            "idValue": "39655511000001105",
+            "manufacturer": "GlaxoSmithKline UK Ltd"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "38737511000001105",
+            "display": "Shingles (Herpes Zoster) adjuvanted recombinant vaccine powder and solvent for suspension for injection 0.5ml vials",
+            "stringValue": "Shingles adjuvanted recombinant vaccine powder and solvent for suspension for injection 0.5ml vials",
+            "idValue": "38737511000001105",
+            "manufacturer": "GlaxoSmithKline UK Ltd"
+        }
+    ],
+    "PNEUMOCOCCAL":[
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "16649411000001104",
+            "display": "Prevenar 13 vaccine suspension for injection 0.5ml pre-filled syringes (Pfizer Ltd)",
+            "stringValue": "Prevenar 13 vaccine suspension for injection 0.5ml pre-filled syringes",
+            "idValue": "16649411000001104",
+            "manufacturer": "Pfizer Ltd"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "40600011000001101",
+            "display": "Prevenar 20 vaccine suspension for injection 0.5ml pre-filled syringes (Pfizer Ltd)",
+            "stringValue": "Prevenar 20 vaccine suspension for injection 0.5ml pre-filled syringes",
+            "idValue": "40600011000001101",
+            "manufacturer": "Pfizer Ltd"
+        }
+    ],
 }
 
 
 
 VACCINATION_PROCEDURE_MAP = {
-    "COVID19": [
+    "COVID": [
         {
             "system": "http://snomed.info/sct",
             "code": "1362591000000103",
@@ -262,13 +322,13 @@ VACCINATION_PROCEDURE_MAP = {
             "system": "http://snomed.info/sct",
             "code": "432636005",
             "display": "Administration of vaccine product containing only Human alphaherpesvirus 3 and Measles morbillivirus and Mumps orthorubulavirus and Rubella virus antigens",
-            "stringValue": "Administration of second dose of vaccine product containing only Human alphaherpesvirus 3 and Measles morbillivirus and Mumps orthorubulavirus and Rubella virus antigens",
+            "stringValue": "vaccine product containing only Human alphaherpesvirus 3 and Measles morbillivirus and Mumps orthorubulavirus and Rubella virus antigens",
             "idValue": "866182"
         },
         {
             "system": "http://snomed.info/sct",
             "code": "433733003",
-            "display": "Administration of second dose of vaccine product containing only Human alphaherpesvirus 3 and Measles morbillivirus and Mumps orthorubulavirus and Rubella virus antigens",
+            "display": "Administration of vaccine product containing only Human alphaherpesvirus 3 and Measles morbillivirus and Mumps orthorubulavirus and Rubella virus antigens",
             "stringValue": "Administration of vaccine product containing only Human alphaherpesvirus 3 and Measles morbillivirus and Mumps orthorubulavirus and Rubella virus antigens",
             "idValue": "86602"
         }
@@ -281,6 +341,13 @@ VACCINATION_PROCEDURE_MAP = {
             "stringValue": "Administration of vaccine product containing only Human alphaherpesvirus 3 antigen for shingles",
             "idValue": "4326365"
         },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "1326111000000107",
+            "display": "Administration of second dose of vaccine product containing only Human alphaherpesvirus 3 antigen for shingles (procedure)",
+            "stringValue": "Administration of second dose of vaccine product containing only Human alphaherpesvirus 3 antigen for shingles",
+            "idValue": "432636512"
+        }        
     ],
     "3IN1": [
         {
@@ -301,11 +368,27 @@ VACCINATION_PROCEDURE_MAP = {
      "PERTUSSIS": [
         {   
             "system": "http://snomed.info/sct",
+            "code": "956951000000104",
+            "display": "Pertussis vaccination in pregnancy (procedure)",
+            "stringValue": "Pertussis vaccination in pregnancy",
+            "idValue": "1000000104"
+        },
+    ],
+     "PNEUMOCOCCAL": [
+        {   
+            "system": "http://snomed.info/sct",
             "code": "722215002",
             "display": "Administration of vaccine product containing only Human alphaherpesvirus 3 antigen for shingles (procedure)",
             "stringValue": "Administration of vaccine product containing only Human alphaherpesvirus 3 antigen for shingles",
             "idValue": "4326365"
         },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "247631000000101",
+            "display": "First pneumococcal conjugated vaccination",
+            "stringValue": "First pneumococcal conjugated",
+            "idValue": "4326365"
+        }
     ]
     
 }
@@ -369,7 +452,7 @@ REASON_CODE_MAP = [
 ]
 
 PROTOCOL_DISEASE_MAP = {
-    "COVID19": [
+    "COVID": [
         {
             "system": "http://snomed.info/sct",
             "code": "840539006",
@@ -380,67 +463,67 @@ PROTOCOL_DISEASE_MAP = {
         {
             "system": "http://snomed.info/sct",
             "code": "6142004",
-            "display": "Influenza caused by seasonal influenza virus (disorder)"
+            "display": "Influenza"
         }
     ],
     "RSV": [
         {
             "system": "http://snomed.info/sct",
             "code": "55735004",
-            "display": "Respiratory syncytial virus infection (disorder)"
+            "display": "Respiratory syncytial virus infection"
         }
     ],
     "HPV": [
         {
             "system": "http://snomed.info/sct",
             "code": "240532009",
-            "display": "Human papillomavirus infection"
+            "display": "Human papilloma virus infection"
         }
     ],
     "MMR": [
         {
             "system": "http://snomed.info/sct",
             "code": "14189004",
-            "display": "Measles (disorder)"
+            "display": "Measles"
         },
         {
             "system": "http://snomed.info/sct",
             "code": "36989005",
-            "display": "Mumps (disorder)"
+            "display": "Mumps"
         },
         {
             "system": "http://snomed.info/sct",
             "code": "36653000",
-            "display": "Rubella (disorder)"
+            "display": "Rubella"
         }        
     ],
     "MMRV": [
       {
             "system": "http://snomed.info/sct",
             "code": "14189004",
-            "display": "Measles (disorder)"
+            "display": "Measles"
       },
       {
            "system": "http://snomed.info/sct",
             "code": "36989005",
-            "display": "Mumps (disorder)"
+            "display": "Mumps"
       },
       {
             "system": "http://snomed.info/sct",
             "code": "36653000",
-            "display": "Rubella (disorder)"
+            "display": "Rubella"
       },
       {
             "system": "http://snomed.info/sct",
             "code": "38907003",
-            "display": "Varicella (disorder)"
+            "display": "Varicella"
       }
     ],
     "PERTUSSIS": [
       {
             "system": "http://snomed.info/sct",
             "code": "27836007",
-            "display": "Pertussis (disorder)"
+            "display": "Pertussis"
       }
     ],
      "SHINGLES": [
@@ -450,7 +533,7 @@ PROTOCOL_DISEASE_MAP = {
             "display": "Herpes zoster"
       }
     ],  
-    "PCV13": [
+    "PNEUMOCOCCAL": [
       {
         "system": "http://snomed.info/sct",
         "code": "16814004",
@@ -471,7 +554,7 @@ PROTOCOL_DISEASE_MAP = {
       {
         "system": "http://snomed.info/sct",
         "code": "76902006",
-        "display": "Tetanus (disorder)"
+        "display": "Tetanus"
       }
     ],
     "MENACWY": [

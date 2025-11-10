@@ -1,3 +1,4 @@
+from multiprocessing import context
 from src.dynamoDB.dynamo_db_helper import *
 from src.objectModels.api_immunization_builder import *
 from src.objectModels.batch.batch_file_builder import *
@@ -12,10 +13,21 @@ from .batch_common_steps import *
 
 scenarios('batchTests/create_batch.feature')
 
-@given("batch file is created for below data")
+@given("batch file is created for below data as full dataset")
 @ignore_if_local_run
 def valid_batch_file_is_created_with_details(datatable, context):    
     build_dataFrame_using_datatable(datatable, context)        
+    create_batch_file(context)
+    
+@given("batch file is created for below data as minimum dataset")
+@ignore_if_local_run
+def valid_batch_file_is_created_with_minimum_details(datatable, context):
+    build_dataFrame_using_datatable(datatable, context)
+    columns_to_clear = [
+        "NHS_NUMBER", "VACCINATION_PROCEDURE_TERM", "VACCINE_PRODUCT_CODE", "VACCINE_PRODUCT_TERM", "VACCINE_MANUFACTURER", "BATCH_NUMBER", "SITE_OF_VACCINATION_CODE", "SITE_OF_VACCINATION_TERM", "EXPIRY_DATE",
+        "ROUTE_OF_VACCINATION_CODE", "ROUTE_OF_VACCINATION_TERM", "DOSE_SEQUENCE", "DOSE_AMOUNT", "DOSE_UNIT_CODE", "DOSE_UNIT_TERM", "INDICATION_CODE", "PERFORMING_PROFESSIONAL_SURNAME", "PERFORMING_PROFESSIONAL_FORENAME"
+        ]
+    context.vaccine_df.loc[:, columns_to_clear] = ""
     create_batch_file(context)
     
 @given("batch file is created for below data where date_and_time field has invalid date")

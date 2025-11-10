@@ -1,4 +1,4 @@
-@Delete_Feature 
+@Delete_Feature @functional
 Feature: Delete an immunization of a patient
 
 @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
@@ -25,7 +25,7 @@ Scenario: Verify that the Delete event is not coming in Post Search API response
     And Deleted Immunization event will not be present in Post method Search API response
 
 @vaccine_type_RSV @patient_id_Random
-Scenario: Verify that the Delete event request will fail with unauthorized access for OPTUM supplier
+Scenario: Verify that the Delete event request will fail with unauthorized access for MAVIS supplier
     Given valid vaccination record is created by 'RAVS' supplier 
     When Send a delete for Immunization event created for the above created event is send by 'MAVIS'
     Then The request will be successful with the status code '403'

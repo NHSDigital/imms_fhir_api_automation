@@ -1,9 +1,29 @@
-@Create_Batch_Feature
+@Create_Batch_Feature @functional
 Feature: Create the immunization event for a patient through batch file
 
+@smoke
 @delete_cleanup_batch @vaccine_type_HPV  @supplier_name_MAVIS
-Scenario: Verify that vaccination record will be created through batch file
-    Given batch file is created for below data
+Scenario: Verify that full dataset vaccination record will be created through batch file
+    Given batch file is created for below data as full dataset
+        | patient_id        | unique_id             |
+        | Random            | Valid_NhsNumber       |
+        | InvalidInPDS      | InvalidInPDS_NhsNumber|
+        | SFlag             | SFlag_NhsNumber       |
+        | Mod11_NHS         | Mod11_NhSNumber       |
+        | OldNHSNo          | OldNHSNo              |
+    When batch file is uploaded in s3 bucket
+    Then file will be moved to destination bucket and inf ack file will be created
+    And inf ack file has success status for processed batch file
+    And bus ack file will be created
+    And all records are processed successfully in the bus ack file 
+    And Audit table will have correct status, queue name and record count for the processed batch file
+    And The imms event table will be populated with the correct data for 'created' event for records in batch file
+    And The delta table will be populated with the correct data for all records in batch file  
+
+@smoke
+@delete_cleanup_batch @vaccine_type_MMR  @supplier_name_MAVIS 
+Scenario: Verify that minimum dataset vaccination record will be created through batch file
+    Given batch file is created for below data as minimum dataset
         | patient_id        | unique_id             |
         | Random            | Valid_NhsNumber       |
         | InvalidInPDS      | InvalidInPDS_NhsNumber|
@@ -150,7 +170,7 @@ Scenario: verify that vaccination record will be get rejected if mandatory field
         | Random            | Fail-empty_unique_id-no_unique_identifiers            |
         | Random            | Fail-empty_unique_id_uri-no_unique_identifiers        |
         | Random            | Fail-empty_primary_source-empty_primary_source        |    
-        | Random            | Fail-empty_procedure_code-empty_procedure_code        | 
+        | Random            | Fail-empty_procedure_code-no_procedure_code           | 
         | Random            | Fail-white_space_site_code-no_site_code               |
         | Random            | Fail-white_space_site_Code_uri-no_site_code_uri       |
         | Random            | Fail-white_space_location_code-no_location_code       |
@@ -158,7 +178,7 @@ Scenario: verify that vaccination record will be get rejected if mandatory field
         | Random            | Fail-white_space_unique_id-no_unique_id               |
         | Random            | Fail-white_space_unique_id_uri-no_unique_id_uri       | 
         | Random            | Fail-white_space_primary_source-no_primary_source     |  
-        | Random            | Fail-white_space_procedure_code-no_procedure_code     | 
+        | Random            | Fail-white_space_procedure_code-empty_procedure_code  | 
         | Random            | Fail-invalid_primary_source-no_primary_source         | 
         | Random            | Fail-empty_action_flag-invalid_action_flag            |
         | Random            | Fail-white_space_action_flag-invalid_action_flag      |
@@ -169,19 +189,21 @@ Scenario: verify that vaccination record will be get rejected if mandatory field
     And all records are rejected in the bus ack file and no imms id is generated
     And Audit table will have correct status, queue name and record count for the processed batch file 
 
-# @delete_cleanup_batch @vaccine_type_HPV  @supplier_name_MAVIS
-# Scenario: verify that vaccination record will be get rejected if mandatory field for site, location and unique URI are invalid in batch file
-#     Given batch file is created for below data where mandatory field for site, location and unique uri values are invalid
-#         | patient_id        | unique_id                      |
-#         | Random            | Fail-invalid_unique_id_uri-    |
-#         | Random            | Fail-invalid_site_Code_uri-    |
-#         | Random            | Fail-invalid_location_Code_uri |
-#     When batch file is uploaded in s3 bucket
-#     Then file will be moved to destination bucket and inf ack file will be created
-#     And inf ack file has success status for processed batch file
-#     And bus ack file will be created
-# #     And all records are rejected in the bus ack file and no imms id is generated
-# #     And Audit table will have correct status, queue name and record count for the processed batch file 
+@delete_cleanup_batch @vaccine_type_COVID  @supplier_name_EMIS
+Scenario: verify that vaccination record will be successful if mandatory field for site, location and unique URI are invalid in batch file
+    Given batch file is created for below data where mandatory field for site, location and unique uri values are invalid
+        | patient_id        | unique_id                      |
+        | Random            | Fail-invalid_unique_id_uri-    |
+        | Random            | Fail-invalid_site_Code_uri-    |
+        | Random            | Fail-invalid_location_Code_uri |
+    When batch file is uploaded in s3 bucket
+    Then file will be moved to destination bucket and inf ack file will be created
+    And inf ack file has success status for processed batch file
+    And bus ack file will be created
+    And all records are processed successfully in the bus ack file 
+    And Audit table will have correct status, queue name and record count for the processed batch file
+    And The imms event table will be populated with the correct data for 'created' event for records in batch file
+    And The delta table will be populated with the correct data for all records in batch file 
 
 
 @delete_cleanup_batch @vaccine_type_MENACWY  @supplier_name_MAVIS
@@ -202,30 +224,30 @@ Scenario: verify that vaccination record will be get successful if action flag h
     And The delta table will be populated with the correct data for all records in batch file
 
 
-# @vaccine_type_3in1  @supplier_name_MAVIS
-# Scenario: verify that vaccination record will be get rejected if non mandatory fields are empty string in batch file
-#     Given batch file is created for below data where non mandatory fields are empty string
-#         | patient_id        | unique_id             |
-#         | Random            | Fail-empty_NHS_Number-empty_NHSNumber       |
-#         | Random            | Fail-empty_procedure_term-empty_procedure_term       |  
-#         | Random            | Fail-empty_product_code-empty_product_code       |
-#         | Random            | Fail-empty_product_term-empty_product_term       |
-#         | Random            | Fail-empty_VACCINE_MANUFACTURER-empty_manufacturer       |
-#         | Random            | Fail-empty_batch_number-empty_lot_number       |
-#         | Random            | Fail-empty_site_OF_vaccination-empty_vaccine_site_code       |  
-#         | Random            | Fail-empty_site_OF_vaccination_term-empty_vaccine_site_term       |
-#         | Random            | Fail-empty_ROUTE_OF_vaccination-empty_route_code       |
-#         | Random            | Fail-empty_ROUTE_OF_vaccination_term-empty_route_term       |
-#         | Random            | Fail-empty_DOSE_SEQUENCE-doseNumberPositiveInt_PositiveInteger       | 
-#         | Random            | Fail-empty_dose_unit_code-empty_doseQuantity_code       |        
-#         | Random            | Fail-empty_dose_unit_term-empty_doseQuantity_term       |
-#         | Random            | Fail-empty_indication_code-empty_indication_code       |
-#     When batch file is uploaded in s3 bucket
-#     Then file will be moved to destination bucket and inf ack file will be created
-#     And inf ack file has success status for processed batch file
-#     And bus ack file will be created
-#     And all records are rejected in the bus ack file and no imms id is generated
-#     And Audit table will have correct status, queue name and record count for the processed batch file  
+@vaccine_type_3in1  @supplier_name_MAVIS
+Scenario: verify that vaccination record will be get rejected if non mandatory fields are empty string in batch file
+    Given batch file is created for below data where non mandatory fields are empty string
+        | patient_id        | unique_id             |
+        | Random            | Fail-empty_NHS_Number-empty_NHSNumber       |
+        | Random            | Fail-empty_procedure_term-empty_procedure_term       |  
+        | Random            | Fail-empty_product_code-empty_product_code       |
+        | Random            | Fail-empty_product_term-empty_product_term       |
+        | Random            | Fail-empty_VACCINE_MANUFACTURER-empty_manufacturer       |
+        | Random            | Fail-empty_batch_number-empty_lot_number       |
+        | Random            | Fail-empty_site_OF_vaccination-empty_vaccine_site_code       |  
+        | Random            | Fail-empty_site_OF_vaccination_term-empty_vaccine_site_term       |
+        | Random            | Fail-empty_ROUTE_OF_vaccination-empty_route_code       |
+        | Random            | Fail-empty_ROUTE_OF_vaccination_term-empty_route_term       |
+        | Random            | Fail-empty_DOSE_SEQUENCE-doseNumberPositiveInt_PositiveInteger       | 
+        | Random            | Fail-empty_dose_unit_code-empty_doseQuantity_code       |        
+        | Random            | Fail-empty_dose_unit_term-empty_doseQuantity_term       |
+        | Random            | Fail-empty_indication_code-empty_indication_code       |
+    When batch file is uploaded in s3 bucket
+    Then file will be moved to destination bucket and inf ack file will be created
+    And inf ack file has success status for processed batch file
+    And bus ack file will be created
+    And all records are rejected in the bus ack file and no imms id is generated
+    And Audit table will have correct status, queue name and record count for the processed batch file  
 
 @delete_cleanup_batch @vaccine_type_3in1  @supplier_name_MAVIS
 Scenario: verify that vaccination record will be get successful if non mandatory fields are missing in batch file

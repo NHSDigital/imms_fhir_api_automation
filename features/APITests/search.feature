@@ -1,7 +1,7 @@
-@Search_Feature
+@Search_Feature @functional
 Feature: Search the immunization of a patient
 
-# Positive Scenarios
+@smoke
 @Delete_cleanUp @supplier_name_Postman_Auth
 Scenario Outline: Verify that the GET method of Search API will be successful with all the valid parameters
     Given Valid vaccination record is created with Patient '<Patient>' and vaccine_type '<Vaccine_type>'
@@ -11,18 +11,21 @@ Scenario Outline: Verify that the GET method of Search API will be successful wi
     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Immunization
     And The Search Response JSONs field values should match with the input JSONs field values for resourceType Patient
     Examples: 
-      |Patient       | Vaccine_type|
-      |Random        | RSV         |
-      |SFlag         | RSV         |
-      |SupersedeNhsNo| RSV         |
-      |Random        | FLU         |
-      |SFlag         | FLU         |
-      |SupersedeNhsNo| FLU         |
-      |Random        | COVID19     |
-      |SFlag         | COVID19     |
-      |SupersedeNhsNo| COVID19     |
-      |Mod11_NHS     | RSV         |
+      |Patient       | Vaccine_type |
+      |Random        | MMRV         |
+      |SFlag         | RSV          |
+      |SupersedeNhsNo| RSV          |
+      |Random        | FLU          |
+      |SFlag         | FLU          |
+      |SupersedeNhsNo| FLU          |
+      |Random        | COVID        |
+      |SFlag         | PERTUSSIS    |
+      |SupersedeNhsNo| COVID        |
+      |Mod11_NHS     | RSV          |
+      |Random        | SHINGLES     |
+      |Random        | PNEUMOCOCCAL |
 
+@smoke
 @Delete_cleanUp @supplier_name_Postman_Auth
 Scenario Outline: Verify that the POST method of Search API will be successful with all the valid parameters 
     Given Valid vaccination record is created with Patient '<Patient>' and vaccine_type '<Vaccine_type>'
@@ -39,9 +42,9 @@ Scenario Outline: Verify that the POST method of Search API will be successful w
       |Random        | FLU         |
       |SFlag         | FLU         |
       |SupersedeNhsNo| FLU         |
-      |Random        | COVID19     |
-      |SFlag         | COVID19     |
-      |SupersedeNhsNo| COVID19     | 
+      |Random        | COVID       |
+      |SFlag         | COVID       |
+      |SupersedeNhsNo| COVID       |
 
 @supplier_name_Postman_Auth
 Scenario Outline: Verify that the immunisation events retrieved in the response of Search API should be within Date From and Date To range
@@ -53,7 +56,7 @@ Scenario Outline: Verify that the immunisation events retrieved in the response 
     And The occurrenceDateTime of the immunization events should be within the Date From and Date To range
     Examples: 
       |NHSNumber        | vaccine_type | DateFrom   |  DateTo    |
-      |9728403348       | COVID19      | 2025-06-18 | 2025-06-25 |
+      |9728403348       | FLU          | 2025-01-01 | 2025-06-04 |
 
 # Negative Scenarios
 @supplier_name_Postman_Auth
@@ -66,10 +69,10 @@ Scenario Outline: Verify that Search API will throw error if NHS Number is inval
     And The Search Response JSONs should contain correct error message for invalid NHS Number
     Examples:
       | NHSNumber         | DiseaseType |
-      |   ""              | COVID19     |
+      |   ""              | COVID     |
       | 1234567890        | RSV         |
-      | 1                 | COVID19     |
-      | 10000000000 00001 | COVID19      |
+      | 1                 | COVID     |
+      | 10000000000 00001 | COVID      |
 
 
 @supplier_name_Postman_Auth 
@@ -82,7 +85,7 @@ Scenario Outline: Verify that Search API will throw error if include is invalid
     And The Search Response JSONs should contain correct error message for invalid include
     Examples: 
       |NHSNumber        | vaccine_type | include  |
-      |9728403348       | COVID19      | abc      |
+      |9728403348       | COVID      | abc      |
 
 
 @supplier_name_Postman_Auth
@@ -95,10 +98,10 @@ Scenario Outline: Verify that Search API will throw error if both different comb
     And The Search Response JSONs should contain correct error message for invalid Date From, Date To and include
     Examples: 
       |NHSNumber        | vaccine_type | DateFrom   |  DateTo    | include                   |
-      |9728403348       | COVID19      | 999-06-01  | 999-06-01  | abc                       |
-      |9728403348       | COVID19      | 2025-13-01 | 2025-12-01 | abc                       |
-      |9728403348       | COVID19      | 2025-05-12 | 2025-05-12 | abc                       |
-      |9728403348       | COVID19      | 999-06-01  | 999-06-01  | Immunization:patient      |
+      |9728403348       | COVID      | 999-06-01  | 999-06-01  | abc                       |
+      |9728403348       | COVID      | 2025-13-01 | 2025-12-01 | abc                       |
+      |9728403348       | COVID      | 2025-05-12 | 2025-05-12 | abc                       |
+      |9728403348       | COVID      | 999-06-01  | 999-06-01  | Immunization:patient      |
 
 @supplier_name_Postman_Auth
 Scenario Outline: Verify that Search API will throw error if Disease Type is invalid
@@ -180,7 +183,7 @@ Scenario Outline: Verify that Search API will throw error supplier is not author
     And The Response JSONs should contain correct error message for 'unauthorized_access' access
     Examples:
       | NHSNumber   | DiseaseType |
-      |  9449304424 | COVID19     |
+      |  9449304424 | COVID       |
 
     
 @Delete_cleanUp @vaccine_type_FLU @patient_id_Random  @supplier_name_Postman_Auth

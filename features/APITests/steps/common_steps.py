@@ -161,10 +161,10 @@ def validate_imms_event_table_by_operation(context, operation: Operation):
     assert int(context.expected_version) == int(context.eTag), (
         f"Expected Version: {context.expected_version}, Found: {context.eTag}"
     )
-
+    
     fields_to_compare = [
         ("Operation", Operation[operation].value, item.get("Operation")),
-        ("SupplierSystem", context.supplier_name, item.get("SupplierSystem")),
+        ("SupplierSystem", context.supplier_name.upper(), item.get("SupplierSystem").upper()),
         ("PatientPK", f"Patient#{context.patient.identifier[0].value}", item.get("PatientPK")),
         ("PatientSK", f"{context.vaccine_type.upper()}#{context.ImmsID}", item.get("PatientSK")),
          ("Version", int(context.expected_version), int(item.get("Version"))),
@@ -183,7 +183,7 @@ def validate_imms_event_table_by_operation(context, operation: Operation):
 @then(parsers.parse("The Response JSONs should contain correct error message for Imms_id '{errorName}'"))
 def validateForbiddenAccess(context, errorName):
     error_response = parse_error_response(context.response.json())
-    validate_error_response(error_response, errorName, context.ImmsID)
+    validate_error_response(error_response, errorName, imms_id=context.ImmsID)
     print(f"\n Error Response - \n {error_response}")
     
 @then('The Etag in header will containing the latest event version')
