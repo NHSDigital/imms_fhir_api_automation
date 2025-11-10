@@ -40,6 +40,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'int'}}
+
     steps:
       - name: Connect to AWS
         uses: aws-actions/configure-aws-credentials@v4
@@ -90,22 +91,25 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
           S3_env: ${{ vars.S3_ENV }}
         run: |
-          env:
-          TEST_PATH: ${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' }}
-          TEST_FILTER: ${{ github.event_name == 'workflow_dispatch' && inputs.TestFilter || 'functional' }}
+          TEST_PATH="${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' }}"
+          TEST_FILTER="${{ github.event_name == 'workflow_dispatch' && inputs.testFilter || 'functional' }}"
+
           if [ "$TEST_PATH" = "API&batchTests" ]; then
             TEST_PATH="features"
           else
             TEST_PATH="features/$TEST_PATH"
           fi
           source venv/bin/activate
-          pytest "$TEST_PATH" -m "$TEST_FILTER" --junitxml=output/test-results.xml --alluredir=output/allure-results 
+          pytest "$TEST_PATH" -m "$TEST_FILTER" --junitxml=output/test-results.xml --alluredir=output/allure-results
+
           if [ $? -ne 0 ]; then
             echo "Pytest-BDD tests failed"
             exit 1
           else
             echo "Pytest-BDD tests passed"
           fi
+
+
 
       - name: Publish test results to GitHub UI
         if: always()
