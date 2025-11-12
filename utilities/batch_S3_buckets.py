@@ -59,44 +59,32 @@ def wait_and_read_ack_file(context, folderName: str, timeout=120, interval=5, du
             response = s3.list_objects_v2(Bucket=destination_bucket, Prefix=forwarded_prefix)
             contents = response.get("Contents", [])
 
-            if not contents :
-                print(f"Still waiting... ({elapsed}s)")          
-                time.sleep(interval)
-                elapsed += interval
-                continue
-
-            if duplicate_inf_files == True and len(contents)==1:
-                print(f"Still waiting... ({elapsed}s)")          
-                time.sleep(interval)
-                elapsed += interval
-                continue 
-            
-            sorted_objects = sorted(
-                response['Contents'],   
-                key=lambda obj: obj['LastModified'],
-                reverse=True  # Descending order
-            )            
-            if duplicate_bus_files:
+            if not contents:
+                print(f"[WAIT] No files found yet... ({elapsed}s)")
+            elif duplicate_inf_files and len(contents) == 1:
+                print(f"[WAIT] Waiting for more INF files... ({elapsed}s)")
+            elif duplicate_bus_files:
                 if len(contents) > 1:
-                    return "Multiple files found"
-                else:
-                    time.sleep(interval)
-                    elapsed += interval
-                    continue 
+                    print(f"[ERROR] Unexpected second BUS file detected: {contents}")
+                    return "Unexpected duplicate BUS file found"
+                elif len(contents) == 1:
+                    print(f"[WAIT] Only one BUS file seen so far... ({elapsed}s)")
             else:
+                sorted_objects = sorted(contents, key=lambda obj: obj["LastModified"], reverse=True)
                 key = sorted_objects[0]["Key"]
-                print(f"File found: {key}") 
-                # Read file contents
+                print(f"[FOUND] File located: {key}")
+
                 obj = s3.get_object(Bucket=destination_bucket, Key=key)
                 file_data = obj["Body"].read().decode("utf-8")
-                print(f"File contents loaded ({len(file_data)} bytes)")
+                print(f"[SUCCESS] File contents loaded ({len(file_data)} bytes)")
                 return file_data
 
-            # else:
-            #     print(f"Still waiting... ({elapsed}s)")
+            time.sleep(interval)
+            elapsed += interval
+
         except ClientError as e:
-            print(f"Error checking bucket: {e}")
+            print(f"[ERROR] S3 access failed: {e}")
             return None
 
-    print(f"Timeout: No file found with prefix '{forwarded_prefix}' after {timeout} seconds")
+    print(f"[TIMEOUT] No file found with prefix '{forwarded_prefix}' after {timeout} seconds")
     return None
