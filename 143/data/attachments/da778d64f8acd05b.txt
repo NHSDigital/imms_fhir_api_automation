@@ -1,0 +1,19 @@
+✅ Pipe-delimited file saved to: /home/runner/work/imms_fhir_api_automation/imms_fhir_api_automation/batch_files_directory/HPV_Vaccination_v5_YGM41_20251112T15291059.csv
+Batch file created: HPV_Vaccination_v5_YGM41_20251112T15291059.csv
+Upload successful: HPV_Vaccination_v5_YGM41_20251112T15291059.csv → immunisation-batch-int-data-sources
+Batch file uploaded to S3: HPV_Vaccination_v5_YGM41_20251112T15291059.csv
+Waiting for file in archive: s3://immunisation-batch-int-data-sources/archive/HPV_Vaccination_v5_YGM41_20251112T15291059.csv
+Still waiting... (0s)
+File found in archive: archive/HPV_Vaccination_v5_YGM41_20251112T15291059.csv
+Waiting for file starting with 'ack/HPV_Vaccination_v5_YGM41_20251112T15291059' in bucket: immunisation-batch-int-data-destinations
+[FOUND] File located: ack/HPV_Vaccination_v5_YGM41_20251112T15291059_InfAck_20251112T15291100.csv
+[SUCCESS] File contents loaded (350 bytes)
+Waiting for file starting with 'forwardedFile/HPV_Vaccination_v5_YGM41_20251112T15291059' in bucket: immunisation-batch-int-data-destinations
+[WAIT] No files found yet... (0s)
+[WAIT] No files found yet... (5s)
+[TIMEOUT] No file found with prefix 'forwardedFile/HPV_Vaccination_v5_YGM41_20251112T15291059' after 10 seconds
+Attempt 1: Found 1 items
+
+Found Audit detail for filename=HPV_Vaccination_v5_YGM41_20251112T15291059.csv
+
+Audit table status updated for {'message_id': 'e2e0ea35-91c6-434e-9714-fcfaadf966b8'}: {'status': 'Not processed - testing'}
