@@ -17,6 +17,36 @@ scenarios('batchTests/batch_file_validation.feature')
 def valid_batch_file_is_created_with_details(datatable, context, invalid_filename, file_extension):    
     build_dataFrame_using_datatable(datatable, context)        
     create_batch_file(context,fileName=invalid_filename,file_ext=file_extension)
+    
+@given("Empty batch file is created")
+@ignore_if_local_run
+def empty_batch_file_is_created(context): 
+    columns = list(BatchVaccinationRecord.__fields__.keys()) 
+    context.vaccine_df = pd.DataFrame(columns=columns)   
+    create_batch_file(context)
+    
+@given("batch file is created with missing column of patient DOB for below data")
+@ignore_if_local_run
+def batch_file_with_missing_dob_is_created(datatable, context):
+    build_dataFrame_using_datatable(datatable, context)
+    if "PERSON_DOB" in context.vaccine_df.columns:
+        context.vaccine_df = context.vaccine_df.drop(columns=["PERSON_DOB"])
+    create_batch_file(context)
+    
+@given("batch file is created with invalid column order for below data")
+@ignore_if_local_run
+def batch_file_with_invalid_column_order_is_created(datatable, context):
+    build_dataFrame_using_datatable(datatable, context)
+    columns = list(context.vaccine_df.columns)
+    columns[0], columns[1] = columns[1], columns[0]
+    context.vaccine_df = context.vaccine_df[columns]
+    create_batch_file(context)
+    
+@given("batch file is created with invalid delimiter for below data")
+@ignore_if_local_run    
+def batch_file_with_invalid_delimiter_is_created(datatable, context):
+    build_dataFrame_using_datatable(datatable, context)        
+    create_batch_file(context, delimiter= ';')
 
 @then("file will be moved to destination bucket and inf ack file will be created for duplicate batch file upload")
 def file_will_be_moved_to_destination_bucket(context):

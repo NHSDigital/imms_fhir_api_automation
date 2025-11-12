@@ -206,7 +206,7 @@ def validate_imms_event_table_for_all_records_in_batch_file(context, operation: 
 def normalize(value):
     return "" if pd.isna(value) or value == "" else value
 
-def create_batch_file(context, file_ext: str = "csv", fileName: str = None):
+def create_batch_file(context, file_ext: str = "csv", fileName: str = None, delimiter: str = "|"):
     context.expected_version = "1"
     context.FileTimestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S") + f"{int(datetime.now(timezone.utc).microsecond / 10000):02d}"    
     context.file_extension = file_ext
@@ -219,7 +219,7 @@ def create_batch_file(context, file_ext: str = "csv", fileName: str = None):
         suffix = "" if re.search(timestamp_pattern, fileName) else f"_{context.FileTimestamp}"
         context.filename = f"{fileName}{suffix}.{context.file_extension}"        
     
-    save_record_to_batch_files_directory(context)
+    save_record_to_batch_files_directory(context, delimiter)
 
     print(f"Batch file created: {context.filename}")
     

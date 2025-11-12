@@ -1,6 +1,5 @@
-@Batch_File_Validation_Feature
-Feature: Validate the file level validations for vaccination batch file
-
+@Batch_File_Validation_Feature @functional
+Feature: Validate the file level and columns validations for vaccination batch file
 
 @vaccine_type_HPV  @supplier_name_MAVIS
 Scenario Outline: verify that vaccination file will be rejected if file name format is invalid
@@ -38,12 +37,44 @@ Scenario: verify that vaccination file will be rejected if the processed file is
     And bus ack file will not be created
     And Audit table will have 'Not processed - Duplicate', 'MAVIS_HPV' and 'None' for the processed batch file
 
+@vaccine_type_HPV  @supplier_name_MAVIS
+Scenario: verify that vaccination file will be rejected if file is empty
+    Given Empty batch file is created
+    When batch file is uploaded in s3 bucket
+    Then file will be moved to destination bucket and inf ack file will be created
+    And inf ack file has success status for processed batch file
+    And bus ack file will not be created
+    And Audit table will have 'Not processed - Empty file', 'MAVIS_HPV' and 'None' for the processed batch file
 
+@vaccine_type_HPV  @supplier_name_MAVIS
+Scenario: verify that vaccination file will be rejected if one of mandatory column is missing
+    Given batch file is created with missing column of patient DOB for below data
+        | patient_id        | unique_id         |
+        | Random            | Valid_NhsNumber   |
+    When batch file is uploaded in s3 bucket
+    Then file will be moved to destination bucket and inf ack file will be created
+    And inf ack file has failure status for processed batch file
+    And bus ack file will not be created
+    And Audit table will have 'Failed', 'MAVIS_HPV' and 'File headers are invalid.' for the processed batch file
 
+@vaccine_type_HPV  @supplier_name_MAVIS
+Scenario: verify that vaccination file will be rejected if column order is invalid
+    Given batch file is created with invalid column order for below data
+        | patient_id        | unique_id         |
+        | Random            | Valid_NhsNumber   |
+    When batch file is uploaded in s3 bucket
+    Then file will be moved to destination bucket and inf ack file will be created
+    And inf ack file has failure status for processed batch file
+    And bus ack file will not be created
+    And Audit table will have 'Failed', 'MAVIS_HPV' and 'File headers are invalid.' for the processed batch file
 
-        #Duplicate
-        #Empty File
-        #Column missing
-        #Invalid Column Order
-        #Invalid Column Header
-        #Invalid Delimiter
+@vaccine_type_HPV  @supplier_name_MAVIS
+Scenario: verify that vaccination file will be rejected if file delimiter is invalid
+    Given batch file is created with invalid delimiter for below data
+        | patient_id        | unique_id         |
+        | Random            | Valid_NhsNumber   |
+    When batch file is uploaded in s3 bucket
+    Then file will be moved to destination bucket and inf ack file will be created
+    And inf ack file has failure status for processed batch file
+    And bus ack file will not be created
+    And Audit table will have 'Failed', 'MAVIS_HPV' and 'File headers are invalid.' for the processed batch file
