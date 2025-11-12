@@ -239,22 +239,19 @@ def get_all_the_vaccination_codes(list_items):
         for item in list_items
     ]
     
-def validate_audit_table_record(context, item, expected_status: str, expected_error_detail: str = None, expected_queue_name: str = None):
+def validate_audit_table_record(context, item, expected_status: str, expected_error_detail: str = None, expected_queue_name: str = None, expected_record_count: str = None):
+
     check.is_true(
         item.get("status") == expected_status,
         f"Expected status {expected_status}, got '{item.get('status')}'"
     )
 
-    if expected_queue_name:
-        expected_queue = expected_queue_name
-    else:
-        expected_queue = f"{context.supplier_name}_{context.vaccine_type}"
-
+    expected_queue = expected_queue_name if expected_queue_name else f"{context.supplier_name}_{context.vaccine_type}"
     check.is_true(
         item.get("queue_name", "").upper() == expected_queue.upper(),
         f"Expected queue_name '{expected_queue}', got '{item.get('queue_name')}'"
     )
-    
+  
     if expected_status == "Processed":
         actual_row_count = len(context.vaccine_df)
         check.is_true(
@@ -273,9 +270,9 @@ def validate_audit_table_record(context, item, expected_status: str, expected_er
     )
 
     check.is_true(
-        item.get("error_details") == expected_error_detail,
+        item.get("error_details") == (expected_error_detail if expected_error_detail != 'None' else None),
         f"Expected error_detail {expected_error_detail}, but got: {item.get('error_details')}"
-    )
+    ) 
 
     
 def validate_imms_delta_record_with_batch_record(context, batch_record, item, event_type, action_flag):

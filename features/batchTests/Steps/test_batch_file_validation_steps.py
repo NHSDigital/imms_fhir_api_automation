@@ -18,6 +18,11 @@ def valid_batch_file_is_created_with_details(datatable, context, invalid_filenam
     build_dataFrame_using_datatable(datatable, context)        
     create_batch_file(context,fileName=invalid_filename,file_ext=file_extension)
 
+@then("file will be moved to destination bucket and inf ack file will be created for duplicate batch file upload")
+def file_will_be_moved_to_destination_bucket(context):
+    context.fileContent = wait_and_read_ack_file(context, "ack", duplicate_inf_files=True)
+    assert context.fileContent, f"File not found in destination bucket after timeout:  {context.forwarded_prefix}"    
+
 @then("inf ack file has failure status for processed batch file")
 def failed_inf_ack_file(context):  
     all_valid = validate_inf_ack_file(context, success=False)
@@ -25,18 +30,14 @@ def failed_inf_ack_file(context):
 
 @then("bus ack file will not be created")
 def file_will_not_be_moved_to_destination_bucket(context):
-    context.fileContent = wait_and_read_ack_file(context, "forwardedFile", timeout=10)
+    context.fileContent = wait_and_read_ack_file(context, "forwardedFile", timeout=10, duplicate_bus_files=True)
     assert context.fileContent==None, f"File found in destination bucket: {context.forwarded_prefix}"
 
-@then(parsers.parse("Audit table will have failed status, {queue_name} and {error_details} for the processed batch file"))
-def validate_imms_audit_table(context,error_details, queue_name):
+@then(parsers.parse("Audit table will have '{status}', '{queue_name}' and '{error_details}' for the processed batch file"))
+def validate_imms_audit_table(context, status, queue_name, error_details):
     table_query_response = fetch_batch_audit_table_detail(context.aws_profile_name, context.filename, context.S3_env)
 
     assert isinstance(table_query_response, list) and table_query_response, f"Item not found in response for filename: {context.filename}"
     item = table_query_response[0]
-    validate_audit_table_record(context, item, "Failed", error_details, queue_name)       
+    validate_audit_table_record(context, item, status, error_details, queue_name)       
     update_audit_table_for_failed_status(item,context, context.aws_profile_name, context.S3_env)
-
-# @when("same batch file is uploaded again in s3 bucket")
-# def upload_same_batch_file_again(context):
-#     upload_file_to_s3_bucket(context, context.filename, context.working_directory, f"immunisation-batch-{context.S3_env}-data-sources")

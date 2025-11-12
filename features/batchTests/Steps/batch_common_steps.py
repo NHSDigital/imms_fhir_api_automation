@@ -1,3 +1,4 @@
+from concurrent.futures import thread
 import json
 import pandas as pd
 import os
@@ -59,16 +60,22 @@ def ignore_local_run_set_test_data(func):
         return func(*args, **kwargs)
     return wrapper
 
+@given("batch file is created for below data as full dataset")
+@ignore_if_local_run
+def valid_batch_file_is_created_with_details(datatable, context):    
+    build_dataFrame_using_datatable(datatable, context)        
+    create_batch_file(context)
+
 @given("Valid batch file is created")
 def valid_batch_file_is_created(context):
     context.file_extension = "csv"
-    context.filename = generate_file_name(context)
+    context.filename = generate_file_name(context) 
     record = build_batch_file(context)
     context.vaccine_df = pd.DataFrame([record.dict()])   
     save_record_to_batch_files_directory(context)
     print(f"Batch file created: {context.filename}")
 
-@when("same batch file is uploaded again in s3 bucket")    
+@when("same batch file is uploaded again in s3 bucket") 
 @when("batch file is uploaded in s3 bucket")
 @ignore_local_run_set_test_data
 def batch_file_upload_in_s3_bucket(context):
@@ -76,6 +83,12 @@ def batch_file_upload_in_s3_bucket(context):
     print(f"Batch file uploaded to S3: {context.filename}")
     fileIsMoved = wait_for_file_to_move_archive(context)
     assert fileIsMoved, f"File not found in archive after timeout"
+
+# @when("same batch file is uploaded again in s3 bucket")    
+# @ignore_local_run_set_test_data
+# def same_batch_file_upload_in_s3_bucket(context):
+#     time.sleep(30)
+#     batch_file_upload_in_s3_bucket(context)
     
 @then("file will be moved to destination bucket and inf ack file will be created")
 def file_will_be_moved_to_destination_bucket(context):

@@ -41,7 +41,8 @@ def wait_for_file_to_move_archive(context, timeout=120, interval=5):
     print(f"Timeout: File not found in archive after {timeout} seconds")
     return False
 
-def wait_and_read_ack_file(context, folderName: str, timeout=120, interval=5):
+def wait_and_read_ack_file(context, folderName: str, timeout=120, interval=5, duplicate_bus_files=False, duplicate_inf_files=False):
+
     s3 = boto3.client("s3")
     destination_bucket = f"immunisation-batch-{context.S3_env}-data-destinations"
     source_filename = context.filename
@@ -57,24 +58,45 @@ def wait_and_read_ack_file(context, folderName: str, timeout=120, interval=5):
         try:
             response = s3.list_objects_v2(Bucket=destination_bucket, Prefix=forwarded_prefix)
             contents = response.get("Contents", [])
-            if contents:
-                key = contents[0]["Key"]
-                print(f"File found: {key}")
 
+            if not contents :
+                print(f"Still waiting... ({elapsed}s)")          
+                time.sleep(interval)
+                elapsed += interval
+                continue
+
+            if duplicate_inf_files == True and len(contents)==1:
+                print(f"Still waiting... ({elapsed}s)")          
+                time.sleep(interval)
+                elapsed += interval
+                continue 
+            
+            sorted_objects = sorted(
+                response['Contents'],   
+                key=lambda obj: obj['LastModified'],
+                reverse=True  # Descending order
+            )            
+            if duplicate_bus_files:
+                if len(contents) > 1:
+                    return "Multiple files found"
+                else:
+                    time.sleep(interval)
+                    elapsed += interval
+                    continue 
+            else:
+                key = sorted_objects[0]["Key"]
+                print(f"File found: {key}") 
                 # Read file contents
                 obj = s3.get_object(Bucket=destination_bucket, Key=key)
                 file_data = obj["Body"].read().decode("utf-8")
                 print(f"File contents loaded ({len(file_data)} bytes)")
                 return file_data
 
-            else:
-                print(f"Still waiting... ({elapsed}s)")
+            # else:
+            #     print(f"Still waiting... ({elapsed}s)")
         except ClientError as e:
             print(f"Error checking bucket: {e}")
             return None
-
-        time.sleep(interval)
-        elapsed += interval
 
     print(f"Timeout: No file found with prefix '{forwarded_prefix}' after {timeout} seconds")
     return None
