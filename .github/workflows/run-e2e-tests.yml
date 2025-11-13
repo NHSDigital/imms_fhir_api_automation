@@ -85,6 +85,8 @@ jobs:
           MAVIS_client_Secret: ${{ secrets.MAVIS_client_Secret }}
           EMIS_client_Id: ${{ secrets.OPTUM_client_Id }}
           EMIS_client_Secret: ${{ secrets.OPTUM_client_Secret }}
+          TPP_client_Id: ${{ secrets.TPP_client_Id }}
+          TPP_client_Secret: ${{ secrets.TPP_client_Secret }}
           SONAR_client_Id: ${{ secrets.SONAR_client_Id }}
           SONAR_client_Secret: ${{ secrets.SONAR_client_Secret }}
           baseUrl: ${{ vars.baseUrl }}
