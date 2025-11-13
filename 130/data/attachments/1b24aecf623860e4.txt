@@ -1,7 +1,0 @@
-
- Read Request is https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization/245bfec1-6f17-46b0-a189-db80a96eec4b?_summary
-404
-404
-
- Error Response - 
- resourceType='OperationOutcome' id='8a77c09f-7a26-4fcf-9403-97a87da3f3f6' meta=Meta(profile=['https://simplifier.net/guide/UKCoreDevelopment2/ProfileUKCore-OperationOutcome']) issue=[Issue(severity='error', code='not-found', details=Details(coding=[Coding(system='https://fhir.nhs.uk/Codesystem/http-error-codes', code='NOT-FOUND')]), diagnostics='Immunization resource does not exist. ID: 245bfec1-6f17-46b0-a189-db80a96eec4b')]
