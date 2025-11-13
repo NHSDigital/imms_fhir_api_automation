@@ -95,7 +95,7 @@ jobs:
           TEST_PATH="${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' }}"
           TEST_FILTER="${{ github.event_name == 'workflow_dispatch' && inputs.testFilter || 'functional' }}"
 
-          if [ "TEST_FILTER" = "Batch_File_Validation_Feature" ]; then
+          if [ "$TEST_FILTER" = "Batch_File_Validation_Feature" ]; then
             TEST_PATH="features/batchTests"
           else
             if [ "$TEST_PATH" = "API&batchTests" ]; then
