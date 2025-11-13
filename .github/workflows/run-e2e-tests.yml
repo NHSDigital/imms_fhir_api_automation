@@ -95,10 +95,14 @@ jobs:
           TEST_PATH="${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' }}"
           TEST_FILTER="${{ github.event_name == 'workflow_dispatch' && inputs.testFilter || 'functional' }}"
 
-          if [ "$TEST_PATH" = "API&batchTests" ]; then
-            TEST_PATH="features"
+          if [ "TEST_FILTER" = "Batch_File_Validation_Feature" ]; then
+            TEST_PATH="batchTests"
           else
-            TEST_PATH="features/$TEST_PATH"
+            if [ "$TEST_PATH" = "API&batchTests" ]; then
+              TEST_PATH="features"
+            else
+              TEST_PATH="features/$TEST_PATH"
+            fi
           fi
           source venv/bin/activate
           pytest "$TEST_PATH" -m "$TEST_FILTER" --junitxml=output/test-results.xml --alluredir=output/allure-results
