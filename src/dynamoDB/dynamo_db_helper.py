@@ -46,42 +46,6 @@ def fetch_immunization_events_detail(aws_profile_name:str, ImmsID: str, env:str,
 
     return response
 
-def fetch_items_by_attribute(
-    aws_profile_name: str,
-    env: str,
-    table_getter: callable,
-    attribute_name: str,
-    attribute_value: str,
-    max_retries: int = 3,
-    wait_seconds: int = 3
-):
-    db = DynamoDBHelper(aws_profile_name, env)
-    table = table_getter(db)
-
-    for attempt in range(max_retries):
-        response = table.scan(
-            FilterExpression=Attr(attribute_name).eq(attribute_value)
-        )
-
-        items = response.get('Items', [])
-        while 'LastEvaluatedKey' in response:
-            response = table.scan(
-                FilterExpression=Attr(attribute_name).eq(attribute_value),
-                ExclusiveStartKey=response['LastEvaluatedKey']
-            )
-            items.extend(response.get('Items', []))
-
-        if items:
-            break
-
-        if attempt < max_retries - 1:
-            print(f"\n Waiting for DynamoDB table to update... (attempt {attempt + 1})")
-            time.sleep(wait_seconds)
-
-    print(f"\n Scan response for {attribute_name} = {attribute_value}: {items}\n")
-    return items
-
-
 def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name: str, ImmsID: str, env: str):
     db = DynamoDBHelper(aws_profile_name, env)
     tableImmsDelta = db.get_delta_table()
@@ -108,31 +72,32 @@ def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name: str, ImmsID:
     print(f"\n❌ No items found for ImmsID={ImmsID} after {max_attempts} attempts.\n")
     return []
 
-# def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name: str, ImmsID: str, env: str):
-#     db = DynamoDBHelper(aws_profile_name, env)
-#     tableImmsDelta = db.get_delta_table()
 
-#     response = tableImmsDelta.query(
-#         IndexName="ImmunisationIdIndex",
-#         KeyConditionExpression=Key('ImmsID').eq(ImmsID)
-#     )
+def fetch_batch_audit_table_detail(aws_profile_name:str, filename: str, env:str):
+    db = DynamoDBHelper(aws_profile_name, env)
+    tableImmsAudit = db.get_batch_audit_table()
 
-#     items = response.get("Items", [])
-#     print(f"\nImmunization Delta items for ImmsID={ImmsID}:\n{items}\n")
-#     return items
+    max_attempts = 5
+    delay = 2  
 
-def fetch_batch_audit_table_detail(aws_profile_name:str, filename: str, env:str, max_retries: int = 3, wait_seconds: int = 3):
-    items = fetch_items_by_attribute(
-        aws_profile_name=aws_profile_name,
-        env=env,
-        table_getter=DynamoDBHelper.get_batch_audit_table,
-        attribute_name="filename",
-        attribute_value=filename,
-        max_retries=max_retries,
-        wait_seconds=wait_seconds
-    )
+    for attempt in range(1, max_attempts + 1):
+        response = tableImmsAudit.query(
+            IndexName="filename_index",
+            KeyConditionExpression=Key('filename').eq(filename)
+        )
 
-    return items
+        items = response.get("Items", [])
+        print(f"Attempt {attempt}: Found {len(items)} items")
+
+        if items:
+            print(f"\nFound Audit detail for filename={filename}\n")
+            return items
+
+        time.sleep(delay)
+        delay *= 2 
+
+    print(f"\n❌ No items found for filename={filename} after {max_attempts} attempts.\n")
+    return []
     
 def parse_imms_int_imms_event_response(resource: dict) -> ImmunizationReadResponse_IntTable:
     contained_raw = resource.get("contained", [])
@@ -199,8 +164,6 @@ def validate_imms_delta_record_with_created_event(context, create_obj, item, eve
                 expected == actual,
                 f"Expected {name}: {expected}, Actual {actual}"
             )  
-        
-
 
 def get_all_term_text(context):
     item = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID, context.S3_env)
@@ -239,23 +202,25 @@ def get_all_the_vaccination_codes(list_items):
         for item in list_items
     ]
     
-def validate_audit_table_record(context, item, expected_status: str, expected_error_detail: str = None):
+def validate_audit_table_record(context, item, expected_status: str, expected_error_detail: str = None, expected_queue_name: str = None, expected_record_count: str = None):
+
     check.is_true(
         item.get("status") == expected_status,
         f"Expected status {expected_status}, got '{item.get('status')}'"
     )
 
-    expected_queue = f"{context.supplier_name}_{context.vaccine_type}"
+    expected_queue = expected_queue_name if expected_queue_name else f"{context.supplier_name}_{context.vaccine_type}"
     check.is_true(
         item.get("queue_name", "").upper() == expected_queue.upper(),
         f"Expected queue_name '{expected_queue}', got '{item.get('queue_name')}'"
     )
-    
-    actual_row_count = len(context.vaccine_df)
-    check.is_true(
-        item.get("record_count") == actual_row_count,
-        f"Expected record_count {actual_row_count}, got '{item.get('record_count')}'"
-    )
+  
+    if expected_status == "Processed":
+        actual_row_count = len(context.vaccine_df)
+        check.is_true(
+            item.get("record_count") == actual_row_count,
+            f"Expected record_count {actual_row_count}, got '{item.get('record_count')}'"
+        )
 
     check.is_true(
         item.get("filename") == context.filename,
@@ -268,9 +233,9 @@ def validate_audit_table_record(context, item, expected_status: str, expected_er
     )
 
     check.is_true(
-        item.get("error_detail") == expected_error_detail,
-        f"Expected error_detail {expected_error_detail}, but got: {item.get('error_detail')}"
-    )
+        item.get("error_details") == (expected_error_detail if expected_error_detail != 'None' else None),
+        f"Expected error_detail {expected_error_detail}, but got: {item.get('error_details')}"
+    ) 
     
 def validate_imms_delta_record_with_batch_record(context, batch_record, item, event_type, action_flag):
     event = item[0].get("Imms")
@@ -528,3 +493,23 @@ def get_gender_code(input: str) -> GenderCode:
             return gender
 
     raise ValueError(f"Invalid gender input: {input}")
+
+def update_audit_table_for_failed_status(item: dict, aws_profile_name:str, env:str):
+    
+    if item.get("status") != "Failed":
+         return
+     
+    db = DynamoDBHelper(aws_profile_name, env)
+    table = db.get_batch_audit_table()
+
+    key = {"message_id": item["message_id"]}
+
+    response = table.update_item(
+        Key=key,
+        UpdateExpression="SET #s = :new_status",
+        ExpressionAttributeNames={"#s": "status"},
+        ExpressionAttributeValues={":new_status": "Not processed - Automation testing"},
+        ReturnValues="UPDATED_NEW"
+    )
+
+    print(f"✅ Updated audit status for message_id={key['message_id']}: {response.get('Attributes')}")

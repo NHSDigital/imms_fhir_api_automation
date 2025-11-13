@@ -30,6 +30,7 @@ on:
         options:
           - smoke
           - functional
+          - Batch_File_Validation_Feature 
 
 permissions:
   contents: write
@@ -84,6 +85,8 @@ jobs:
           MAVIS_client_Secret: ${{ secrets.MAVIS_client_Secret }}
           EMIS_client_Id: ${{ secrets.OPTUM_client_Id }}
           EMIS_client_Secret: ${{ secrets.OPTUM_client_Secret }}
+          TPP_client_Id: ${{ secrets.TPP_client_Id }}
+          TPP_client_Secret: ${{ secrets.TPP_client_Secret }}
           SONAR_client_Id: ${{ secrets.SONAR_client_Id }}
           SONAR_client_Secret: ${{ secrets.SONAR_client_Secret }}
           baseUrl: ${{ vars.baseUrl }}
@@ -94,10 +97,14 @@ jobs:
           TEST_PATH="${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' }}"
           TEST_FILTER="${{ github.event_name == 'workflow_dispatch' && inputs.testFilter || 'functional' }}"
 
-          if [ "$TEST_PATH" = "API&batchTests" ]; then
-            TEST_PATH="features"
+          if [ "$TEST_FILTER" = "Batch_File_Validation_Feature" ]; then
+            TEST_PATH="features/batchTests"
           else
-            TEST_PATH="features/$TEST_PATH"
+            if [ "$TEST_PATH" = "API&batchTests" ]; then
+              TEST_PATH="features"
+            else
+              TEST_PATH="features/$TEST_PATH"
+            fi
           fi
           source venv/bin/activate
           pytest "$TEST_PATH" -m "$TEST_FILTER" --junitxml=output/test-results.xml --alluredir=output/allure-results

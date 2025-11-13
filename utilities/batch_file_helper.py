@@ -111,26 +111,26 @@ def validate_inf_ack_file(context, success: bool = True) -> bool:
         excepted_header_response_code = "Failure"
         excepted_issue_severity = "Fatal"
         excepted_issue_code = "Fatal Error"  
-        excepted_response_code = "10001"
-        expected_response_display
+        excepted_response_code = "10002"
+        expected_response_display = "Infrastructure Level Response Value - Processing Error"
 
     if header_response_code != excepted_header_response_code:
-        print(f"Row {i}: HEADER_RESPONSE_CODE is not {excepted_header_response_code}")
+        print(f"HEADER_RESPONSE_CODE is not {excepted_header_response_code}")
         row_valid = False
     if issue_severity != excepted_issue_severity:
-        print(f"Row {i}: ISSUE_SEVERITY is not {excepted_issue_severity}")
+        print(f"ISSUE_SEVERITY is not {excepted_issue_severity}")
         row_valid = False
     if issue_code != excepted_issue_code:
-        print(f"Row {i}: ISSUE_CODE is not {excepted_issue_code}")
+        print(f"ISSUE_CODE is not {excepted_issue_code}")
         row_valid = False
     if response_code != excepted_response_code:
-        print(f"Row {i}: RESPONSE_CODE is not {excepted_response_code}")
+        print(f"RESPONSE_CODE is not {excepted_response_code}")
         row_valid = False
     if response_display != expected_response_display:
-        print(f"Row {i}: RESPONSE_DISPLAY is not {expected_response_display}")
+        print(f"RESPONSE_DISPLAY is not {expected_response_display}")
         row_valid = False
     if message_delivery != expected_message_delivery:
-        print(f"Row {i}: MESSAGE_DELIVERY is not {expected_message_delivery}")
+        print(f"MESSAGE_DELIVERY is not {expected_message_delivery}")
         row_valid = False
     
     return row_valid
