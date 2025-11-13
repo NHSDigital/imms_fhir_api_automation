@@ -1,0 +1,21 @@
+token started.......
+✅ Pipe-delimited file saved to: /home/runner/work/imms_fhir_api_automation/imms_fhir_api_automation/batch_files_directory/HP_Vaccinations_v5_YGM41_20251113T11062211.csv
+Batch file created: HP_Vaccinations_v5_YGM41_20251113T11062211.csv
+Upload successful: HP_Vaccinations_v5_YGM41_20251113T11062211.csv → immunisation-batch-int-data-sources
+Batch file uploaded to S3: HP_Vaccinations_v5_YGM41_20251113T11062211.csv
+Waiting for file in archive: s3://immunisation-batch-int-data-sources/archive/HP_Vaccinations_v5_YGM41_20251113T11062211.csv
+Still waiting... (0s)
+Still waiting... (5s)
+File found in archive: archive/HP_Vaccinations_v5_YGM41_20251113T11062211.csv
+Waiting for file starting with 'ack/HP_Vaccinations_v5_YGM41_20251113T11062211' in bucket: immunisation-batch-int-data-destinations
+[FOUND] File located: ack/HP_Vaccinations_v5_YGM41_20251113T11062211_InfAck_20251113T11062300.csv
+[SUCCESS] File contents loaded (350 bytes)
+Waiting for file starting with 'forwardedFile/HP_Vaccinations_v5_YGM41_20251113T11062211' in bucket: immunisation-batch-int-data-destinations
+[WAIT] No files found yet... (0s)
+[WAIT] No files found yet... (5s)
+[TIMEOUT] No file found with prefix 'forwardedFile/HP_Vaccinations_v5_YGM41_20251113T11062211' after 10 seconds
+Attempt 1: Found 1 items
+
+Found Audit detail for filename=HP_Vaccinations_v5_YGM41_20251113T11062211.csv
+
+✅ Updated audit status for message_id=89054cd9-5aa9-44a8-961f-976bfc696a2b: {'status': 'Not processed - Automation testing'}
