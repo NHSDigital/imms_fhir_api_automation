@@ -1,0 +1,8 @@
+❌ Step failed! **batch file is created with missing columns for below data** 
+ Error: 
+          {
+            "error": "invalid_request",
+            "error_description": "client_id is missing",
+            "message_id": "rrt-105336850564505972-c-geu2-3503620-19488699-1"
+          }
+        
