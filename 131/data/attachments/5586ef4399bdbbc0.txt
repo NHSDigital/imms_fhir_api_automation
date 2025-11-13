@@ -1,7 +1,0 @@
-❌ Step failed! **Valid json payload is created where recorded has invalid 'empty' date** 
- Error: <html>
-<head><title>403 Forbidden</title></head>
-<body>
-<center><h1>403 Forbidden</h1></center>
-</body>
-</html>
