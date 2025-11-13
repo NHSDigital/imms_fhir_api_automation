@@ -1,2 +1,0 @@
-❌ Step failed! **batch file is created for below data where mandatory field for site, location and unique uri values are invalid** 
- Error: 'code'
