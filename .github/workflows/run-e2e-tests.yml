@@ -30,6 +30,7 @@ on:
         options:
           - smoke
           - functional
+          - Batch_File_Validation_Feature 
 
 permissions:
   contents: write
