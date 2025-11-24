@@ -2,7 +2,7 @@
 Feature: Create the immunization event for a patient through batch file
 
 @smoke
-@delete_cleanup_batch @vaccine_type_HPV  @supplier_name_MAVIS
+@delete_cleanup_batch @vaccine_type_HPV  @supplier_name_TPP
 Scenario: Verify that full dataset vaccination record will be created through batch file
     Given batch file is created for below data as full dataset
         | patient_id        | unique_id             |
@@ -21,7 +21,7 @@ Scenario: Verify that full dataset vaccination record will be created through ba
     And The delta table will be populated with the correct data for all records in batch file  
 
 @smoke
-@delete_cleanup_batch @vaccine_type_MMR  @supplier_name_MAVIS 
+@delete_cleanup_batch @vaccine_type_MMR  @supplier_name_TPP 
 Scenario: Verify that minimum dataset vaccination record will be created through batch file
     Given batch file is created for below data as minimum dataset
         | patient_id        | unique_id             |
@@ -39,14 +39,14 @@ Scenario: Verify that minimum dataset vaccination record will be created through
     And The imms event table will be populated with the correct data for 'created' event for records in batch file
     And The delta table will be populated with the correct data for all records in batch file  
 
-@vaccine_type_HPV  @supplier_name_MAVIS
+@vaccine_type_FLU  @supplier_name_MAVIS
 Scenario: Verify that vaccination record will be get rejected if date_and_time is invalid in batch file
     Given batch file is created for below data where date_and_time field has invalid date 
         | patient_id        | unique_id                                                |
         | Random            | Fail-future_occurrence-invalid_OccurrenceDateTime        |
         | Random            | Fail-invalid_batch_occurrence-invalid_OccurrenceDateTime |
         | Random            | Fail-nonexistent-invalid_OccurrenceDateTime              |
-        | Random            | Fail-empty-empty_OccurrenceDateTime                                  |
+        | Random            | Fail-empty-empty_OccurrenceDateTime                      |
     When batch file is uploaded in s3 bucket
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
@@ -54,7 +54,7 @@ Scenario: Verify that vaccination record will be get rejected if date_and_time i
     And all records are rejected in the bus ack file and no imms id is generated
     And Audit table will have correct status, queue name and record count for the processed batch file
 
-@vaccine_type_HPV  @supplier_name_MAVIS
+@vaccine_type_FLU  @supplier_name_MAVIS
 Scenario: verify that vaccination record will be get rejected if recorded_date is invalid in batch file
     Given batch file is created for below data where recorded field has invalid date 
         | patient_id        | unique_id                            |
@@ -69,7 +69,7 @@ Scenario: verify that vaccination record will be get rejected if recorded_date i
     And all records are rejected in the bus ack file and no imms id is generated
     And Audit table will have correct status, queue name and record count for the processed batch file
 
-@vaccine_type_HPV  @supplier_name_MAVIS
+@vaccine_type_FLU  @supplier_name_MAVIS
 Scenario: verify that vaccination record will be get rejected if expiry_date is invalid in batch file
     Given batch file is created for below data where expiry field has invalid date 
         | patient_id        | unique_id                                  |
@@ -82,7 +82,7 @@ Scenario: verify that vaccination record will be get rejected if expiry_date is 
     And all records are rejected in the bus ack file and no imms id is generated
     And Audit table will have correct status, queue name and record count for the processed batch file
 
-@vaccine_type_HPV  @supplier_name_MAVIS
+@vaccine_type_FLU  @supplier_name_MAVIS
 Scenario: verify that vaccination record will be get rejected if Person date of birth is invalid in batch file
     Given batch file is created for below data where Person date of birth field has invalid date 
         | patient_id        | unique_id                               |
@@ -97,7 +97,7 @@ Scenario: verify that vaccination record will be get rejected if Person date of 
     And all records are rejected in the bus ack file and no imms id is generated 
     And Audit table will have correct status, queue name and record count for the processed batch file
 
-@vaccine_type_HPV  @supplier_name_MAVIS
+@vaccine_type_FLU  @supplier_name_MAVIS
 Scenario: verify that vaccination record will be get rejected if Person nhs number, name and gender is invalid in batch file
     Given batch file is created for below data where Person detail has invalid data
         | patient_id        | unique_id                                        |                               
@@ -120,7 +120,7 @@ Scenario: verify that vaccination record will be get rejected if Person nhs numb
     And all records are rejected in the bus ack file and no imms id is generated
     And Audit table will have correct status, queue name and record count for the processed batch file 
 
-@vaccine_type_HPV  @supplier_name_MAVIS
+@vaccine_type_FLU  @supplier_name_MAVIS
 Scenario: verify that vaccination record will be get successful if performer is invalid in batch file
     Given batch file is created for below data where performer detail has invalid data
         | patient_id        | unique_id                |
@@ -159,7 +159,7 @@ Scenario: verify that vaccination record will be get successful with different v
     And The imms event table will be populated with the correct data for 'created' event for records in batch file
     And The delta table will be populated with the correct data for all records in batch file 
 
-@vaccine_type_HPV  @supplier_name_MAVIS
+@vaccine_type_FLU  @supplier_name_MAVIS
 Scenario: verify that vaccination record will be get rejected if mandatory fields for site, location and unique identifiers are missing in batch file
     Given batch file is created for below data where mandatory fields for site, location, action flag, primary source and unique identifiers are missing
         | patient_id        | unique_id                                             |                               
@@ -206,7 +206,7 @@ Scenario: verify that vaccination record will be successful if mandatory field f
     And The delta table will be populated with the correct data for all records in batch file 
 
 
-@delete_cleanup_batch @vaccine_type_MENACWY  @supplier_name_MAVIS
+@delete_cleanup_batch @vaccine_type_MENACWY  @supplier_name_TPP
 Scenario: verify that vaccination record will be get successful if action flag has different cases
     Given batch file is created for below data where action flag has different cases
         | patient_id        | unique_id             |
@@ -224,7 +224,7 @@ Scenario: verify that vaccination record will be get successful if action flag h
     And The delta table will be populated with the correct data for all records in batch file
 
 
-@vaccine_type_3in1  @supplier_name_MAVIS
+@vaccine_type_3in1  @supplier_name_TPP
 Scenario: verify that vaccination record will be get rejected if non mandatory fields are empty string in batch file
     Given batch file is created for below data where non mandatory fields are empty string
         | patient_id        | unique_id             |
@@ -249,7 +249,7 @@ Scenario: verify that vaccination record will be get rejected if non mandatory f
     And all records are rejected in the bus ack file and no imms id is generated
     And Audit table will have correct status, queue name and record count for the processed batch file  
 
-@delete_cleanup_batch @vaccine_type_3in1  @supplier_name_MAVIS
+@delete_cleanup_batch @vaccine_type_3in1  @supplier_name_TPP
 Scenario: verify that vaccination record will be get successful if non mandatory fields are missing in batch file
     Given batch file is created for below data where non mandatory fields are missing
         | patient_id        | unique_id             |

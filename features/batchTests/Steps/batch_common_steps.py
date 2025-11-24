@@ -138,7 +138,8 @@ def validate_imms_delta_table_for_all_records_in_batch_file(context):
         item = fetch_immunization_int_delta_detail_by_immsID(
             context.aws_profile_name,
             context.ImmsID,  
-            context.S3_env
+            context.S3_env,
+            expected_version=context.expected_version
         )
 
         check.is_true(item, f"Item not found in response for IMMS_ID: {imms_id}")
