@@ -1,0 +1,3 @@
+❌ Step failed! **The request will be successful with the status code '201'** 
+ Error: 
+ Expected status code: 201, but got: 403. Response: {'resourceType': 'OperationOutcome', 'id': '06a65581-6029-4964-9bfb-31dbbd459227', 'meta': {'profile': ['https://simplifier.net/guide/UKCoreDevelopment2/ProfileUKCore-OperationOutcome']}, 'issue': [{'severity': 'error', 'code': 'forbidden', 'details': {'coding': [{'system': 'https://fhir.nhs.uk/Codesystem/http-error-codes', 'code': 'FORBIDDEN'}]}, 'diagnostics': 'Unauthorized request for vaccine type'}]} 

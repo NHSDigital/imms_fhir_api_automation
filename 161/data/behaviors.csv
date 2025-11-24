@@ -1,0 +1,5 @@
+"BROKEN","EPIC","FAILED","FEATURE","PASSED","SKIPPED","STORY","UNKNOWN"
+"1","Immunization Service","2","Create the immunization event for a patient","55","0","","0"
+"0","Immunization Service","0","Search the immunization of a patient","11","0","","0"
+"0","Immunization Service","0","Read the immunization of a patient","6","0","","0"
+"0","Immunization Service","0","Delete an immunization of a patient","5","0","","0"
