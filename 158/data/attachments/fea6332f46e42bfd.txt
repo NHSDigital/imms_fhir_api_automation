@@ -1,0 +1,2 @@
+❌ Step failed! **The delta table will be populated with the correct data for deleted event** 
+ Error: fetch_immunization_int_delta_detail_by_immsID() got an unexpected keyword argument 'expected_version'
