@@ -30,7 +30,8 @@ def send_delete_for_immunization_event_by_supplier(context, Supplier):
 @then('The delta table will be populated with the correct data for deleted event')
 def validate_imms_delta_table_by_ImmsID(context):
     create_obj = context.create_object
-    items = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID, context.S3_env, expected_version=2)
+    expected_version = 2
+    items = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID, context.S3_env, expected_version)
     assert items, f"Items not found in response for ImmsID: {context.ImmsID}"
 
     # Find the latest item where operation is DELETE
