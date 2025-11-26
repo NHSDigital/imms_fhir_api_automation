@@ -1,8 +1,0 @@
-❌ Step failed! **batch file is created with invalid column name for patient surname for below data** 
- Error: 
-          {
-            "error": "invalid_request",
-            "error_description": "client_id is missing",
-            "message_id": "rrt-5256141547831280564-b-geu2-2315980-20437682-1"
-          }
-        
