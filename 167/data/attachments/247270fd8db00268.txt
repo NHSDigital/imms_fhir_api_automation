@@ -1,0 +1,16 @@
+
+ Search Get parameters - 
+ patient.identifier=https%3A%2F%2Ffhir.nhs.uk%2FId%2Fnhs-number|1&-immunization.target=COVID&-date.from=2025-11-26&_include=Immunization:patient
+400
+400
+
+ Error Response - 
+ resourceType='OperationOutcome' id='522bce48-aa8f-4de8-9ada-c194ad76364d' meta=Meta(profile=['https://simplifier.net/guide/UKCoreDevelopment2/ProfileUKCore-OperationOutcome']) issue=[Issue(severity='error', code='invalid', details=Details(coding=[Coding(system='https://fhir.nhs.uk/Codesystem/http-error-codes', code='INVALID')]), diagnostics='Search parameter patient.identifier must be a valid NHS number.')]
+
+ Search Post request - 
+ patient.identifier=https%3A%2F%2Ffhir.nhs.uk%2FId%2Fnhs-number|1&-immunization.target=COVID&-date.from=2025-11-26&_include=Immunization:patient
+400
+400
+
+ Error Response - 
+ resourceType='OperationOutcome' id='f58e7e6f-dd30-4fe8-9080-4c9538bc7b76' meta=Meta(profile=['https://simplifier.net/guide/UKCoreDevelopment2/ProfileUKCore-OperationOutcome']) issue=[Issue(severity='error', code='invalid', details=Details(coding=[Coding(system='https://fhir.nhs.uk/Codesystem/http-error-codes', code='INVALID')]), diagnostics='Search parameter patient.identifier must be a valid NHS number.')]
