@@ -73,7 +73,7 @@ Scenario Outline:  Verify that the POST Create API for different supplier fails 
     And The Response JSONs should contain correct error message for 'unauthorized_access' access
     Examples: 
       | Patient  | vaccine_type| Supplier     |
-      |Random    | 3in1        | MAVIS        |
+      |Random    | COVID        | MAVIS        |
       |Random    | RSV         | MAVIS        |
       |Random    | RSV         | SONAR        |
 
