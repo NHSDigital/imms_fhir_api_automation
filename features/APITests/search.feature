@@ -97,11 +97,11 @@ Scenario Outline: Verify that Search API will throw error if both different comb
     Then The request will be unsuccessful with the status code '400'
     And The Search Response JSONs should contain correct error message for invalid Date From, Date To and include
     Examples: 
-      |NHSNumber        | vaccine_type | DateFrom   |  DateTo    | include                   |
-      |9728403348       | COVID      | 999-06-01  | 999-06-01  | abc                       |
-      |9728403348       | COVID      | 2025-13-01 | 2025-12-01 | abc                       |
-      |9728403348       | COVID      | 2025-05-12 | 2025-05-12 | abc                       |
-      |9728403348       | COVID      | 999-06-01  | 999-06-01  | Immunization:patient      |
+      |NHSNumber        | vaccine_type | DateFrom   |  DateTo    | include                 |
+      |9728403348       | COVID        | 999-06-01  | 999-06-01  | abc                     |
+      |9728403348       | COVID        | 2025-13-01 | 2025-12-01 | abc                     |
+      |9728403348       | COVID        | 2025-05-12 | 2025-05-12 | abc                     |
+      |9728403348       | COVID        | 999-06-01  | 999-06-01  | Immunization:patient    |
 
 @supplier_name_Postman_Auth
 Scenario Outline: Verify that Search API will throw error if Disease Type is invalid

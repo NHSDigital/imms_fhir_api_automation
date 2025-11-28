@@ -147,7 +147,7 @@ def validate_imms_event_table(context):
 @then('The delta table will be populated with the correct data for created event')
 def validate_imms_delta_table_by_ImmsID(context):
     create_obj = context.create_object
-    item = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID, context.S3_env)
+    item = fetch_immunization_int_delta_detail_by_immsID(context.aws_profile_name, context.ImmsID, context.S3_env, context.expected_version)
     assert item, f"Item not found in response for ImmsID: {context.ImmsID}"
      
     validate_imms_delta_record_with_created_event(context, create_obj, item, Operation.created.value, ActionFlag.created.value)    

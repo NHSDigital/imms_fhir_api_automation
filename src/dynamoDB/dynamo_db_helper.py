@@ -46,7 +46,7 @@ def fetch_immunization_events_detail(aws_profile_name:str, ImmsID: str, env:str,
 
     return response
 
-def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name: str, ImmsID: str, env: str):
+def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name: str, ImmsID: str, env: str, expected_item: int = 1):
     db = DynamoDBHelper(aws_profile_name, env)
     tableImmsDelta = db.get_delta_table()
 
@@ -62,7 +62,7 @@ def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name: str, ImmsID:
         items = response.get("Items", [])
         print(f"Attempt {attempt}: Found {len(items)} items")
 
-        if items:
+        if len(items) >= expected_item :
             print(f"\nFound Immunization Delta items for ImmsID={ImmsID}\n")
             return items
 
@@ -115,6 +115,7 @@ def parse_imms_int_imms_event_response(resource: dict) -> ImmunizationReadRespon
     return ImmunizationReadResponse_IntTable.parse_obj(resource)
 
 def validate_imms_delta_record_with_created_event(context, create_obj, item, event_type, action_flag):
+    
     event = item[0].get("Imms")
     assert event, "Imms field missing in items."
     fields_to_compare = [
@@ -162,7 +163,7 @@ def validate_imms_delta_record_with_created_event(context, create_obj, item, eve
     for name, expected, actual in fields_to_compare:
         check.is_true(
                 expected == actual,
-                f"Expected {name}: {expected}, Actual {actual}"
+                f"Update ImmsID {context.ImmsID} with Version {context.expected_version} - Expected {name}: {expected}, Actual {actual}"
             )  
 
 def get_all_term_text(context):
