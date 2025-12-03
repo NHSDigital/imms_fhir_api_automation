@@ -1,0 +1,40 @@
+✅ Pipe-delimited file saved to: /home/runner/work/imms_fhir_api_automation/imms_fhir_api_automation/batch_files_directory/3in1_Vaccinations_v5_YGA_20251203T15270959.csv
+Batch file created: 3in1_Vaccinations_v5_YGA_20251203T15270959.csv
+Upload successful: 3in1_Vaccinations_v5_YGA_20251203T15270959.csv → immunisation-batch-int-data-sources
+Batch file uploaded to S3: 3in1_Vaccinations_v5_YGA_20251203T15270959.csv
+Waiting for file in archive: s3://immunisation-batch-int-data-sources/archive/3in1_Vaccinations_v5_YGA_20251203T15270959.csv
+Still waiting... (0s)
+Still waiting... (5s)
+Still waiting... (10s)
+Still waiting... (15s)
+Still waiting... (20s)
+Still waiting... (25s)
+Still waiting... (30s)
+File found in archive: archive/3in1_Vaccinations_v5_YGA_20251203T15270959.csv
+Waiting for file starting with 'ack/3in1_Vaccinations_v5_YGA_20251203T15270959' in bucket: immunisation-batch-int-data-destinations
+[FOUND] File located: ack/3in1_Vaccinations_v5_YGA_20251203T15270959_InfAck_20251203T15271000.csv
+[SUCCESS] File contents loaded (299 bytes)
+Waiting for file starting with 'forwardedFile/3in1_Vaccinations_v5_YGA_20251203T15270959' in bucket: immunisation-batch-int-data-destinations
+[FOUND] File located: forwardedFile/3in1_Vaccinations_v5_YGA_20251203T15270959_BusAck_20251203T15271000.csv
+[SUCCESS] File contents loaded (208 bytes)
+IMMS_ID mapping:
+                                             LOCAL_ID  IMMS_ID
+0   no_NHS_Number-20251203T152709^https://fhir.nhs...      NaN
+1   no_procedure_term-20251203T152709^https://fhir...      NaN
+2   no_product_code-20251203T152709^https://fhir.n...      NaN
+3   no_product_term-20251203T152709^https://fhir.n...      NaN
+4   no_VACCINE_MANUFACTURER-20251203T152709^https:...      NaN
+5   no_batch_number-20251203T152709^https://fhir.n...      NaN
+6   no_site_OF_vaccination-20251203T152709^https:/...      NaN
+7   no_site_OF_vaccination_term-20251203T152709^ht...      NaN
+8   no_ROUTE_OF_vaccination-20251203T152709^https:...      NaN
+9   no_ROUTE_OF_vaccination_term-20251203T152709^h...      NaN
+10  no_DOSE_SEQUENCE-20251203T152709^https://fhir....      NaN
+11  no_dose_unit_code-20251203T152709^https://fhir...      NaN
+12  no_dose_unit_term-20251203T152709^https://fhir...      NaN
+13  no_indication_code-20251203T152709^https://fhi...      NaN
+Attempt 1: Found 1 items
+
+Found Audit detail for filename=3in1_Vaccinations_v5_YGA_20251203T15270959.csv
+
+Sending DELETE request to: https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization/nan

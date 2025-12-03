@@ -1,0 +1,32 @@
+✅ Pipe-delimited file saved to: /home/runner/work/imms_fhir_api_automation/imms_fhir_api_automation/batch_files_directory/MMR_Vaccinations_v5_YGA_20251203T15183547.csv
+Batch file created: MMR_Vaccinations_v5_YGA_20251203T15183547.csv
+Upload successful: MMR_Vaccinations_v5_YGA_20251203T15183547.csv → immunisation-batch-int-data-sources
+Batch file uploaded to S3: MMR_Vaccinations_v5_YGA_20251203T15183547.csv
+Waiting for file in archive: s3://immunisation-batch-int-data-sources/archive/MMR_Vaccinations_v5_YGA_20251203T15183547.csv
+Still waiting... (0s)
+Still waiting... (5s)
+Still waiting... (10s)
+Still waiting... (15s)
+Still waiting... (20s)
+Still waiting... (25s)
+Still waiting... (30s)
+Still waiting... (35s)
+File found in archive: archive/MMR_Vaccinations_v5_YGA_20251203T15183547.csv
+Waiting for file starting with 'ack/MMR_Vaccinations_v5_YGA_20251203T15183547' in bucket: immunisation-batch-int-data-destinations
+[FOUND] File located: ack/MMR_Vaccinations_v5_YGA_20251203T15183547_InfAck_20251203T15183600.csv
+[SUCCESS] File contents loaded (299 bytes)
+Waiting for file starting with 'forwardedFile/MMR_Vaccinations_v5_YGA_20251203T15183547' in bucket: immunisation-batch-int-data-destinations
+[FOUND] File located: forwardedFile/MMR_Vaccinations_v5_YGA_20251203T15183547_BusAck_20251203T15183600.csv
+[SUCCESS] File contents loaded (208 bytes)
+IMMS_ID mapping:
+                                            LOCAL_ID  IMMS_ID
+0  Valid_NhsNumber-20251203T151835^https://fhir.n...      NaN
+1  InvalidInPDS_NhsNumber-20251203T151835^https:/...      NaN
+2  SFlag_NhsNumber-20251203T151835^https://fhir.n...      NaN
+3  Mod11_NhSNumber-20251203T151835^https://fhir.n...      NaN
+4  OldNHSNo-20251203T151835^https://fhir.nhs.uk/I...      NaN
+Attempt 1: Found 1 items
+
+Found Audit detail for filename=MMR_Vaccinations_v5_YGA_20251203T15183547.csv
+
+Sending DELETE request to: https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization/nan

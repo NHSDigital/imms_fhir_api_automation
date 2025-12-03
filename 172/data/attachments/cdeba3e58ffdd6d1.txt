@@ -1,0 +1,30 @@
+✅ Pipe-delimited file saved to: /home/runner/work/imms_fhir_api_automation/imms_fhir_api_automation/batch_files_directory/MENACWY_Vaccinations_v5_YGA_20251203T15253918.csv
+Batch file created: MENACWY_Vaccinations_v5_YGA_20251203T15253918.csv
+Upload successful: MENACWY_Vaccinations_v5_YGA_20251203T15253918.csv → immunisation-batch-int-data-sources
+Batch file uploaded to S3: MENACWY_Vaccinations_v5_YGA_20251203T15253918.csv
+Waiting for file in archive: s3://immunisation-batch-int-data-sources/archive/MENACWY_Vaccinations_v5_YGA_20251203T15253918.csv
+Still waiting... (0s)
+Still waiting... (5s)
+Still waiting... (10s)
+Still waiting... (15s)
+Still waiting... (20s)
+Still waiting... (25s)
+Still waiting... (30s)
+File found in archive: archive/MENACWY_Vaccinations_v5_YGA_20251203T15253918.csv
+Waiting for file starting with 'ack/MENACWY_Vaccinations_v5_YGA_20251203T15253918' in bucket: immunisation-batch-int-data-destinations
+[FOUND] File located: ack/MENACWY_Vaccinations_v5_YGA_20251203T15253918_InfAck_20251203T15254000.csv
+[SUCCESS] File contents loaded (299 bytes)
+Waiting for file starting with 'forwardedFile/MENACWY_Vaccinations_v5_YGA_20251203T15253918' in bucket: immunisation-batch-int-data-destinations
+[FOUND] File located: forwardedFile/MENACWY_Vaccinations_v5_YGA_20251203T15253918_BusAck_20251203T15254000.csv
+[SUCCESS] File contents loaded (208 bytes)
+IMMS_ID mapping:
+                                            LOCAL_ID  IMMS_ID
+0  Action_flag_NEW-20251203T152539^https://fhir.n...      NaN
+1  Action_flag_New-20251203T152539^https://fhir.n...      NaN
+2  Action_flag_new-20251203T152539^https://fhir.n...      NaN
+3  Action_flag_nEw-20251203T152539^https://fhir.n...      NaN
+Attempt 1: Found 1 items
+
+Found Audit detail for filename=MENACWY_Vaccinations_v5_YGA_20251203T15253918.csv
+
+Sending DELETE request to: https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization/nan
