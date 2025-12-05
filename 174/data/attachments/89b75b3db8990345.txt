@@ -1,0 +1,27 @@
+✅ Pipe-delimited file saved to: /home/runner/work/imms_fhir_api_automation/imms_fhir_api_automation/batch_files_directory/FLU_Vaccinations_v5_V0V8L_20251205T22220201.csv
+Batch file created: FLU_Vaccinations_v5_V0V8L_20251205T22220201.csv
+Upload successful: FLU_Vaccinations_v5_V0V8L_20251205T22220201.csv → immunisation-batch-int-data-sources
+Batch file uploaded to S3: FLU_Vaccinations_v5_V0V8L_20251205T22220201.csv
+Waiting for file in archive: s3://immunisation-batch-int-data-sources/archive/FLU_Vaccinations_v5_V0V8L_20251205T22220201.csv
+Still waiting... (0s)
+Still waiting... (5s)
+Still waiting... (10s)
+Still waiting... (15s)
+Still waiting... (20s)
+Still waiting... (25s)
+Still waiting... (30s)
+File found in archive: archive/FLU_Vaccinations_v5_V0V8L_20251205T22220201.csv
+Waiting for file starting with 'ack/FLU_Vaccinations_v5_V0V8L_20251205T22220201' in bucket: immunisation-batch-int-data-destinations
+[FOUND] File located: ack/FLU_Vaccinations_v5_V0V8L_20251205T22220201_InfAck_20251205T22220300.csv
+[SUCCESS] File contents loaded (299 bytes)
+Waiting for file starting with 'forwardedFile/FLU_Vaccinations_v5_V0V8L_20251205T22220201' in bucket: immunisation-batch-int-data-destinations
+[FOUND] File located: forwardedFile/FLU_Vaccinations_v5_V0V8L_20251205T22220201_BusAck_20251205T22220300.csv
+[SUCCESS] File contents loaded (208 bytes)
+IMMS_ID mapping:
+                                            LOCAL_ID  IMMS_ID
+0  empty_performer_forename-20251205T222202^https...      NaN
+1  empty_performer_Surname-20251205T222202^https:...      NaN
+Attempt 1: Found 1 items
+
+Found Audit detail for filename=FLU_Vaccinations_v5_V0V8L_20251205T22220201.csv
+
