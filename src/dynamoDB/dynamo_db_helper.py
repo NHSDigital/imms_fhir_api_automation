@@ -60,7 +60,7 @@ def fetch_immunization_events_detail_by_IdentifierPK(aws_profile_name:str, Ident
 
     return response
 
-def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name: str, ImmsID: str, env: str):
+def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name: str, ImmsID: str, env: str, expected_item: int = 1):
     db = DynamoDBHelper(aws_profile_name, env)
     tableImmsDelta = db.get_delta_table()
 

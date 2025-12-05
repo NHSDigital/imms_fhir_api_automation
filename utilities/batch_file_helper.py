@@ -2,76 +2,43 @@ from utilities.error_constants import ERROR_MAP
 
 
 def validate_bus_ack_file(context) -> bool:
-    content = context.fileContent
-    lines = content.strip().split("\n")
-    header = lines[0].split("|")
-    expected_columns = 14
+    content = context.fileContent.strip()
+    lines = content.split("\n")
 
-    if len(header) != expected_columns:
-        print(f"Header column count mismatch: expected {expected_columns}, got {len(header)}")
+    # Expected header columns
+    expected_header = [
+        "MESSAGE_HEADER_ID",
+        "HEADER_RESPONSE_CODE",
+        "ISSUE_SEVERITY",
+        "ISSUE_CODE",
+        "ISSUE_DETAILS_CODE",
+        "RESPONSE_TYPE",
+        "RESPONSE_CODE",
+        "RESPONSE_DISPLAY",
+        "RECEIVED_TIME",
+        "MAILBOX_FROM",
+        "LOCAL_ID",
+        "IMMS_ID",
+        "OPERATION_OUTCOME",
+        "MESSAGE_DELIVERY",
+    ]
+
+    header = lines[0].split("|")
+
+    if len(header) != len(expected_header):
+        print(f"Header column count mismatch: expected {len(expected_header)}, got {len(header)}")
         return False
 
-    valid_ids = set(
-        context.vaccine_df["UNIQUE_ID"].astype(str) + "^" + context.vaccine_df["UNIQUE_ID_URI"].astype(str)
-    )
+    if header != expected_header:
+        print(f"Header names mismatch.\nExpected: {expected_header}\nGot: {header}")
+        return False
 
-    # Create a mapping from LOCAL_ID to IMMS_ID
-    local_to_imms = {}
-    overall_valid = True
+    if len(lines) > 1:
+        print("File contains data rows; only header should be present.")
+        return False
 
-    for i, line in enumerate(lines[1:], start=2):
-        fields = line.split("|")
-        row_valid = True  # Reset for each row
-
-        if len(fields) != expected_columns:
-            print(f"Row {i}: column count mismatch ({len(fields)} fields)")
-            overall_valid = False
-            continue
-
-        header_response_code = fields[1]
-        issue_severity = fields[2]
-        issue_code = fields[3]
-        response_code = fields[6]
-        response_display = fields[7]
-        local_id = fields[10]
-        imms_id = fields[11]
-        message_delivery = fields[13]
-
-        if header_response_code != "OK":
-            print(f"Row {i}: HEADER_RESPONSE_CODE is not OK")
-            row_valid = False
-        if issue_severity != "Information":
-            print(f"Row {i}: ISSUE_SEVERITY is not Information")
-            row_valid = False
-        if issue_code != "OK":
-            print(f"Row {i}: ISSUE_CODE is not OK")
-            row_valid = False
-        if response_code != "30001":
-            print(f"Row {i}: RESPONSE_CODE is not 30001")
-            row_valid = False
-        if response_display != "Success":
-            print(f"Row {i}: RESPONSE_DISPLAY is not Success")
-            row_valid = False
-        if local_id not in valid_ids:
-            print(f"Row {i}: LOCAL_ID not found in vaccine_df")
-            row_valid = False
-        if not imms_id:
-            print(f"Row {i}: IMMS_ID is missing")
-            row_valid = False
-        if message_delivery != "True":
-            print(f"Row {i}: MESSAGE_DELIVERY is not True")
-            row_valid = False
-        if row_valid:
-            local_to_imms[local_id] = imms_id
-        else:
-            overall_valid = False
-
-    context.vaccine_df["LOCAL_ID"] = ( context.vaccine_df["UNIQUE_ID"].astype(str) + "^" + context.vaccine_df["UNIQUE_ID_URI"].astype(str) )
-    context.vaccine_df["IMMS_ID"] = context.vaccine_df["LOCAL_ID"].map(local_to_imms)
-
-    print("IMMS_ID mapping:")
-    print(context.vaccine_df[["LOCAL_ID", "IMMS_ID"]])
-    return overall_valid
+    print("Bus ACK file validation passed.")
+    return True
 
 
 def validate_inf_ack_file(context, success: bool = True) -> bool:

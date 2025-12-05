@@ -105,7 +105,7 @@ def file_will_be_moved_to_destination_bucket(context):
     context.fileContent = wait_and_read_ack_file(context, "forwardedFile")
     assert context.fileContent, f"File not found in destination bucket after timeout: {context.forwarded_prefix}"
     
-@then("all records are processed successfully in the bus ack file")
+@then("bus ack will be empty as all records are processed successfully")
 def all_records_are_processed_successfully_in_the_batch_file(context):  
     all_valid = validate_bus_ack_file(context)
     assert all_valid, "One or more records failed validation checks"
@@ -166,10 +166,13 @@ def validate_imms_event_table_for_all_records_in_batch_file(context, operation: 
         table_query_response = fetch_immunization_events_detail_by_IdentifierPK(
             context.aws_profile_name, unique_id_combined, context.S3_env
         )
-        assert "Item" in table_query_response, f"Item not found in response for unique_id_combined: {unique_id_combined}"
-        item = table_query_response["Item"]
+        assert "Items" in table_query_response and table_query_response["Count"] > 0, \
+        f"Item not found in response for unique_id_combined: {unique_id_combined}"
 
-        df.at[idx, "IMMS_ID"] = item.get("PK")
+        item = table_query_response["Items"][0]
+
+        df.at[idx, "IMMS_ID"]=  item.get("PK")
+        context.ImmsID= item.get("PK").replace("Immunization#", "")
 
         resource_json_str = item.get("Resource")
         assert resource_json_str, "Resource field missing in item."

@@ -29,7 +29,7 @@ Scenario: verify that vaccination file will be rejected if the processed file is
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
     And bus ack file will be created
-    And all records are processed successfully in the bus ack file 
+    And bus ack will be empty as all records are processed successfully  
     And Audit table will have correct status, queue name and record count for the processed batch file
     When same batch file is uploaded again in s3 bucket
     Then file will be moved to destination bucket and inf ack file will be created for duplicate batch file upload
