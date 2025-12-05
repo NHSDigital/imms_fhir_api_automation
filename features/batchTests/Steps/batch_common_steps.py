@@ -155,22 +155,21 @@ def validate_imms_delta_table_for_all_records_in_batch_file(context):
 @then(parsers.parse("The imms event table will be populated with the correct data for '{operation}' event for records in batch file"))
 def validate_imms_event_table_for_all_records_in_batch_file(context, operation: Operation):
     df = context.vaccine_df
-    # Defensive check
-    check.is_true("IMMS_ID" in df.columns, "Column 'IMMS_ID' not found in vaccine_df")
+        
+    df["UNIQUE_ID_COMBINED"] = df["UNIQUE_ID_URI"].astype(str) + "#" + df["UNIQUE_ID"].astype(str)
+    valid_rows = df[df["UNIQUE_ID_COMBINED"].notnull() & (df["UNIQUE_ID_COMBINED"] != "nan#nan")]
 
-    # Filter rows where IMMS_ID is not null
-    valid_rows = df[df["IMMS_ID"].notnull()]
-
-    check.is_true(not valid_rows.empty, "No rows with non-null IMMS_ID found in vaccine_df")
-
-    for _, row in valid_rows.iterrows():
-        imms_id = row["IMMS_ID"]
-        context.ImmsID= imms_id.replace("Immunization#", "")
+    for idx, row in valid_rows.iterrows():
+        unique_id_combined = row["UNIQUE_ID_COMBINED"]
         batch_record = {k: normalize(v) for k, v in row.to_dict().items()}
-    
-        table_query_response = fetch_immunization_events_detail(context.aws_profile_name, context.ImmsID, context.S3_env)
-        assert "Item" in table_query_response, f"Item not found in response for ImmsID: {context.ImmsID}"
+
+        table_query_response = fetch_immunization_events_detail_by_IdentifierPK(
+            context.aws_profile_name, unique_id_combined, context.S3_env
+        )
+        assert "Item" in table_query_response, f"Item not found in response for unique_id_combined: {unique_id_combined}"
         item = table_query_response["Item"]
+
+        df.at[idx, "IMMS_ID"] = item.get("PK")
 
         resource_json_str = item.get("Resource")
         assert resource_json_str, "Resource field missing in item."

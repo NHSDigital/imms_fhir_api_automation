@@ -46,6 +46,20 @@ def fetch_immunization_events_detail(aws_profile_name:str, ImmsID: str, env:str,
 
     return response
 
+def fetch_immunization_events_detail_by_IdentifierPK(aws_profile_name:str, IdentifierPK: str, env:str,):
+    db = DynamoDBHelper(aws_profile_name, env)
+    tableImmsEvent = db.get_events_table()
+
+    response = tableImmsEvent.query(
+        IndexName="IdentifierGSI",
+        KeyConditionExpression="IdentifierPK = :pkval",
+        ExpressionAttributeValues={":pkval": IdentifierPK}
+    )
+
+    print(f"\n Imms Event response is {response} \n")
+
+    return response
+
 def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name: str, ImmsID: str, env: str):
     db = DynamoDBHelper(aws_profile_name, env)
     tableImmsDelta = db.get_delta_table()
