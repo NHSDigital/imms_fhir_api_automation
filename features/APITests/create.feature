@@ -18,8 +18,8 @@ Scenario Outline:  Verify that the POST Create API for different vaccine types
       |Random    | RSV         | RAVS         |
       |Random    | FLU         | MAVIS        |
       |Random    | MMR         | Postman_Auth |
-      |Random    | MENACWY     | MAVIS        |
-      |Random    | 3in1        | MAVIS        |
+      |Random    | MENACWY     | TPP          |
+      |Random    | 3in1        | TPP          |
       |Random    | MMRV        | EMIS         |
       |Random    | PERTUSSIS   | EMIS         |
       |Random    | SHINGLES    | EMIS         |
@@ -73,7 +73,7 @@ Scenario Outline:  Verify that the POST Create API for different supplier fails 
     And The Response JSONs should contain correct error message for 'unauthorized_access' access
     Examples: 
       | Patient  | vaccine_type| Supplier     |
-      |Random    | HPV         |  RAVS        |
+      |Random    | COVID        | MAVIS        |
       |Random    | RSV         | MAVIS        |
       |Random    | RSV         | SONAR        |
 
