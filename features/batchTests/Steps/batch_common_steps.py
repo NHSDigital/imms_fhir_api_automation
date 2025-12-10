@@ -106,8 +106,9 @@ def file_will_be_moved_to_destination_bucket(context):
     assert context.fileContent, f"File not found in destination bucket after timeout: {context.forwarded_prefix}"
     
 @then("bus ack will be empty as all records are processed successfully")
-def all_records_are_processed_successfully_in_the_batch_file(context):  
-    all_valid = validate_bus_ack_file(context)
+def all_records_are_processed_successfully_in_the_batch_file(context): 
+    file_rows = read_and_validate_bus_ack_file_content(context) 
+    all_valid = validate_bus_ack_file_for_successful_records(context, file_rows)
     assert all_valid, "One or more records failed validation checks"
     
 @then("Audit table will have correct status, queue name and record count for the processed batch file")

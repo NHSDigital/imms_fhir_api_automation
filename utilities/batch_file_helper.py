@@ -1,44 +1,30 @@
 from utilities.error_constants import ERROR_MAP
 
 
-def validate_bus_ack_file(context) -> bool:
-    content = context.fileContent.strip()
-    lines = content.split("\n")
+def validate_bus_ack_file_for_successful_records(context, file_rows) -> bool:
+    if not file_rows:
+        print("No rows found in BUS ACK file for successful records")
+        return True
+    else:
+        success_mask = (
+            ~context.vaccine_df["UNIQUE_ID"].str.startswith("Fail-", na=False) &
+            (context.vaccine_df["UNIQUE_ID"].str.strip() != "")
+        )
 
-    # Expected header columns
-    expected_header = [
-        "MESSAGE_HEADER_ID",
-        "HEADER_RESPONSE_CODE",
-        "ISSUE_SEVERITY",
-        "ISSUE_CODE",
-        "ISSUE_DETAILS_CODE",
-        "RESPONSE_TYPE",
-        "RESPONSE_CODE",
-        "RESPONSE_DISPLAY",
-        "RECEIVED_TIME",
-        "MAILBOX_FROM",
-        "LOCAL_ID",
-        "IMMS_ID",
-        "OPERATION_OUTCOME",
-        "MESSAGE_DELIVERY",
-    ]
+        success_df = context.vaccine_df[success_mask]
 
-    header = lines[0].split("|")
+        valid_ids = set(success_df["UNIQUE_ID"].astype(str) + "^" + success_df["UNIQUE_ID_URI"].astype(str))
+        
+        file_ids = set(file_rows["LOCAL_ID"].astype(str))
 
-    if len(header) != len(expected_header):
-        print(f"Header column count mismatch: expected {len(expected_header)}, got {len(header)}")
-        return False
+        intersection = valid_ids & file_ids
 
-    if header != expected_header:
-        print(f"Header names mismatch.\nExpected: {expected_header}\nGot: {header}")
-        return False
-
-    if len(lines) > 1:
-        print("File contains data rows; only header should be present.")
-        return False
-
-    print("Bus ACK file validation passed.")
-    return True
+        if intersection:
+            print(f"Unexpected valid IDs found in BUS ACK file: {intersection}")
+            return False
+        else:
+            print("No successful records present in BUS ACK file — validation passed")
+            return True   
 
 
 def validate_inf_ack_file(context, success: bool = True) -> bool:
@@ -110,26 +96,19 @@ def normalize_for_lookup(id_str: str) -> str:
     normalized_suffix = "" if suffix in ["", "nan"] else suffix
     return f"{normalized_prefix}^{normalized_suffix}"
 
-def validate_bus_ack_file_for_error(context) -> bool:
-    content = context.fileContent
-    lines = content.strip().split("\n")
-    header = lines[0].split("|")
+def validate_bus_ack_file_for_error(context, file_rows) -> bool:
+    
+    if not file_rows:
+        print("No rows found in BUS ACK file for failed records")
+        return False
 
-    file_rows = {}
-    for i, line in enumerate(lines[1:], start=2):
-        fields = line.split("|")
-        local_id = fields[10]
-        normalized_id = normalize_for_lookup(local_id)
-        entry = {
-            "row": i,
-            "fields": fields,
-            "original_local_id": local_id
-        }
-        file_rows.setdefault(normalized_id, []).append(entry)
+    fail_mask = (
+        context.vaccine_df["UNIQUE_ID"].str.startswith("Fail-", na=False) | (context.vaccine_df["UNIQUE_ID"].str.strip() == "")
+     )
 
-    valid_ids = set(
-        context.vaccine_df["UNIQUE_ID"].astype(str) + "^" + context.vaccine_df["UNIQUE_ID_URI"].astype(str)
-    )
+    fail_df = context.vaccine_df[fail_mask]
+
+    valid_ids = set(fail_df["UNIQUE_ID"].astype(str) + "^" + fail_df["UNIQUE_ID_URI"].astype(str))
 
     overall_valid = True
 
@@ -204,3 +183,58 @@ def validate_bus_ack_file_for_error(context) -> bool:
             overall_valid = overall_valid and row_valid
 
     return overall_valid
+
+
+def read_and_validate_bus_ack_file_content(context):
+    content = context.fileContent.strip()
+    lines = content.split("\n")
+
+    expected_header = [
+        "MESSAGE_HEADER_ID",
+        "HEADER_RESPONSE_CODE",
+        "ISSUE_SEVERITY",
+        "ISSUE_CODE",
+        "ISSUE_DETAILS_CODE",
+        "RESPONSE_TYPE",
+        "RESPONSE_CODE",
+        "RESPONSE_DISPLAY",
+        "RECEIVED_TIME",
+        "MAILBOX_FROM",
+        "LOCAL_ID",
+        "IMMS_ID",
+        "OPERATION_OUTCOME",
+        "MESSAGE_DELIVERY",
+    ]
+
+    if not lines:
+        print("File is empty")
+        return {}
+
+    header = lines[0].split("|")
+
+    if len(header) != len(expected_header):
+        print(f"Header column count mismatch: expected {len(expected_header)}, got {len(header)}")
+        return {}
+
+    if header != expected_header:
+        print(f"Header names mismatch.\nExpected: {expected_header}\nGot: {header}")
+        return {}
+   
+    file_rows = {}   
+    if len(lines) > 1:
+        for i, line in enumerate(lines[1:], start=2):
+            fields = line.split("|")
+            if len(fields) < len(expected_header):
+                print(f"Row {i} has insufficient columns: {fields}")
+                continue
+
+            local_id = fields[10]
+            normalized_id = normalize_for_lookup(local_id)
+            entry = {
+                "row": i,
+                "fields": fields,
+                "original_local_id": local_id,
+            }
+            file_rows.setdefault(normalized_id, []).append(entry)
+
+    return file_rows
