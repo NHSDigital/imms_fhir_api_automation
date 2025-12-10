@@ -46,6 +46,20 @@ def fetch_immunization_events_detail(aws_profile_name:str, ImmsID: str, env:str,
 
     return response
 
+def fetch_immunization_events_detail_by_IdentifierPK(aws_profile_name:str, IdentifierPK: str, env:str,):
+    db = DynamoDBHelper(aws_profile_name, env)
+    tableImmsEvent = db.get_events_table()
+
+    response = tableImmsEvent.query(
+        IndexName="IdentifierGSI",
+        KeyConditionExpression="IdentifierPK = :pkval",
+        ExpressionAttributeValues={":pkval": IdentifierPK}
+    )
+
+    print(f"\n Imms Event response is {response} \n")
+
+    return response
+
 def fetch_immunization_int_delta_detail_by_immsID(aws_profile_name: str, ImmsID: str, env: str, expected_item: int = 1):
     db = DynamoDBHelper(aws_profile_name, env)
     tableImmsDelta = db.get_delta_table()
@@ -216,13 +230,35 @@ def validate_audit_table_record(context, item, expected_status: str, expected_er
         f"Expected queue_name '{expected_queue}', got '{item.get('queue_name')}'"
     )
   
-    if expected_status == "Processed":
-        actual_row_count = len(context.vaccine_df)
-        check.is_true(
-            item.get("record_count") == actual_row_count,
-            f"Expected record_count {actual_row_count}, got '{item.get('record_count')}'"
-        )
+    expected_row_count = len(context.vaccine_df)
+    
+    expected_success_count = context.vaccine_df[(~context.vaccine_df['UNIQUE_ID'].str.startswith('Fail-', na=False)) &
+        (context.vaccine_df['UNIQUE_ID'].str.strip() != "")
+    ].shape[0]
 
+    expected_failure_count = context.vaccine_df[(context.vaccine_df['UNIQUE_ID'].str.startswith('Fail-', na=False)) |
+        (context.vaccine_df['UNIQUE_ID'].str.strip() == "")
+    ].shape[0]
+
+    
+    if expected_status == "Processed":   
+        check.is_true(
+            item.get("record_count") == expected_row_count,
+            f"Expected record_count {expected_row_count}, got '{item.get('record_count')}'"
+        )         
+        
+        if(expected_failure_count>0):
+            check.is_true(
+                item.get("records_failed") == expected_failure_count,
+                f"Expected records_failed {expected_failure_count}, got '{item.get('records_failed')}'"
+            )
+        
+    
+        check.is_true(
+            item.get("records_succeeded") == expected_success_count,
+            f"Expected records_succeeded {expected_success_count}, got '{item.get('records_succeeded')}'"
+        )
+        
     check.is_true(
         item.get("filename") == context.filename,
         f"Expected filename '{context.filename}', got '{item.get('filename')}'"

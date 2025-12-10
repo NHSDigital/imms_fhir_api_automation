@@ -15,7 +15,7 @@ Scenario: Verify that full dataset vaccination record will be created through ba
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
     And bus ack file will be created
-    And all records are processed successfully in the bus ack file 
+    And bus ack will be empty as all records are processed successfully  
     And Audit table will have correct status, queue name and record count for the processed batch file
     And The imms event table will be populated with the correct data for 'created' event for records in batch file
     And The delta table will be populated with the correct data for all records in batch file  
@@ -34,7 +34,7 @@ Scenario: Verify that minimum dataset vaccination record will be created through
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
     And bus ack file will be created
-    And all records are processed successfully in the bus ack file 
+    And bus ack will be empty as all records are processed successfully  
     And Audit table will have correct status, queue name and record count for the processed batch file
     And The imms event table will be populated with the correct data for 'created' event for records in batch file
     And The delta table will be populated with the correct data for all records in batch file  
@@ -130,7 +130,7 @@ Scenario: verify that vaccination record will be get successful if performer is 
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
     And bus ack file will be created
-    And all records are processed successfully in the bus ack file 
+    And bus ack will be empty as all records are processed successfully  
     And Audit table will have correct status, queue name and record count for the processed batch file
     And The imms event table will be populated with the correct data for 'created' event for records in batch file
     And The delta table will be populated with the correct data for all records in batch file  
@@ -154,7 +154,7 @@ Scenario: verify that vaccination record will be get successful with different v
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
     And bus ack file will be created
-    And all records are processed successfully in the bus ack file 
+    And bus ack will be empty as all records are processed successfully  
     And Audit table will have correct status, queue name and record count for the processed batch file
     And The imms event table will be populated with the correct data for 'created' event for records in batch file
     And The delta table will be populated with the correct data for all records in batch file 
@@ -192,15 +192,15 @@ Scenario: verify that vaccination record will be get rejected if mandatory field
 @delete_cleanup_batch @vaccine_type_COVID  @supplier_name_EMIS
 Scenario: verify that vaccination record will be successful if mandatory field for site, location and unique URI are invalid in batch file
     Given batch file is created for below data where mandatory field for site, location and unique uri values are invalid
-        | patient_id        | unique_id                      |
-        | Random            | Fail-invalid_unique_id_uri-    |
-        | Random            | Fail-invalid_site_Code_uri-    |
-        | Random            | Fail-invalid_location_Code_uri |
+        | patient_id        | unique_id                 |
+        | Random            | invalid_unique_id_uri-    |
+        | Random            | invalid_site_Code_uri-    |
+        | Random            | invalid_location_Code_uri |
     When batch file is uploaded in s3 bucket
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
     And bus ack file will be created
-    And all records are processed successfully in the bus ack file 
+    And bus ack will be empty as all records are processed successfully  
     And Audit table will have correct status, queue name and record count for the processed batch file
     And The imms event table will be populated with the correct data for 'created' event for records in batch file
     And The delta table will be populated with the correct data for all records in batch file 
@@ -218,7 +218,7 @@ Scenario: verify that vaccination record will be get successful if action flag h
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
     And bus ack file will be created
-    And all records are processed successfully in the bus ack file 
+    And bus ack will be empty as all records are processed successfully  
     And Audit table will have correct status, queue name and record count for the processed batch file
     And The imms event table will be populated with the correct data for 'created' event for records in batch file
     And The delta table will be populated with the correct data for all records in batch file
@@ -271,7 +271,7 @@ Scenario: verify that vaccination record will be get successful if non mandatory
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
     And bus ack file will be created
-    And all records are processed successfully in the bus ack file 
+    And bus ack will be empty as all records are processed successfully  
     And Audit table will have correct status, queue name and record count for the processed batch file
     And The imms event table will be populated with the correct data for 'created' event for records in batch file
     And The delta table will be populated with the correct data for all records in batch file
