@@ -1,0 +1,1 @@
+✅ Step Passed: **bus ack will be empty as all records are processed successfully
