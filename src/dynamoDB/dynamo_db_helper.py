@@ -230,13 +230,35 @@ def validate_audit_table_record(context, item, expected_status: str, expected_er
         f"Expected queue_name '{expected_queue}', got '{item.get('queue_name')}'"
     )
   
-    if expected_status == "Processed":
-        actual_row_count = len(context.vaccine_df)
-        check.is_true(
-            item.get("record_count") == actual_row_count,
-            f"Expected record_count {actual_row_count}, got '{item.get('record_count')}'"
-        )
+    expected_row_count = len(context.vaccine_df)
+    
+    expected_success_count = context.vaccine_df[(~context.vaccine_df['UNIQUE_ID'].str.startswith('Fail-', na=False)) &
+        (context.vaccine_df['UNIQUE_ID'].str.strip() != "")
+    ].shape[0]
 
+    expected_failure_count = context.vaccine_df[(context.vaccine_df['UNIQUE_ID'].str.startswith('Fail-', na=False)) |
+        (context.vaccine_df['UNIQUE_ID'].str.strip() == "")
+    ].shape[0]
+
+    
+    if expected_status == "Processed":   
+        check.is_true(
+            item.get("record_count") == expected_row_count,
+            f"Expected record_count {expected_row_count}, got '{item.get('record_count')}'"
+        )         
+        
+        if(expected_failure_count>0):
+            check.is_true(
+                item.get("records_failed") == expected_failure_count,
+                f"Expected records_failed {expected_failure_count}, got '{item.get('records_failed')}'"
+            )
+        
+    
+        check.is_true(
+            item.get("records_succeeded") == expected_success_count,
+            f"Expected records_succeeded {expected_success_count}, got '{item.get('records_succeeded')}'"
+        )
+        
     check.is_true(
         item.get("filename") == context.filename,
         f"Expected filename '{context.filename}', got '{item.get('filename')}'"
