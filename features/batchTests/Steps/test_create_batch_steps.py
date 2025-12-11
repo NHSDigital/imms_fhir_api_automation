@@ -183,6 +183,6 @@ def valid_batch_file_is_created_with_missing_non_mandatory_fields(datatable, con
 
 @then("all records are rejected in the bus ack file and no imms id is generated")
 def all_record_are_rejected_for_given_field_name(context):
-    all_valid = validate_bus_ack_file_for_error(context)
+    file_rows = read_and_validate_bus_ack_file_content(context) 
+    all_valid = validate_bus_ack_file_for_error(context, file_rows)
     assert all_valid, "One or more records failed validation checks"
- 

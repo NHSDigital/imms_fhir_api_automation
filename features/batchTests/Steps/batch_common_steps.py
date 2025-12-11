@@ -106,8 +106,9 @@ def file_will_be_moved_to_destination_bucket(context):
     assert context.fileContent, f"File not found in destination bucket after timeout: {context.forwarded_prefix}"
     
 @then("bus ack will be empty as all records are processed successfully")
-def all_records_are_processed_successfully_in_the_batch_file(context):  
-    all_valid = validate_bus_ack_file(context)
+def all_records_are_processed_successfully_in_the_batch_file(context): 
+    file_rows = read_and_validate_bus_ack_file_content(context) 
+    all_valid = validate_bus_ack_file_for_successful_records(context, file_rows)
     assert all_valid, "One or more records failed validation checks"
     
 @then("Audit table will have correct status, queue name and record count for the processed batch file")
@@ -158,10 +159,26 @@ def validate_imms_event_table_for_all_records_in_batch_file(context, operation: 
         
     df["UNIQUE_ID_COMBINED"] = df["UNIQUE_ID_URI"].astype(str) + "#" + df["UNIQUE_ID"].astype(str)
     valid_rows = df[df["UNIQUE_ID_COMBINED"].notnull() & (df["UNIQUE_ID_COMBINED"] != "nan#nan")]
+        
+    df["UNIQUE_ID_COMBINED"] = df["UNIQUE_ID_URI"].astype(str) + "#" + df["UNIQUE_ID"].astype(str)
+    valid_rows = df[df["UNIQUE_ID_COMBINED"].notnull() & (df["UNIQUE_ID_COMBINED"] != "nan#nan")]
 
     for idx, row in valid_rows.iterrows():
         unique_id_combined = row["UNIQUE_ID_COMBINED"]
+    for idx, row in valid_rows.iterrows():
+        unique_id_combined = row["UNIQUE_ID_COMBINED"]
         batch_record = {k: normalize(v) for k, v in row.to_dict().items()}
+
+        table_query_response = fetch_immunization_events_detail_by_IdentifierPK(
+            context.aws_profile_name, unique_id_combined, context.S3_env
+        )
+        assert "Items" in table_query_response and table_query_response["Count"] > 0, \
+        f"Item not found in response for unique_id_combined: {unique_id_combined}"
+
+        item = table_query_response["Items"][0]
+
+        df.at[idx, "IMMS_ID"]=  item.get("PK")
+        context.ImmsID= item.get("PK").replace("Immunization#", "")
 
         table_query_response = fetch_immunization_events_detail_by_IdentifierPK(
             context.aws_profile_name, unique_id_combined, context.S3_env
