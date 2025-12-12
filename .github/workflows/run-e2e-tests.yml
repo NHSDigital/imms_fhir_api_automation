@@ -41,6 +41,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     environment: ${{ github.event_name == 'workflow_dispatch' && (inputs.environment || 'internal-qa') }}
+    env:
+      S3_ENV: ${{ github.event_name == 'workflow_dispatch' && (inputs.environment || 'internal-qa') }}
+      AUTH_URL: ${{ format('https://%s.api.service.nhs.uk/oauth2-mock/authorize', github.event_name == 'workflow_dispatch' && (inputs.environment || 'internal-qa')) }}
+      TOKEN_URL: ${{ format('https://%s.api.service.nhs.uk/oauth2-mock/token', github.event_name == 'workflow_dispatch' && (inputs.environment || 'internal-qa')) }}
+      BASE_URL: ${{ format('https://%s.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4', github.event_name == 'workflow_dispatch' && (inputs.environment || 'internal-qa')) }}
     steps:
 
       - name: Connect to AWS
@@ -72,10 +77,10 @@ jobs:
           
       - name: Run Pytest-BDD tests for ${{ github.event_name == 'workflow_dispatch' && (inputs.testPath || 'API&batchTests') }} with filter ${{ github.event_name == 'workflow_dispatch' && (inputs.testFilter || 'functional') }}
         env: 
-          S3_env: ${{ env.ENVIRONMENT }}
-          auth_url: ${{ format('https://%s.api.service.nhs.uk/oauth2-mock/authorize', env.ENVIRONMENT) }}
-          token_url: ${{ format('https://%s.api.service.nhs.uk/oauth2-mock/token', env.ENVIRONMENT) }}
-          baseUrl: ${{ format('https://%s.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4', env.ENVIRONMENT) }}
+          S3_env: ${{ env.S3_ENV }}
+          auth_url: ${{ env.AUTH_URL }}
+          token_url: ${{ env.TOKEN_URL }}
+          baseUrl: ${{ env.BASE_URL }}
           callback_url: 'https://oauth.pstmn.io/v1/callback'
           Postman_Auth_client_Id: ${{ secrets.Postman_Auth_client_Id }}
           Postman_Auth_client_Secret: ${{ secrets.Postman_Auth_client_Secret }}
