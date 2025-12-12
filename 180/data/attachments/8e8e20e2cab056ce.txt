@@ -1,0 +1,2 @@
+❌ Step failed! **Send a search request with GET method with valid NHS Number '9728403348' and Disease Type 'FLU' and Date From '2025-01-01' and Date To '2025-06-04'** 
+ Error: URL has an invalid label.

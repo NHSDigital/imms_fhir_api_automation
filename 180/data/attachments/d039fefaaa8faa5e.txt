@@ -1,0 +1,2 @@
+❌ Step failed! **Valid token is generated for the 'Postman_Auth'** 
+ Error: URL has an invalid label.

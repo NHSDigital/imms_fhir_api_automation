@@ -1,0 +1,2 @@
+❌ Step failed! **Send a search request with post method using invalid identifier header for Immunization event created** 
+ Error: URL has an invalid label.

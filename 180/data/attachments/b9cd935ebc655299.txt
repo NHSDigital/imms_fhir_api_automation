@@ -1,0 +1,2 @@
+❌ Step failed! **valid vaccination record is created by 'RAVS' supplier** 
+ Error: URL has an invalid label.

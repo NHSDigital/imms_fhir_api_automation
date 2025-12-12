@@ -1,0 +1,2 @@
+❌ Step failed! **Valid json payload is created where doseNumberPositiveInt is '10'** 
+ Error: URL has an invalid label.

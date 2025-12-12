@@ -1,0 +1,2 @@
+❌ Step failed! **Valid vaccination record is created with Patient 'Random' and vaccine_type 'RSV'** 
+ Error: URL has an invalid label.

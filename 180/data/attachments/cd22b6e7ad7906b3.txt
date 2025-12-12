@@ -1,0 +1,2 @@
+❌ Step failed! **Send a search request with GET method with valid Date From '2025-05-01' and invalid Date To '2025-05-32'** 
+ Error: URL has an invalid label.

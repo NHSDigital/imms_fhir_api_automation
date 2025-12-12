@@ -1,0 +1,2 @@
+❌ Step failed! **Valid json payload is created where occurrenceDateTime has invalid 'empty' date** 
+ Error: URL has an invalid label.

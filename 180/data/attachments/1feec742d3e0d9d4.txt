@@ -1,0 +1,2 @@
+❌ Step failed! **Send a search request with GET method with invalid NHS Number '""' and valid Disease Type 'COVID'** 
+ Error: URL has an invalid label.
