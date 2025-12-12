@@ -1,0 +1,2 @@
+❌ Step failed! **Valid token is generated for the 'TPP'** 
+ Error: URL has an invalid label.
