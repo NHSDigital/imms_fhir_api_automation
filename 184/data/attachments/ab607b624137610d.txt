@@ -1,0 +1,2 @@
+❌ Step failed! **Valid vaccination record is created with Patient 'SupersedeNhsNo' and vaccine_type 'COVID'** 
+ Error: Failed to parse: https://%s.api.service.nhs.uk/oauth2-mock/authorize
