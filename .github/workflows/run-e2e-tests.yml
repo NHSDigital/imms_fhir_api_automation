@@ -11,7 +11,7 @@ on:
         default: "int"
         type: choice
         options:
-          - pre-prod
+          - internal-qa
           - int
       testPath:
         description: "Test to execute"
@@ -40,7 +40,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'int'}}
+    environment: ${{ github.event_name == 'workflow_dispatch' && (inputs.environment || 'internal-qa') }}
 
     steps:
       - name: Connect to AWS
@@ -70,15 +70,18 @@ jobs:
           pip install -r requirements.txt 2> req_error.log || { cat req_error.log; exit 1; }
           pip install allure-pytest 2> allure_error.log || { cat allure_error.log; exit 1; }
           
-      - name: Run Pytest-BDD tests for ${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' }} with filter ${{ github.event_name == 'workflow_dispatch' && inputs.testFilter || 'functional' }}
+      - name: Run Pytest-BDD tests for ${{ github.event_name == 'workflow_dispatch' && (inputs.testPath || 'API&batchTests') }} with filter ${{ github.event_name == 'workflow_dispatch' && (inputs.testFilter || 'functional') }}
         env:
-          auth_url: ${{ vars.auth_url }}
-          token_url: ${{ vars.token_url }}
-          callback_url: ${{ vars.callback_url }}
+          
+          S3_env: ${{ vars.S3_ENV }}
+          auth_url: 'https://${{ vars.S3_ENV }}.api.service.nhs.uk/oauth2-mock/authorize'
+          token_url: 'https://${{ vars.S3_ENV }}.api.service.nhs.uk/oauth2-mock/token'
+          baseUrl: 'https://${{ vars.S3_ENV }}.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4'
+          callback_url: 'https://oauth.pstmn.io/v1/callback'
           Postman_Auth_client_Id: ${{ secrets.Postman_Auth_client_Id }}
           Postman_Auth_client_Secret: ${{ secrets.Postman_Auth_client_Secret }}
           username: ${{ secrets.username }}
-          scope: ${{ vars.scope }}
+          scope: 'nhs-cis2'
           RAVS_client_Id: ${{ secrets.RAVS_client_Id }}
           RAVS_client_Secret: ${{ secrets.RAVS_client_Secret }}
           MAVIS_client_Id: ${{ secrets.MAVIS_client_Id }}
@@ -89,10 +92,8 @@ jobs:
           TPP_client_Secret: ${{ secrets.TPP_client_Secret }}
           SONAR_client_Id: ${{ secrets.SONAR_client_Id }}
           SONAR_client_Secret: ${{ secrets.SONAR_client_Secret }}
-          baseUrl: ${{ vars.baseUrl }}
           aws_token_refresh: 'False'
           PYTHONPATH: ${{ github.workspace }}
-          S3_env: ${{ vars.S3_ENV }}
         run: |
           TEST_PATH="${{ github.event_name == 'workflow_dispatch' && inputs.testPath || 'API&batchTests' }}"
           TEST_FILTER="${{ github.event_name == 'workflow_dispatch' && inputs.testFilter || 'functional' }}"
