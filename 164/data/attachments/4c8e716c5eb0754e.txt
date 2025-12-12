@@ -1,7 +1,0 @@
-❌ Step failed! **Empty immunization event is returned in the response** 
- Error: link[0].url should be 'https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization?identifier=None', got 'https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization?identifier=https://www.ieds.england.nhs.uk/|7fba8cf7-0fa0-4172-8751-cfd97efcf6de&_elements=id,meta'
-assert 'https://int....ments=id,meta' == 'https://int....entifier=None'
-  
-  Skipping 75 identical leading characters in diff, use -v to show
-  - dentifier=None
-  + dentifier=https://www.ieds.england.nhs.uk/|7fba8cf7-0fa0-4172-8751-cfd97efcf6de&_elements=id,meta
