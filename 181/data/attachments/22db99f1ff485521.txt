@@ -1,0 +1,8 @@
+❌ Step failed! **Empty immunization event is returned in the response** 
+ Error: link[0].url should be 'https://internal-qa.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization?identifier=None', got 'https://internal-dev.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization?identifier=None'
+assert 'https://inte...entifier=None' == 'https://inte...entifier=None'
+  
+  - https://internal-qa.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization?identifier=None
+  ?                  ^^
+  + https://internal-dev.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization?identifier=None
+  ?                  ^^^

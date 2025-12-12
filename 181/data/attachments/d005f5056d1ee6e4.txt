@@ -1,0 +1,6 @@
+❌ Step failed! **correct immunization event is returned in the response with only specified elements** 
+ Error: link[0].url should start with 'https://internal-qa.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4', got 'https://internal-dev.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization?identifier=https://supplierABC/identifiers/vacc|f570dde0-8cbe-4059-b843-35dccd83b264&_elements=id,meta'
+assert False
+ +  where False = <built-in method startswith of str object at 0x7f026877ad30>('https://internal-qa.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4')
+ +    where <built-in method startswith of str object at 0x7f026877ad30> = 'https://internal-dev.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization?identifier=https://supplierABC/identifiers/vacc|f570dde0-8cbe-4059-b843-35dccd83b264&_elements=id,meta'.startswith
+ +    and   'https://internal-qa.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4' = <utilities.context.ScenarioContext object at 0x7f0268863f50>.baseUrl
