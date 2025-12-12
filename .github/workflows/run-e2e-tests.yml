@@ -8,7 +8,7 @@ on:
       environment:
         description: "Target environment"
         required: true
-        default: "int"
+        default: "internal-qa"
         type: choice
         options:
           - internal-qa
