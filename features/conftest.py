@@ -81,9 +81,13 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     get_delete_url_header(context)
     
     if 'Delete_cleanUp' in tags:
-        print(f"\n Delete Request is {context.url}/{context.ImmsID}")
-        context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
-        assert context.response.status_code == 204, f"Expected status code 204, but got {context.response.status_code}. Response: {context.response.json()}"
+        if context.ImmsID is not None:
+            print(f"\n Delete Request is {context.url}/{context.ImmsID}")
+            context.response = requests.delete(f"{context.url}/{context.ImmsID}", headers=context.headers)
+            assert context.response.status_code == 204, f"Expected status code 204, but got {context.response.status_code}. Response: {context.response.json()}"
+        else:
+            print("Skipping delete: ImmsID is None")
+
 
     if 'delete_cleanup_batch' in tags:
         get_tokens(context, context.supplier_name)
