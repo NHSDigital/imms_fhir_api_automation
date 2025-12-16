@@ -26,3 +26,20 @@ class GenderCode(Enum):
     female = "2"
     unknown = "0"
     other = "9"
+
+class ActionMap(Enum):
+    new     = (Operation.created, ActionFlag.created)
+    update  = (Operation.updated, ActionFlag.updated)
+    delete  = (Operation.deleted, ActionFlag.deleted)
+    created = (Operation.created, ActionFlag.created)
+    updated = (Operation.updated, ActionFlag.updated)
+    deleted = (Operation.deleted, ActionFlag.deleted)
+
+    @property
+    def operation(self):
+        return self.value[0]
+
+    @property
+    def action_flag(self):
+        return self.value[1]
+

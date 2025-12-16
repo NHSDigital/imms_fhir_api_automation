@@ -39,7 +39,6 @@ def ignore_local_run_set_test_data(func):
 
             file_name = os.getenv("LOCAL_RUN_FILE_NAME")
             context.filename = file_name
-            context.expected_version = "1"
             file_path = os.path.join(context.working_directory, file_name)
 
             # Read file into vaccine_df
@@ -66,14 +65,14 @@ def valid_batch_file_is_created_with_details(datatable, context):
     build_dataFrame_using_datatable(datatable, context)        
     create_batch_file(context)
 
-@given("Valid batch file is created")
-def valid_batch_file_is_created(context):
-    context.file_extension = "csv"
-    context.filename = generate_file_name(context) 
-    record = build_batch_file(context)
-    context.vaccine_df = pd.DataFrame([record.dict()])   
-    save_record_to_batch_files_directory(context)
-    print(f"Batch file created: {context.filename}")
+# @given("Valid batch file is created")
+# def valid_batch_file_is_created(context):
+#     context.file_extension = "csv"
+#     context.filename = generate_file_name(context) 
+#     record = build_batch_file(context)
+#     context.vaccine_df = pd.DataFrame([record.dict()])   
+#     save_record_to_batch_files_directory(context)
+#    print(f"Batch file created: {context.filename}")
 
 @when("same batch file is uploaded again in s3 bucket") 
 @when("batch file is uploaded in s3 bucket")
@@ -83,12 +82,6 @@ def batch_file_upload_in_s3_bucket(context):
     print(f"Batch file uploaded to S3: {context.filename}")
     fileIsMoved = wait_for_file_to_move_archive(context)
     assert fileIsMoved, f"File not found in archive after timeout"
-
-# @when("same batch file is uploaded again in s3 bucket")    
-# @ignore_local_run_set_test_data
-# def same_batch_file_upload_in_s3_bucket(context):
-#     time.sleep(30)
-#     batch_file_upload_in_s3_bucket(context)
     
 @then("file will be moved to destination bucket and inf ack file will be created")
 def file_will_be_moved_to_destination_bucket(context):
@@ -105,7 +98,7 @@ def file_will_be_moved_to_destination_bucket(context):
     context.fileContent = wait_and_read_ack_file(context, "forwardedFile")
     assert context.fileContent, f"File not found in destination bucket after timeout: {context.forwarded_prefix}"
     
-@then("bus ack will be empty as all records are processed successfully")
+@then("bus ack will not have any entry of successfully processed records")
 def all_records_are_processed_successfully_in_the_batch_file(context): 
     file_rows = read_and_validate_bus_ack_file_content(context) 
     all_valid = validate_bus_ack_file_for_successful_records(context, file_rows)
@@ -119,52 +112,27 @@ def validate_imms_audit_table(context):
     item = table_query_response[0]
     validate_audit_table_record(context, item, "Processed")
     
-@then("The delta table will be populated with the correct data for all records in batch file")
-def validate_imms_delta_table_for_all_records_in_batch_file(context):
-    df = context.vaccine_df
-
-    # Defensive check
-    check.is_true("IMMS_ID" in df.columns, "Column 'IMMS_ID' not found in vaccine_df")
-
-    # Filter rows where IMMS_ID is not null
-    valid_rows = df[df["IMMS_ID"].notnull()]
-
-    check.is_true(not valid_rows.empty, "No rows with non-null IMMS_ID found in vaccine_df")
-
-    for _, row in valid_rows.iterrows():
-        imms_id = row["IMMS_ID"]
-        context.ImmsID= imms_id.replace("Immunization#", "")
-        batch_record = {k: normalize(v) for k, v in row.to_dict().items()}
-
-        item = fetch_immunization_int_delta_detail_by_immsID(
-            context.aws_profile_name,
-            context.ImmsID,  
-            context.S3_env
-        )
-
-        check.is_true(item, f"Item not found in response for IMMS_ID: {imms_id}")
-
-        if item:
-            validate_imms_delta_record_with_batch_record(
-                context,
-                batch_record,
-                item,
-                Operation.created.value,
-                ActionFlag.created.value
-            )
+@then("The delta table will be populated with the correct data for all created records in batch file")
+def validate_imms_delta_table_for_created_records_in_batch_file(context):
+    preload_delta_data(context)
+    validate_imms_delta_table_for_created_records_in_batch_file(context)
+    
+@then("The delta table will be populated with the correct data for all updated records in batch file")
+def validate_imms_delta_table_for_updated_records_in_batch_file(context):
+    validate_imms_delta_table_for_updated_records_in_batch_file(context)
+    
+@then("The delta table will be populated with the correct data for all deleted records in batch file")
+def validate_imms_delta_table_for_deleted_records_in_batch_file(context):
+    validate_imms_delta_table_for_deleted_records_in_batch_file(context)
             
 @then(parsers.parse("The imms event table will be populated with the correct data for '{operation}' event for records in batch file"))
 def validate_imms_event_table_for_all_records_in_batch_file(context, operation: Operation):
-    df = context.vaccine_df
-        
-    df["UNIQUE_ID_COMBINED"] = df["UNIQUE_ID_URI"].astype(str) + "#" + df["UNIQUE_ID"].astype(str)
-    valid_rows = df[df["UNIQUE_ID_COMBINED"].notnull() & (df["UNIQUE_ID_COMBINED"] != "nan#nan")]
-        
+    mapping = ActionMap[operation.lower()]
+    df = context.vaccine_df[context.vaccine_df["ACTION_FLAG"].str.lower() == mapping.action_flag.value.lower()]
+            
     df["UNIQUE_ID_COMBINED"] = df["UNIQUE_ID_URI"].astype(str) + "#" + df["UNIQUE_ID"].astype(str)
     valid_rows = df[df["UNIQUE_ID_COMBINED"].notnull() & (df["UNIQUE_ID_COMBINED"] != "nan#nan")]
 
-    for idx, row in valid_rows.iterrows():
-        unique_id_combined = row["UNIQUE_ID_COMBINED"]
     for idx, row in valid_rows.iterrows():
         unique_id_combined = row["UNIQUE_ID_COMBINED"]
         batch_record = {k: normalize(v) for k, v in row.to_dict().items()}
@@ -179,17 +147,7 @@ def validate_imms_event_table_for_all_records_in_batch_file(context, operation: 
 
         df.at[idx, "IMMS_ID"]=  item.get("PK")
         context.ImmsID= item.get("PK").replace("Immunization#", "")
-
-        table_query_response = fetch_immunization_events_detail_by_IdentifierPK(
-            context.aws_profile_name, unique_id_combined, context.S3_env
-        )
-        assert "Items" in table_query_response and table_query_response["Count"] > 0, \
-        f"Item not found in response for unique_id_combined: {unique_id_combined}"
-
-        item = table_query_response["Items"][0]
-
-        df.at[idx, "IMMS_ID"]=  item.get("PK")
-        context.ImmsID= item.get("PK").replace("Immunization#", "")
+        update_imms_id_for_all_related_rows(context.vaccine_df, unique_id_combined, context.ImmsID)
 
         resource_json_str = item.get("Resource")
         assert resource_json_str, "Resource field missing in item."
@@ -204,7 +162,7 @@ def validate_imms_event_table_for_all_records_in_batch_file(context, operation: 
         created_event = parse_imms_int_imms_event_response(resource)
         
         nhs_number = batch_record.get("NHS_NUMBER") or "TBC"
-
+       
         fields_to_compare = [
             ("Operation", Operation[operation].value, item.get("Operation")),
             ("SupplierSystem", context.supplier_name, item.get("SupplierSystem")),
@@ -226,7 +184,6 @@ def normalize(value):
     return "" if pd.isna(value) or value == "" else value
 
 def create_batch_file(context, file_ext: str = "csv", fileName: str = None, delimiter: str = "|"):
-    context.expected_version = "1"
     context.FileTimestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S") + f"{int(datetime.now(timezone.utc).microsecond / 10000):02d}"    
     context.file_extension = file_ext
 
@@ -262,4 +219,103 @@ def build_dataFrame_using_datatable(datatable, context):
     
     context.vaccine_df = pd.DataFrame(records)
 
+def update_imms_id_for_all_related_rows(df, unique_id_combined, imms_id):
+    mask = (df["UNIQUE_ID_URI"].astype(str) + "#" + df["UNIQUE_ID"].astype(str)) == unique_id_combined
+    df.loc[mask, "IMMS_ID"] = imms_id
+    
+def preload_delta_data(context):
+    df = context.vaccine_df
 
+    check.is_true("IMMS_ID" in df.columns, "Column 'IMMS_ID' not found in vaccine_df")
+
+    valid_rows = df[df["IMMS_ID"].notnull()]
+    check.is_true(not valid_rows.empty, "No rows with non-null IMMS_ID found in vaccine_df")
+
+    grouped = valid_rows.groupby("IMMS_ID")
+
+    context.delta_cache = {}
+
+    for imms_id, group in grouped:
+        clean_id = imms_id.replace("Immunization#", "")
+        delta_items = fetch_immunization_int_delta_detail_by_immsID(
+            context.aws_profile_name,
+            clean_id,
+            context.S3_env
+        )
+        check.is_true(delta_items, f"No delta records returned for IMMS_ID: {clean_id}")
+
+        context.delta_cache[clean_id] = {
+            "rows": group,
+            "delta_items": delta_items
+        }
+        
+def validate_imms_delta_table_for_created_records_in_batch_file(context):
+    for clean_id, data in context.delta_cache.items():
+        rows = data["rows"]
+        delta_items = data["delta_items"]
+
+        create_items = [i for i in delta_items if i.get("Operation") == "CREATE"]
+
+        check.is_true(
+            len(create_items) == 1,
+            f"Expected exactly 1 CREATE record for IMMS_ID {clean_id}, found {len(create_items)}"
+        )
+
+        create_item = create_items[0]
+
+        for _, row in rows[rows["ACTION_FLAG"] == "NEW"].iterrows():
+            batch_record = {k: normalize(v) for k, v in row.to_dict().items()}
+
+            validate_imms_delta_record_with_batch_record(
+                context,
+                batch_record,
+                create_item,
+                Operation.created.value,
+                ActionFlag.created.value
+            )
+            
+def validate_imms_delta_table_for_updated_records_in_batch_file(context):
+    for clean_id, data in context.delta_cache.items():
+        rows = data["rows"]
+        delta_items = data["delta_items"]
+
+        update_items = [i for i in delta_items if i.get("Operation") == "UPDATE"]
+        check.is_true(update_items, f"No UPDATE records for IMMS_ID {clean_id}")
+        updated_index = context.expected_version - 2  
+        for _, row in rows[rows["ACTION_FLAG"] == "UPDATE"].iterrows():
+            batch_record = {k: normalize(v) for k, v in row.to_dict().items()}
+            item = update_items.pop(updated_index)
+
+            validate_imms_delta_record_with_batch_record(
+                context,
+                batch_record,
+                item,
+                Operation.updated.value,
+                ActionFlag.updated.value
+            )
+            
+def validate_imms_delta_table_for_deleted_records_in_batch_file(context):
+    for clean_id, data in context.delta_cache.items():
+        rows = data["rows"]
+        delta_items = data["delta_items"]
+
+        delete_item = next(
+            (i for i in delta_items if i.get("Operation") == "DELETE"),
+            None
+        )
+        
+        check.is_true(
+            len(delete_item) == 1,
+            f"Expected exactly 1 DELETE record for IMMS_ID {clean_id}, found {len(delete_item)}"
+        )
+        check.is_true(delete_item, f"No DELETE record for IMMS_ID {clean_id}")
+
+        for _, row in rows[rows["ACTION_FLAG"] == "DELETE"].iterrows():
+            batch_record = {k: normalize(v) for k, v in row.to_dict().items()}
+            validate_imms_delta_record_with_batch_record(
+                context,
+                batch_record,
+                delete_item,
+                Operation.deleted.value,
+                ActionFlag.deleted.value
+            )

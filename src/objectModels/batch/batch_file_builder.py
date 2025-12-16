@@ -154,7 +154,7 @@ def save_record_to_batch_files_directory(context, delimiter):
 
     with open(file_path, mode="w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file, delimiter=delimiter, quoting=csv.QUOTE_ALL)
-        writer.writerow(df.columns.tolist())  # Write header
+        writer.writerow(df.columns.tolist())  
         for row in df.itertuples(index=False):
             writer.writerow(row)
 

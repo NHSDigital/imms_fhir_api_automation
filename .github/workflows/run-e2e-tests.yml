@@ -44,9 +44,7 @@ jobs:
     env:
       S3_ENV: ${{ github.event_name == 'workflow_dispatch' && (inputs.environment || 'internal-qa') }}
 
-
     steps:
-
       - name: Connect to AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -119,8 +117,6 @@ jobs:
           else
             echo "Pytest-BDD tests passed"
           fi
-
-
 
       - name: Publish test results to GitHub UI
         if: always()
