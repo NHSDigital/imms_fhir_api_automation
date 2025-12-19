@@ -65,15 +65,6 @@ def valid_batch_file_is_created_with_details(datatable, context):
     build_dataFrame_using_datatable(datatable, context)        
     create_batch_file(context)
 
-# @given("Valid batch file is created")
-# def valid_batch_file_is_created(context):
-#     context.file_extension = "csv"
-#     context.filename = generate_file_name(context) 
-#     record = build_batch_file(context)
-#     context.vaccine_df = pd.DataFrame([record.dict()])   
-#     save_record_to_batch_files_directory(context)
-#    print(f"Batch file created: {context.filename}")
-
 @when("same batch file is uploaded again in s3 bucket") 
 @when("batch file is uploaded in s3 bucket")
 @ignore_local_run_set_test_data
@@ -115,14 +106,18 @@ def validate_imms_audit_table(context):
 @then("The delta table will be populated with the correct data for all created records in batch file")
 def validate_imms_delta_table_for_created_records_in_batch_file(context):
     preload_delta_data(context)
-    validate_imms_delta_table_for_created_records_in_batch_file(context)
+    validate_imms_delta_table_for_newly_created_records_in_batch_file(context)
     
 @then("The delta table will be populated with the correct data for all updated records in batch file")
-def validate_imms_delta_table_for_updated_records_in_batch_file(context):
+def validate_imms_delta_table_for_updated_records(context):
+    if context.delta_cache is None:
+        preload_delta_data(context)
     validate_imms_delta_table_for_updated_records_in_batch_file(context)
     
 @then("The delta table will be populated with the correct data for all deleted records in batch file")
-def validate_imms_delta_table_for_deleted_records_in_batch_file(context):
+def validate_imms_delta_table_for_deleted_records(context):
+    if context.delta_cache is None:
+        preload_delta_data(context)
     validate_imms_delta_table_for_deleted_records_in_batch_file(context)
             
 @then(parsers.parse("The imms event table will be populated with the correct data for '{operation}' event for records in batch file"))
@@ -179,12 +174,19 @@ def validate_imms_event_table_for_all_records_in_batch_file(context, operation: 
             
         validate_to_compare_batch_record_with_event_table_record(context, batch_record, created_event)
     
+  
+@then("all records are rejected in the bus ack file and no imms id is generated")
+def all_record_are_rejected_for_given_field_name(context):
+    file_rows = read_and_validate_bus_ack_file_content(context) 
+    all_valid = validate_bus_ack_file_for_error(context, file_rows)
+    assert all_valid, "One or more records failed validation checks"
 
 def normalize(value):
     return "" if pd.isna(value) or value == "" else value
 
 def create_batch_file(context, file_ext: str = "csv", fileName: str = None, delimiter: str = "|"):
-    context.FileTimestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S") + f"{int(datetime.now(timezone.utc).microsecond / 10000):02d}"    
+    offset = datetime.now().astimezone().strftime("%z")[-2:]
+    context.FileTimestamp = datetime.now().astimezone().strftime("%Y%m%dT%H%M%S") + offset    
     context.file_extension = file_ext
 
     timestamp_pattern = r'\d{8}T\d{8}'
@@ -249,7 +251,7 @@ def preload_delta_data(context):
             "delta_items": delta_items
         }
         
-def validate_imms_delta_table_for_created_records_in_batch_file(context):
+def validate_imms_delta_table_for_newly_created_records_in_batch_file(context):
     for clean_id, data in context.delta_cache.items():
         rows = data["rows"]
         delta_items = data["delta_items"]
@@ -303,19 +305,23 @@ def validate_imms_delta_table_for_deleted_records_in_batch_file(context):
             (i for i in delta_items if i.get("Operation") == "DELETE"),
             None
         )
-        
-        check.is_true(
-            len(delete_item) == 1,
-            f"Expected exactly 1 DELETE record for IMMS_ID {clean_id}, found {len(delete_item)}"
-        )
+
         check.is_true(delete_item, f"No DELETE record for IMMS_ID {clean_id}")
 
-        for _, row in rows[rows["ACTION_FLAG"] == "DELETE"].iterrows():
-            batch_record = {k: normalize(v) for k, v in row.to_dict().items()}
-            validate_imms_delta_record_with_batch_record(
-                context,
-                batch_record,
-                delete_item,
-                Operation.deleted.value,
-                ActionFlag.deleted.value
-            )
+        delete_rows = rows[rows["ACTION_FLAG"] == "DELETE"]
+
+        check.is_true(
+            len(delete_rows) == 1,
+            f"Expected exactly 1 DELETE row in batch file for IMMS_ID {clean_id}, found {len(delete_rows)}"
+        )
+
+        row = delete_rows.iloc[0]
+        batch_record = {k: normalize(v) for k, v in row.to_dict().items()}
+
+        validate_imms_delta_record_with_batch_record(
+            context,
+            batch_record,
+            delete_item,
+            Operation.deleted.value,
+            ActionFlag.deleted.value
+        )

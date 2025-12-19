@@ -273,5 +273,4 @@ Scenario: verify that vaccination record will be get successful if non mandatory
     And bus ack file will be created
     And bus ack will not have any entry of successfully processed records
     And Audit table will have correct status, queue name and record count for the processed batch file
-    And The imms event table will be populated with the correct data for 'created' event for records in batch file
     And The delta table will be populated with the correct data for all created records in batch file

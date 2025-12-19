@@ -42,4 +42,5 @@ class ScenarioContext:
         self.supplier_ods_code = None
         self.working_directory = None
         self.fileContent = None
+        self.delta_cache = None
 
