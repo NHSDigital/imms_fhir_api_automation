@@ -184,8 +184,16 @@ def validate_bus_ack_file_for_error(context, file_rows) -> bool:
 
     return overall_valid
 
+def read_and_validate_bus_ack_file_content(
+    context, 
+    by_local_id: bool = True, 
+    by_row_number: bool = False
+) -> dict:
 
-def read_and_validate_bus_ack_file_content(context):
+    # Prevent invalid combinations
+    if by_local_id and by_row_number:
+        raise ValueError("Choose only one mode: by_local_id OR by_row_number")
+
     content = context.fileContent.strip()
     lines = content.split("\n")
 
@@ -211,30 +219,37 @@ def read_and_validate_bus_ack_file_content(context):
         return {}
 
     header = lines[0].split("|")
-
-    if len(header) != len(expected_header):
-        print(f"Header column count mismatch: expected {len(expected_header)}, got {len(header)}")
-        return {}
-
     if header != expected_header:
-        print(f"Header names mismatch.\nExpected: {expected_header}\nGot: {header}")
+        print("Header mismatch")
         return {}
-   
-    file_rows = {}   
-    if len(lines) > 1:
+
+    file_rows = {}
+
+    if by_local_id:
         for i, line in enumerate(lines[1:], start=2):
             fields = line.split("|")
-            if len(fields) < len(expected_header):
-                print(f"Row {i} has insufficient columns: {fields}")
-                continue
+            local_id = normalize_for_lookup(fields[10])
 
-            local_id = fields[10]
-            normalized_id = normalize_for_lookup(local_id)
-            entry = {
-                "row": i,
-                "fields": fields,
-                "original_local_id": local_id,
-            }
-            file_rows.setdefault(normalized_id, []).append(entry)
+            file_rows.setdefault(local_id, []).append(
+                {
+                    "row": i,
+                    "fields": fields,
+                    "original_local_id": fields[10],
+                }
+            )
+        return file_rows
 
-    return file_rows
+    if by_row_number:
+        for i, line in enumerate(lines[1:], start=2):
+            fields = line.split("|")
+
+            file_rows[i] = [
+                {
+                    "row": i,
+                    "fields": fields,
+                    "original_local_id": fields[10],
+                }
+            ]
+        return file_rows
+
+    raise ValueError("You must select either by_local_id=True or by_row_number=True")

@@ -59,5 +59,5 @@ Scenario: Verify that the API vaccination record will be successful updated and 
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
     And bus ack file will be created
-    And all records are rejected in the bus ack file and no imms id is generated
+    And bus ack will have error records for all the updated records in the batch file
     And The delta and imms event table will be populated with the correct data for api created event

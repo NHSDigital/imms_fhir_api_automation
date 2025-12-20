@@ -17,7 +17,6 @@ from features.APITests.steps.test_update_steps import validate_delta_table_for_u
 scenarios('batchTests/update_batch.feature')
 
 @given("batch file is created for below data as full dataset and each record has a valid update record in the same file")
-@ignore_if_local_run
 def valid_batch_file_is_created_with_details(datatable, context):    
     build_dataFrame_using_datatable(datatable, context) 
     df_new = context.vaccine_df.copy()
@@ -116,25 +115,25 @@ def upload_batch_file_to_s3_for_update_with_mandatory_field_missing(context):
     context.vaccine_df = pd.concat([context.vaccine_df.loc[[0]]] * 19, ignore_index=True)
 
     missing_cases = {
-        0: {"SITE_CODE": ""},
-        1: {"SITE_CODE_TYPE_URI": ""},
-        2: {"LOCATION_CODE": ""},
-        3: {"LOCATION_CODE_TYPE_URI": ""},
+        0: {"SITE_CODE": "", "PERSON_SURNAME": "empty_site_code"},
+        1: {"SITE_CODE_TYPE_URI": "", "PERSON_SURNAME": "empty_site_code_uri"},
+        2: {"LOCATION_CODE": "", "PERSON_SURNAME": "empty_location_code"},
+        3: {"LOCATION_CODE_TYPE_URI": "", "PERSON_SURNAME": "empty_location_code_uri"},
         4: {"UNIQUE_ID": "", "PERSON_SURNAME": "no_unique_identifiers"},
         5: {"UNIQUE_ID_URI": "", "PERSON_SURNAME": "no_unique_identifiers"},
-        6: {"PRIMARY_SOURCE": ""},
-        7: {"VACCINATION_PROCEDURE_CODE": ""},
-        8: {"SITE_CODE": " "},
-        9: {"SITE_CODE_TYPE_URI": " "},
-        10: {"LOCATION_CODE": " "},
-        11: {"LOCATION_CODE_TYPE_URI": " "},
+        6: {"PRIMARY_SOURCE": "", "PERSON_SURNAME": "empty_primary_source"},
+        7: {"VACCINATION_PROCEDURE_CODE": "", "PERSON_SURNAME": "no_procedure_code"},
+        8: {"SITE_CODE": " ", "PERSON_SURNAME": "no_site_code"},
+        9: {"SITE_CODE_TYPE_URI": " ", "PERSON_SURNAME": "no_site_code_uri"},
+        10: {"LOCATION_CODE": " ", "PERSON_SURNAME": "no_location_code"},
+        11: {"LOCATION_CODE_TYPE_URI": " ", "PERSON_SURNAME": "no_location_code_uri"},
         12: {"UNIQUE_ID": " ", "PERSON_SURNAME": "no_unique_id"},
         13: {"UNIQUE_ID_URI": " ", "PERSON_SURNAME": "no_unique_id_uri"},
-        14: {"PRIMARY_SOURCE": " "},
-        15: {"VACCINATION_PROCEDURE_CODE": " "},
-        16: {"PRIMARY_SOURCE": "test"},
-        17: {"ACTION_FLAG": ""},
-        18: {"ACTION_FLAG": " "},
+        14: {"PRIMARY_SOURCE": " ", "PERSON_SURNAME": "no_primary_source"},
+        15: {"VACCINATION_PROCEDURE_CODE": " ", "PERSON_SURNAME": "empty_procedure_code"},
+        16: {"PRIMARY_SOURCE": "test", "PERSON_SURNAME": "no_primary_source"},
+        17: {"ACTION_FLAG": "", "PERSON_SURNAME": "invalid_action_flag"},
+        18: {"ACTION_FLAG": " ", "PERSON_SURNAME": "invalid_action_flag"}
     }
 
     # Apply all missing-field modifications
@@ -143,3 +142,79 @@ def upload_batch_file_to_s3_for_update_with_mandatory_field_missing(context):
             context.vaccine_df.loc[row_idx, col] = value
 
     create_batch_file(context)
+
+@then("bus ack will have error records for all the updated records in the batch file")
+def all_records_are_processed_successfully_in_the_batch_file(context): 
+    file_rows = read_and_validate_bus_ack_file_content(context, False, True) 
+    all_valid = validate_bus_ack_file_for_error_by_surname(context, file_rows)
+    assert all_valid, "One or more records failed validation checks"
+
+def validate_bus_ack_file_for_error_by_surname(context, file_rows) -> bool:
+    if not file_rows:
+        print("No rows found in BUS ACK file for failed records")
+        return False
+
+    overall_valid = True
+
+    for batch_idx, row in context.vaccine_df.iterrows():
+
+        bus_ack_row_number = batch_idx + 2
+
+        row_data_list = file_rows.get(bus_ack_row_number)
+
+        if not row_data_list:
+            print(f"Batch row {batch_idx}: No BUS ACK entry found for row number {bus_ack_row_number}")
+            overall_valid = False
+            continue
+
+        surname = str(row.get("PERSON_SURNAME", "")).strip()
+        expected_error = surname
+        expected_diagnostic = ERROR_MAP.get(expected_error, {}).get("diagnostics")
+
+        for row_data in row_data_list:
+            i = row_data["row"]
+            fields = row_data["fields"]
+            row_valid = True
+
+            header_response_code = fields[1]
+            issue_severity = fields[2]
+            issue_code = fields[3]
+            response_code = fields[6]
+            response_display = fields[7]
+            imms_id = fields[11]
+            operation_outcome = fields[12]
+            message_delivery = fields[13]
+
+
+            if header_response_code != "Fatal Error":
+                print(f"Row {i}: HEADER_RESPONSE_CODE is not 'Fatal Error'")
+                row_valid = False
+            if issue_severity != "Fatal":
+                print(f"Row {i}: ISSUE_SEVERITY is not 'Fatal'")
+                row_valid = False
+            if issue_code != "Fatal Error":
+                print(f"Row {i}: ISSUE_CODE is not 'Fatal Error'")
+                row_valid = False
+            if response_code != "30002":
+                print(f"Row {i}: RESPONSE_CODE is not '30002'")
+                row_valid = False
+            if response_display != "Business Level Response Value - Processing Error":
+                print(f"Row {i}: RESPONSE_DISPLAY is not expected value")
+                row_valid = False
+            if imms_id:
+                print(f"Row {i}: IMMS_ID should be null but is populated")
+                row_valid = False
+            if message_delivery != "False":
+                print(f"Row {i}: MESSAGE_DELIVERY is not 'False'")
+                row_valid = False
+
+            if operation_outcome != expected_diagnostic:
+                print(
+                    f"Row {i}: operation_outcome '{operation_outcome}' does not match "
+                    f"expected diagnostics '{expected_diagnostic}' for surname '{expected_error}'"
+                )
+                row_valid = False
+
+            overall_valid = overall_valid and row_valid
+
+    return overall_valid
