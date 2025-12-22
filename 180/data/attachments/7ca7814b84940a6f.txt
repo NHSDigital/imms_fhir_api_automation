@@ -1,2 +1,0 @@
-❌ Step failed! **Send a delete for Immunization event created with invalid Imms Id** 
- Error: URL has an invalid label.

@@ -1,2 +1,0 @@
-❌ Step failed! **batch file is created for below data where Person date of birth field has invalid date** 
- Error: URL has an invalid label.

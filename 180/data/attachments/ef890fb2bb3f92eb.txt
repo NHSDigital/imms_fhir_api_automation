@@ -1,2 +1,0 @@
-❌ Step failed! **Valid token is generated for the 'SONAR'** 
- Error: URL has an invalid label.

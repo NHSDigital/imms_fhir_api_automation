@@ -1,2 +1,0 @@
-❌ Step failed! **Valid vaccination record is created with Patient 'Random' and vaccine_type 'PNEUMOCOCCAL'** 
- Error: URL has an invalid label.

@@ -1,2 +1,0 @@
-❌ Step failed! **Valid json payload is created where vaccination terms has text field populated** 
- Error: URL has an invalid label.

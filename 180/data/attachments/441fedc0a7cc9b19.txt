@@ -1,2 +1,0 @@
-❌ Step failed! **Valid json payload is created where patient surname is 'white_space'** 
- Error: URL has an invalid label.

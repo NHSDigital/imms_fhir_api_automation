@@ -1,2 +1,0 @@
-❌ Step failed! **Valid json payload is created where patient gender is 'number'** 
- Error: URL has an invalid label.

@@ -1,2 +1,0 @@
-❌ Step failed! **valid vaccination record is created by 'Postman_Auth' supplier** 
- Error: URL has an invalid label.
