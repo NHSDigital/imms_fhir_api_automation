@@ -1,7 +1,0 @@
-
- Delete Request is https://int.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization/e4032d6a-f0bf-40b0-bc51-fd52a0ae0bb6
-404
-404
-
- Error Response - 
- resourceType='OperationOutcome' id='0de49508-966e-4796-9246-5f1436f8c068' meta=Meta(profile=['https://simplifier.net/guide/UKCoreDevelopment2/ProfileUKCore-OperationOutcome']) issue=[Issue(severity='error', code='not-found', details=Details(coding=[Coding(system='https://fhir.nhs.uk/Codesystem/http-error-codes', code='NOT-FOUND')]), diagnostics='Immunization resource does not exist. ID: e4032d6a-f0bf-40b0-bc51-fd52a0ae0bb6')]
