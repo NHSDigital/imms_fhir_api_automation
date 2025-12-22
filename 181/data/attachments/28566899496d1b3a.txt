@@ -1,7 +1,0 @@
-❌ Step failed! **correct immunization event is returned in the response** 
- Error: Expected link URL to start with 'https://internal-qa.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4', but got 'https://internal-dev.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization?identifier=https://supplierABC/identifiers/vacc|c2155309-3218-4c0a-8254-bd5a27e413d7'
-assert False
- +  where False = <built-in method startswith of str object at 0x7f02695fc490>('https://internal-qa.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4')
- +    where <built-in method startswith of str object at 0x7f02695fc490> = 'https://internal-dev.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization?identifier=https://supplierABC/identifiers/vacc|c2155309-3218-4c0a-8254-bd5a27e413d7'.startswith
- +      where 'https://internal-dev.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization?identifier=https://supplierABC/identifiers/vacc|c2155309-3218-4c0a-8254-bd5a27e413d7' = Link(relation='self', url='https://internal-dev.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4/Immunization?identifier=https://supplierABC/identifiers/vacc|c2155309-3218-4c0a-8254-bd5a27e413d7').url
- +    and   'https://internal-qa.api.service.nhs.uk/immunisation-fhir-api/FHIR/R4' = <utilities.context.ScenarioContext object at 0x7f02685049d0>.baseUrl
