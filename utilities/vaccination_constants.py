@@ -299,10 +299,10 @@ VACCINE_CODE_MAP = {
         },
         {   
             "system": "http://snomed.info/sct",
-            "code": "34609911000001106",
+            "code": "17996111000001109",
             "display": "Rotavirus vaccine live oral suspension 1.5ml pre-filled syringes",
             "stringValue": "Rotarix vaccine live oral suspension 1.5ml tube (GlaxoSmithKline UK Ltd)",
-            "idValue": "7996111000001109",
+            "idValue": "17996111000001109",
             "manufacturer": "Merck Sharp & Dohme (UK) Ltd"
         }
     ],
