@@ -93,6 +93,8 @@ jobs:
           TPP_client_Secret: ${{ secrets.TPP_client_Secret }}
           SONAR_client_Id: ${{ secrets.SONAR_client_Id }}
           SONAR_client_Secret: ${{ secrets.SONAR_client_Secret }}
+          MEDICUS_client_Id: ${{ secrets.MEDICUS_client_Id }}
+          MEDICUS_client_Secret: ${{ secrets.MEDICUS_client_Secret }}
           aws_token_refresh: 'False'
           PYTHONPATH: ${{ github.workspace }}
         run: |
