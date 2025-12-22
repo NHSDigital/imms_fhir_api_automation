@@ -21,7 +21,7 @@ Scenario: Update immunization event for a patient through batch file
     And The delta table will be populated with the correct data for all created records in batch file 
     And The delta table will be populated with the correct data for all updated records in batch file 
 
-@Delete_cleanUp @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
+@Delete_cleanUp @vaccine_type_ROTAVIRUS @patient_id_Random @supplier_name_EMIS
 Scenario: Verify that the API vaccination record will be successful updated by batch file upload
     Given I have created a valid vaccination record through API
     And The delta and imms event table will be populated with the correct data for api created event
@@ -35,7 +35,7 @@ Scenario: Verify that the API vaccination record will be successful updated by b
     And The imms event table will be populated with the correct data for 'updated' event for records in batch file
     And The delta table will be populated with the correct data for all updated records in batch file
 
-@Delete_cleanUp @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
+@Delete_cleanUp @vaccine_type_6IN1 @patient_id_Random @supplier_name_TPP
 Scenario: Verify that the batch vaccination record will be successful updated by API request
     Given batch file is created for below data as full dataset
         | patient_id        | unique_id             |

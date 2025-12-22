@@ -37,14 +37,14 @@ Scenario Outline: Verify that the POST method of Search API will be successful w
     Examples: 
       |Patient       | Vaccine_type|
       |Random        | RSV         |
-      |SFlag         | RSV         |
-      |SupersedeNhsNo| RSV         |
+      |SFlag         | SHINGLES    |
+      |SupersedeNhsNo| PERTUSSIS   |
       |Random        | FLU         |
-      |SFlag         | FLU         |
-      |SupersedeNhsNo| FLU         |
+      |SFlag         | 3in1        |
+      |SupersedeNhsNo| 4in1        |
       |Random        | COVID       |
-      |SFlag         | COVID       |
-      |SupersedeNhsNo| COVID       |
+      |SFlag         | BCG         |
+      |SupersedeNhsNo| HEPB        |
 
 @supplier_name_Postman_Auth
 Scenario Outline: Verify that the immunisation events retrieved in the response of Search API should be within Date From and Date To range

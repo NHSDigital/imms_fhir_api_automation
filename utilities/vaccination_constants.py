@@ -216,10 +216,133 @@ VACCINE_CODE_MAP = {
             "manufacturer": "Pfizer Ltd"
         }
     ],
+    "BCG":[
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "37240111000001101",
+            "display": "BCG Vaccine AJV powder for suspension for injection 1ml vials (AJ Vaccines)",
+            "stringValue": "BCG Vaccine AJV powder for suspension for injection 1ml vials",
+            "idValue": "37240111000001101",
+            "manufacturer": "AJ Vaccines"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "9316511000001100",
+            "display": "BCG vaccine powder and solvent for suspension for injection vials 10 vial (Pfizer Ltd)",
+            "stringValue": "BCG vaccine powder and solvent for suspension for injection vials 10 vial",
+            "idValue": "9316511000001100",
+            "manufacturer": "Pfizer Ltd"
+        }
+    ],
+    "HEPB":[
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "10752011000001102",
+            "display": "HBVAXPRO 10micrograms/1ml vaccine suspension for injection pre-filled syringes (Merck Sharp & Dohme (UK) Ltd)",
+            "stringValue": "HBVAXPRO 10micrograms/1ml vaccine suspension for injection pre-filled syringes",
+            "idValue": "107520110001102",
+            "manufacturer": "Merck Sharp & Dohme (UK) Ltd"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "871822003",
+            "display": "Vaccine product containing only Hepatitis B virus antigen (Pfizer Ltd)",
+            "stringValue": "Vaccine product containing only Hepatitis B virus antigen",
+            "idValue": "871822003",
+            "manufacturer": "Pfizer Ltd"
+        }
+    ],
+    "HIB":[
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "9903711000001109",
+            "display": "Menitorix powder and solvent for solution for injection 0.5ml vials (GlaxoSmithKline)",
+            "stringValue": "Haemophilus type b / Meningococcal C conjugate vaccine powder and solvent for solution for injection 0.5ml vials 1 vial",
+            "idValue": "99037110001109",
+            "manufacturer": "GlaxoSmithKline UK Ltd"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "9903611000001100",
+            "display": "Haemophilus type b / Meningococcal C conjugate vaccine powder and solvent for solution for injection 0.5ml vials 1 vial",
+            "stringValue": "Menitorix powder and solvent for solution for injection 0.5ml vials (GlaxoSmithKline)",
+            "idValue": "99036110001100",
+            "manufacturer": "Sanofi"
+        }
+    ],
+    "MENB":[    
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "23584211000001109",
+            "display": "Bexsero vaccine suspension for injection 0.5ml pre-filled syringes (GlaxoSmithKline UK Ltd)",
+            "stringValue": "Bexsero vaccine powder and solvent for solution for injection 0.5ml vials",
+            "idValue": "235842110001109",
+            "manufacturer": "GlaxoSmithKline UK Ltd"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "37430711000001103",
+            "display": "Bexsero vaccine suspension for injection 0.5ml pre-filled syringes (CST Pharma Ltd) 1 pre-filled disposable injection",
+            "stringValue": "Bexsero vaccine suspension for injection 0.5ml pre-filled syringes (GlaxoSmithKline UK Ltd)",
+            "idValue": "374307110001103",
+            "manufacturer": "Pfizer Ltd"
+        }
+    ],
+    "ROTAVIRUS":[
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "	34609911000001106",
+            "display": "Rotarix vaccine live oral suspension 1.5ml tube (GlaxoSmithKline UK Ltd)",
+            "stringValue": "Rotarix oral vaccine suspension for oral administration 1.5ml pre-filled syringes",
+            "idValue": "	34609911000001106",
+            "manufacturer": "GlaxoSmithKline UK Ltd"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "34609911000001106",
+            "display": "Rotavirus vaccine live oral suspension 1.5ml pre-filled syringes",
+            "stringValue": "Rotarix vaccine live oral suspension 1.5ml tube (GlaxoSmithKline UK Ltd)",
+            "idValue": "7996111000001109",
+            "manufacturer": "Merck Sharp & Dohme (UK) Ltd"
+        }
+    ],
+    "4IN1":[
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "26267211000001100",
+            "display": "Boostrix-IPV suspension for injection 0.5ml pre-filled syringes (GlaxoSmithKline UK Ltd)",
+            "stringValue": "Vaccine product containing only acellular Bordetella pertussis and Clostridium tetani and Corynebacterium diphtheriae and inactivated whole Human poliovirus antigens",
+            "idValue": "1303503001",
+            "manufacturer": "GlaxoSmithKline UK Ltd"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "871893003",
+            "display": "Vaccine product containing only acellular Bordetella pertussis and Clostridium tetani and Corynebacterium diphtheriae and inactivated whole Human poliovirus antigens",
+            "stringValue": "Boostrix-IPV suspension for injection 0.5ml pre-filled syringes (GlaxoSmithKline UK Ltd)",
+            "idValue": "1303503001",
+            "manufacturer": "Pfizer Ltd"
+        }
+    ],
+    "6IN1":[
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "34765811000001105",
+            "display": "Infanrix Hexa vaccine powder and suspension for suspension for injection 0.5ml pre-filled syringes (GlaxoSmithKline UK Ltd) ",
+            "stringValue": "Vaccine product containing only Clostridium tetani and Corynebacterium diphtheriae and inactivated Human poliovirus and acellular Bordetella pertussis and Haemophilus influenzae type b and Hepatitis B virus antigens",
+            "idValue": "347658110001105",
+            "manufacturer": "GlaxoSmithKline UK Ltd"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "1162634005",
+            "display": "Pediatric vaccine product containing only acellular Bordetella pertussis, Clostridium tetani and Corynebacterium diphtheriae toxoids, Haemophilus influenzae type b conjugated, Hepatitis B virus and inactivated Human poliovirus antigens",
+            "stringValue": "Infanrix Hexa vaccine powder and suspension for suspension for injection 0.5ml pre-filled syringes (GlaxoSmithKline UK Ltd)",
+            "idValue": "347658110001105",
+            "manufacturer": "GlaxoSmithKline UK Ltd"
+        }
+    ]
 }
-
-
-
 VACCINATION_PROCEDURE_MAP = {
     "COVID": [
         {
@@ -365,7 +488,7 @@ VACCINATION_PROCEDURE_MAP = {
             "idValue": "8662002"
         }
     ],
-     "PERTUSSIS": [
+    "PERTUSSIS": [
         {   
             "system": "http://snomed.info/sct",
             "code": "956951000000104",
@@ -374,7 +497,7 @@ VACCINATION_PROCEDURE_MAP = {
             "idValue": "1000000104"
         },
     ],
-     "PNEUMOCOCCAL": [
+    "PNEUMOCOCCAL": [
         {   
             "system": "http://snomed.info/sct",
             "code": "722215002",
@@ -389,8 +512,122 @@ VACCINATION_PROCEDURE_MAP = {
             "stringValue": "First pneumococcal conjugated",
             "idValue": "4326365"
         }
+    ],
+    "BCG": [
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "42284007",
+            "display": "Administration of vaccine product containing only live attenuated Mycobacterium bovis antigen",
+            "stringValue": "Requires Bacillus Calmette-Guerin vaccination",
+            "idValue": "4326365"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "429069001",
+            "display": "Requires Bacillus Calmette-Guerin vaccination",
+            "stringValue": "Administration of vaccine product containing only live attenuated Mycobacterium bovis antigen",
+            "idValue": "4326365"
+        }
+    ],
+    "HEPB": [
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "170370000",
+            "display": "Administration of first dose of vaccine product containing only Hepatitis B virus antigen",
+            "stringValue": "Administration of booster dose of vaccine product containing only Hepatitis B virus antigen",
+            "idValue": "4326365"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "170373003",
+            "display": "Administration of booster dose of vaccine product containing only Hepatitis B virus antigen",
+            "stringValue": "Administration of first dose of vaccine product containing only Hepatitis B virus antigen",
+            "idValue": "4326365"
+        }
+    ],
+    "HIB": [
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "428975001",
+            "display": "Haemophilus influenzae type B Meningitis C (HibMenC) vaccination codes",
+            "stringValue": "Haemophilus influenzae type B Meningitis C (HibMenC) vaccination codes",
+            "idValue": "4326365"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "712833000",
+            "display": "Haemophilus influenzae type B Meningitis C (HibMenC) vaccination codes",
+            "stringValue": "Haemophilus influenzae type B Meningitis C (HibMenC) vaccination codes",
+            "idValue": "4326365"
+        }
+    ],
+    "MENB": [
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "720539004",
+            "display": "Administration of first dose of vaccine product containing only Neisseria meningitidis serogroup B antigen",
+            "stringValue": "Recombinant meningococcal group B and outer membrane vesicle vaccination",
+            "idValue": "235842110001109",
+            "manufacturer": "GlaxoSmithKline UK Ltd"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "516301000000101",
+            "display": "Recombinant meningococcal group B and outer membrane vesicle vaccination",
+            "stringValue": "Administration of first dose of vaccine product containing only Neisseria meningitidis serogroup B antigen",
+            "idValue": "516301000101",
+            "manufacturer": "CST Pharma Ltd"
+        }
+    ],
+    "ROTAVIRUS": [
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "868631000000102",
+            "display": "First rotavirus vaccination",
+            "stringValue": "Administration of vaccine product containing only Rotavirus antigen",
+            "idValue": "4326365"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "415354003",
+            "display": "Administration of vaccine product containing only Rotavirus antigen",
+            "stringValue": "First rotavirus vaccination",
+            "idValue": "4326365"
+        }
+    ],
+    "4IN1": [
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "868273007",
+            "display": "Administration of vaccine product containing only Bordetella pertussis and Clostridium tetani and Corynebacterium diphtheriae and Human poliovirus antigens",
+            "stringValue": "Administration of vaccine product containing only acellular Bordetella pertussis and Clostridium tetani and Corynebacterium diphtheriae and inactivated whole Human poliovirus antigens",
+            "idValue": "1303503001"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "247821000000102",
+            "display": "Booster diphtheria, tetanus, acellular pertussis and inactivated polio vaccination",
+            "stringValue": "Administration of vaccine product containing only acellular Bordetella pertussis and Clostridium tetani and Corynebacterium diphtheriae and inactivated whole Human poliovirus antigens",
+            "idValue": "1303503001"
+        }
+    ],
+    "6IN1": [
+         {   
+            "system": "http://snomed.info/sct",
+            "code": "1082441000000108",
+            "display": "First diphtheria, tetanus and acellular pertussis, inactivated polio, Haemophilus influenzae type b and hepatitis B vaccination",
+            "stringValue": "Administration of vaccine product containing only acellular Bordetella pertussis and Clostridium tetani and Corynebacterium diphtheriae and inactivated whole Human poliovirus antigens",
+            "idValue": "1303503001"
+        },
+        {   
+            "system": "http://snomed.info/sct",
+            "code": "1162640003",
+            "display": "Administration of vaccine product containing only acellular Bordetella pertussis and Clostridium tetani and Corynebacterium diphtheriae and Haemophilus influenzae type b and Hepatitis B virus and inactivated Human poliovirus antigens",
+            "stringValue": "Administration of vaccine product containing only acellular Bordetella pertussis and Clostridium tetani and Corynebacterium diphtheriae and inactivated whole Human poliovirus antigens",
+            "idValue": "1303503001"
+        }
     ]
-    
+            
 }
 
 SITE_MAP = [
@@ -563,5 +800,95 @@ PROTOCOL_DISEASE_MAP = {
         "code": "23511006",
         "display": "Meningococcal infectious disease"
       }
-    ]    
-}
+    ],
+    "4IN1": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "398102009",
+        "display": "Acute poliomyelitis"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "397430003",
+        "display": "Diphtheria caused by Corynebacterium diphtheriae"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "27836007",
+        "display": "Pertussis"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "76902006",
+        "display": "Tetanus"
+      }      
+    ],
+    "6IN1": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "398102009",
+        "display": "Acute poliomyelitis"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "397430003",
+        "display": "Diphtheria caused by Corynebacterium diphtheriae"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "709410003",
+        "display": "Haemophilus influenzae type b infection"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "27836007",
+        "display": "Pertussis"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "76902006",
+        "display": "Tetanus"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "66071002",
+        "display": "Type B viral hepatitis"
+      }      
+    ],
+    "BCG": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "56717001",
+        "display": "Tuberculosis"
+      }
+    ],
+    "HEPB": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "66071002",
+        "display": "Type B viral hepatitis"
+      }
+    ],
+    "HIB": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "709410003",
+        "display": "Haemophilus influenzae type b infection"
+      }
+    ],
+    "MENB": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "1354584007",
+        "display": "Meningococcal infectious disease caused by Neisseria meningitidis serogroup B"
+      }
+    ],
+    "ROTAVIRUS": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "186150001",
+        "display": "Enteritis caused by rotavirus"
+      }
+    ]
+    
+  }

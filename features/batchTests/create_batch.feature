@@ -54,7 +54,7 @@ Scenario: Verify that vaccination record will be get rejected if date_and_time i
     And all records are rejected in the bus ack file and no imms id is generated
     And Audit table will have correct status, queue name and record count for the processed batch file
 
-@vaccine_type_FLU  @supplier_name_MAVIS
+@vaccine_type_6IN1  @supplier_name_EMIS
 Scenario: verify that vaccination record will be get rejected if recorded_date is invalid in batch file
     Given batch file is created for below data where recorded field has invalid date 
         | patient_id        | unique_id                            |
@@ -69,7 +69,7 @@ Scenario: verify that vaccination record will be get rejected if recorded_date i
     And all records are rejected in the bus ack file and no imms id is generated
     And Audit table will have correct status, queue name and record count for the processed batch file
 
-@vaccine_type_FLU  @supplier_name_MAVIS
+@vaccine_type_4IN1  @supplier_name_TPP
 Scenario: verify that vaccination record will be get rejected if expiry_date is invalid in batch file
     Given batch file is created for below data where expiry field has invalid date 
         | patient_id        | unique_id                                  |
@@ -120,7 +120,7 @@ Scenario: verify that vaccination record will be get rejected if Person nhs numb
     And all records are rejected in the bus ack file and no imms id is generated
     And Audit table will have correct status, queue name and record count for the processed batch file 
 
-@vaccine_type_FLU  @supplier_name_MAVIS
+@vaccine_type_BCG  @supplier_name_TPP
 Scenario: verify that vaccination record will be get successful if performer is invalid in batch file
     Given batch file is created for below data where performer detail has invalid data
         | patient_id        | unique_id                |
@@ -135,7 +135,7 @@ Scenario: verify that vaccination record will be get successful if performer is 
     And The imms event table will be populated with the correct data for 'created' event for records in batch file
     And The delta table will be populated with the correct data for all created records in batch file  
 
-@vaccine_type_FLU  @supplier_name_SONAR
+@vaccine_type_ROTAVIRUS  @supplier_name_TPP
 Scenario: verify that vaccination record will be get successful with different valid value in gender field
     Given batch file is created for below data where person detail has valid values
         | patient_id        | unique_id                   |
