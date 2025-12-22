@@ -2,7 +2,7 @@
 Feature: Search the immunization of a patient
 
 @smoke
-@Delete_cleanUp @supplier_name_Postman_Auth
+@Delete_cleanUp @supplier_name_TPP
 Scenario Outline: Verify that the GET method of Search API will be successful with all the valid parameters
     Given Valid vaccination record is created with Patient '<Patient>' and vaccine_type '<Vaccine_type>'
     When Send a search request with GET method for Immunization event created
@@ -26,7 +26,7 @@ Scenario Outline: Verify that the GET method of Search API will be successful wi
       |Random        | PNEUMOCOCCAL |
 
 @smoke
-@Delete_cleanUp @supplier_name_Postman_Auth
+@Delete_cleanUp @supplier_name_EMIS
 Scenario Outline: Verify that the POST method of Search API will be successful with all the valid parameters 
     Given Valid vaccination record is created with Patient '<Patient>' and vaccine_type '<Vaccine_type>'
     When Send a search request with POST method for Immunization event created
