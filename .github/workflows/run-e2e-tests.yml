@@ -44,9 +44,7 @@ jobs:
     env:
       S3_ENV: ${{ github.event_name == 'workflow_dispatch' && (inputs.environment || 'internal-qa') }}
 
-
     steps:
-
       - name: Connect to AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -95,6 +93,8 @@ jobs:
           TPP_client_Secret: ${{ secrets.TPP_client_Secret }}
           SONAR_client_Id: ${{ secrets.SONAR_client_Id }}
           SONAR_client_Secret: ${{ secrets.SONAR_client_Secret }}
+          MEDICUS_client_Id: ${{ secrets.MEDICUS_client_Id }}
+          MEDICUS_client_Secret: ${{ secrets.MEDICUS_client_Secret }}
           aws_token_refresh: 'False'
           PYTHONPATH: ${{ github.workspace }}
         run: |
@@ -119,8 +119,6 @@ jobs:
           else
             echo "Pytest-BDD tests passed"
           fi
-
-
 
       - name: Publish test results to GitHub UI
         if: always()

@@ -275,14 +275,14 @@ def validate_audit_table_record(context, item, expected_status: str, expected_er
     ) 
     
 def validate_imms_delta_record_with_batch_record(context, batch_record, item, event_type, action_flag):
-    event = item[0].get("Imms")
+    event = item.get("Imms")
     assert event, "Imms field missing in items."
     
     fields_to_compare = [
-        ("Operation", event_type.upper(), item[0].get("Operation")),
-        ("SupplierSystem", context.supplier_name.lower(), item[0].get("SupplierSystem").lower()),
-        ("VaccineType", f"{context.vaccine_type.lower()}", item[0].get("VaccineType").lower()),
-        ("Source", "IEDS", item[0].get("Source")),
+        ("Operation", event_type.upper(), item.get("Operation")),
+        ("SupplierSystem", context.supplier_name.lower(), item.get("SupplierSystem").lower()),
+        ("VaccineType", f"{context.vaccine_type.lower()}", item.get("VaccineType").lower()),
+        ("Source", "IEDS", item.get("Source")),
         ("CONVERSION_ERRORS", [], event.get("CONVERSION_ERRORS")),
         ("PERSON_FORENAME", batch_record["PERSON_FORENAME"], event.get("PERSON_FORENAME")),
         ("PERSON_SURNAME", batch_record["PERSON_SURNAME"], event.get("PERSON_SURNAME")),

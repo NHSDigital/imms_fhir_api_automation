@@ -19,13 +19,20 @@ Scenario Outline:  Verify that the POST Create API for different vaccine types
       |Random    | FLU         | MAVIS        |
       |Random    | MMR         | Postman_Auth |
       |Random    | MENACWY     | TPP          |
-      |Random    | 3in1        | TPP          |
+      |Random    | 3IN1        | TPP          |
       |Random    | MMRV        | EMIS         |
       |Random    | PERTUSSIS   | EMIS         |
       |Random    | SHINGLES    | EMIS         |
       |Random    | PNEUMOCOCCAL| EMIS         |
+      |Random    | 4IN1        | TPP          |
+      |Random    | 6IN1        | EMIS         |
+      |Random    | HIB         | TPP          |
+      |Random    | MENB        | TPP          |
+      |Random    | ROTAVIRUS   | MEDICUS      |
+      |Random    | HEPB        | EMIS         |
+      |Random    | BCG         | MEDICUS      |
 
-@Delete_cleanUp @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
+@Delete_cleanUp @vaccine_type_6IN1 @patient_id_Random @supplier_name_EMIS
 Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_VACCINATION_TERM, ROUTE_OF_VACCINATION_TERM fields are mapped to respective text fields in imms delta table
     Given Valid json payload is created where vaccination terms has text field populated
     When Trigger the post create request
@@ -33,7 +40,7 @@ Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_
     And The location key and Etag in header will contain the Immunization Id and version
     And The terms are mapped to the respective text fields in imms delta table
 
-@Delete_cleanUp @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
+@Delete_cleanUp @vaccine_type_BCG @patient_id_Random @supplier_name_EMIS
 Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM fields are mapped to first instance of coding.display fields in imms delta table
     Given Valid json payload is created where vaccination terms has multiple instances of coding
     When Trigger the post create request
@@ -41,7 +48,7 @@ Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM fields ar
     And The location key and Etag in header will contain the Immunization Id and version
     And The terms are mapped to first instance of coding.display fields in imms delta table
 
-@Delete_cleanUp @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
+@Delete_cleanUp @vaccine_type_HEPB @patient_id_Random @supplier_name_MEDICUS
 Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_VACCINATION_TERM, ROUTE_OF_VACCINATION_TERM fields are mapped to correct instance of coding.display fields in imms delta table
     Given Valid json payload is created where vaccination terms has multiple instance of coding with different coding system
     When Trigger the post create request
@@ -49,7 +56,7 @@ Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_
     And The location key and Etag in header will contain the Immunization Id and version
     And The terms are mapped to correct instance of coding.display fields in imms delta table
 
-@Delete_cleanUp @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
+@Delete_cleanUp @vaccine_type_PERTUSSIS @patient_id_Random @supplier_name_EMIS
 Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_VACCINATION_TERM, ROUTE_OF_VACCINATION_TERM fields are mapped to coding.display in imms delta table in case of only one instance of coding
     Given Valid json payload is created where vaccination terms has one instance of coding with no text or value string field
     When Trigger the post create request
@@ -57,7 +64,7 @@ Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_
     And The location key and Etag in header will contain the Immunization Id and version
     And The terms are mapped to correct coding.display fields in imms delta table
 
-@Delete_cleanUp @vaccine_type_RSV @patient_id_Random @supplier_name_RAVS
+@Delete_cleanUp @vaccine_type_HIB @patient_id_Random @supplier_name_TPP
 Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_VACCINATION_TERM, ROUTE_OF_VACCINATION_TERM fields are blank in imms delta table if no text or value string or display field is present
     Given Valid json payload is created where vaccination terms has no text or value string or display field
     When Trigger the post create request
@@ -73,7 +80,7 @@ Scenario Outline:  Verify that the POST Create API for different supplier fails 
     And The Response JSONs should contain correct error message for 'unauthorized_access' access
     Examples: 
       | Patient  | vaccine_type| Supplier     |
-      |Random    | COVID        | MAVIS        |
+      |Random    | COVID       | MAVIS        |
       |Random    | RSV         | MAVIS        |
       |Random    | RSV         | SONAR        |
 

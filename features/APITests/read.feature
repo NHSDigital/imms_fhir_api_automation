@@ -1,7 +1,7 @@
 @Read_Feature @functional
 Feature: Read the immunization of a patient
 
-@Delete_cleanUp @supplier_name_Postman_Auth
+@Delete_cleanUp @supplier_name_MEDICUS
 Scenario Outline: Verify that the Read method of API will be successful and fetch valid imms event detail 
     Given Valid vaccination record is created with Patient '<Patient>' and vaccine_type '<Vaccine_type>'
     When Send a read request for Immunization event created
@@ -12,9 +12,9 @@ Scenario Outline: Verify that the Read method of API will be successful and fetc
 
     Examples: 
       |Patient       | Vaccine_type|
-      |Random        | RSV         |
+      |Random        | 4IN1        |
       |Random        | FLU         |
-      |Random        | COVID      |
+      |Random        | COVID       |
 
 
 @Delete_cleanUp @vaccine_type_FLU @patient_id_Random  @supplier_name_Postman_Auth
