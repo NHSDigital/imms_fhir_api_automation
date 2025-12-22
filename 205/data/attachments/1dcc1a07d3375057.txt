@@ -1,0 +1,24 @@
+✅ Pipe-delimited file saved to: /home/runner/work/imms_fhir_api_automation/imms_fhir_api_automation/batch_files_directory/3in1_Vaccinations_v5_YGA_20251222T15564100.csv
+Batch file created: 3in1_Vaccinations_v5_YGA_20251222T15564100.csv
+Upload successful: 3in1_Vaccinations_v5_YGA_20251222T15564100.csv → immunisation-batch-internal-qa-data-sources
+Batch file uploaded to S3: 3in1_Vaccinations_v5_YGA_20251222T15564100.csv
+Waiting for file in archive: s3://immunisation-batch-internal-qa-data-sources/archive/3in1_Vaccinations_v5_YGA_20251222T15564100.csv
+Still waiting... (0s)
+Still waiting... (5s)
+Still waiting... (10s)
+Still waiting... (15s)
+Still waiting... (20s)
+Still waiting... (25s)
+Still waiting... (30s)
+Still waiting... (35s)
+File found in archive: archive/3in1_Vaccinations_v5_YGA_20251222T15564100.csv
+Waiting for file starting with 'ack/3in1_Vaccinations_v5_YGA_20251222T15564100' in bucket: immunisation-batch-internal-qa-data-destinations
+[FOUND] File located: ack/3in1_Vaccinations_v5_YGA_20251222T15564100_InfAck_20251222T15564300.csv
+[SUCCESS] File contents loaded (299 bytes)
+Waiting for file starting with 'forwardedFile/3in1_Vaccinations_v5_YGA_20251222T15564100' in bucket: immunisation-batch-internal-qa-data-destinations
+[FOUND] File located: forwardedFile/3in1_Vaccinations_v5_YGA_20251222T15564100_BusAck_20251222T15564300.csv
+[SUCCESS] File contents loaded (5718 bytes)
+Attempt 1: Found 1 items
+
+Found Audit detail for filename=3in1_Vaccinations_v5_YGA_20251222T15564100.csv
+
