@@ -21,7 +21,7 @@ Scenario: Delete immunization event for a patient through batch file
     And The delta table will be populated with the correct data for all created records in batch file 
     And The delta table will be populated with the correct data for all deleted records in batch file 
 
-@vaccine_type_MENB @patient_id_Random @supplier_name_RAVS
+@vaccine_type_MENB @patient_id_Random @supplier_name_EMIS
 Scenario: Verify that the API vaccination record will be successful deleted by batch file upload
     Given I have created a valid vaccination record through API
     And The delta and imms event table will be populated with the correct data for api created event
