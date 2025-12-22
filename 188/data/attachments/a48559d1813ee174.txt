@@ -1,3 +1,0 @@
-❌ Step failed! **The request will be successful with the status code '204'** 
- Error: 
- Expected status code: 204, but got: 502. Response: {'fault': {'faultstring': 'Unexpected EOF at target', 'detail': {'errorcode': 'messaging.adaptors.http.flow.UnexpectedEOFAtTarget'}}} 
