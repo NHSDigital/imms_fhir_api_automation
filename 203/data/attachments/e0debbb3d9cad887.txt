@@ -1,0 +1,19 @@
+✅ Pipe-delimited file saved to: /home/runner/work/imms_fhir_api_automation/imms_fhir_api_automation/batch_files_directory/ROTAVIRUS_Vaccinations_v5_YGA_20251222T15313100.csv
+Batch file created: ROTAVIRUS_Vaccinations_v5_YGA_20251222T15313100.csv
+Upload successful: ROTAVIRUS_Vaccinations_v5_YGA_20251222T15313100.csv → immunisation-batch-internal-qa-data-sources
+Batch file uploaded to S3: ROTAVIRUS_Vaccinations_v5_YGA_20251222T15313100.csv
+Waiting for file in archive: s3://immunisation-batch-internal-qa-data-sources/archive/ROTAVIRUS_Vaccinations_v5_YGA_20251222T15313100.csv
+Still waiting... (0s)
+Still waiting... (5s)
+Still waiting... (10s)
+Still waiting... (15s)
+Still waiting... (20s)
+Still waiting... (25s)
+Still waiting... (30s)
+File found in archive: archive/ROTAVIRUS_Vaccinations_v5_YGA_20251222T15313100.csv
+Waiting for file starting with 'ack/ROTAVIRUS_Vaccinations_v5_YGA_20251222T15313100' in bucket: immunisation-batch-internal-qa-data-destinations
+[FOUND] File located: ack/ROTAVIRUS_Vaccinations_v5_YGA_20251222T15313100_InfAck_20251222T15313300.csv
+[SUCCESS] File contents loaded (299 bytes)
+Waiting for file starting with 'forwardedFile/ROTAVIRUS_Vaccinations_v5_YGA_20251222T15313100' in bucket: immunisation-batch-internal-qa-data-destinations
+[FOUND] File located: forwardedFile/ROTAVIRUS_Vaccinations_v5_YGA_20251222T15313100_BusAck_20251222T15313300.csv
+[SUCCESS] File contents loaded (1699 bytes)
