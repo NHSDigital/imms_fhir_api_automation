@@ -291,10 +291,10 @@ VACCINE_CODE_MAP = {
     "ROTAVIRUS":[
         {   
             "system": "http://snomed.info/sct",
-            "code": "	34609911000001106",
+            "code": "34609911000001106",
             "display": "Rotarix vaccine live oral suspension 1.5ml tube (GlaxoSmithKline UK Ltd)",
             "stringValue": "Rotarix oral vaccine suspension for oral administration 1.5ml pre-filled syringes",
-            "idValue": "	34609911000001106",
+            "idValue": "34609911000001106",
             "manufacturer": "GlaxoSmithKline UK Ltd"
         },
         {   
