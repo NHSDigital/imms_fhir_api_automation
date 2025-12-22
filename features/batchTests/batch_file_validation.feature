@@ -79,7 +79,7 @@ Scenario: verify that vaccination file will be rejected if file delimiter is inv
     And bus ack file will not be created
     And Audit table will have 'Failed', 'SONAR_FLU' and 'File headers are invalid.' for the processed batch file
 
-@vaccine_type_3in1  @supplier_name_TPP
+@vaccine_type_3IN1  @supplier_name_TPP
 Scenario: verify that vaccination file will be rejected if one of the column name is invalid
     Given batch file is created with invalid column name for patient surname for below data
         | patient_id        | unique_id         |
@@ -90,7 +90,7 @@ Scenario: verify that vaccination file will be rejected if one of the column nam
     And bus ack file will not be created
     And Audit table will have 'Failed', 'TPP_3IN1' and 'File headers are invalid.' for the processed batch file
 
-@vaccine_type_3in1  @supplier_name_EMIS
+@vaccine_type_3IN1  @supplier_name_EMIS
 Scenario: verify that vaccination file will be rejected if additional column is present
     Given batch file is created with additional column person age for below data
         | patient_id        | unique_id         |

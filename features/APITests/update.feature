@@ -117,13 +117,13 @@ Scenario Outline: Verify that the Update API will be fails if patient's date of 
         | nonexistent           | invalid_DateOfBirth   |
         | empty                 | invalid_DateOfBirth   |
 
-@vaccine_type_3in1 @patient_id_Random  @supplier_name_Postman_Auth
+@vaccine_type_3IN1 @patient_id_Random  @supplier_name_Postman_Auth
 Scenario: Verify that the update request will fail for invalid immunization id
     When Send an update request for invalid immunization id
     Then The request will be unsuccessful with the status code '404'
     And The Response JSONs should contain correct error message for 'not_found'
 
-@vaccine_type_3in1 @patient_id_Random  @supplier_name_Postman_Auth
+@vaccine_type_3IN1 @patient_id_Random  @supplier_name_Postman_Auth
 Scenario Outline: Verify that the update request will fail for invalid Etag value
     When Send an update request for invalid Etag <Etag>
     Then The request will be unsuccessful with the status code '400'

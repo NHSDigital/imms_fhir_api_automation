@@ -224,7 +224,7 @@ Scenario: verify that vaccination record will be get successful if action flag h
     And The delta table will be populated with the correct data for all created records in batch file
 
 
-@vaccine_type_3in1  @supplier_name_TPP
+@vaccine_type_3IN1  @supplier_name_TPP
 Scenario: verify that vaccination record will be get rejected if non mandatory fields are empty string in batch file
     Given batch file is created for below data where non mandatory fields are empty string
         | patient_id        | unique_id             |
@@ -249,7 +249,7 @@ Scenario: verify that vaccination record will be get rejected if non mandatory f
     And all records are rejected in the bus ack file and no imms id is generated
     And Audit table will have correct status, queue name and record count for the processed batch file  
 
-@delete_cleanup_batch @vaccine_type_3in1  @supplier_name_TPP
+@delete_cleanup_batch @vaccine_type_3IN1  @supplier_name_TPP
 Scenario: verify that vaccination record will be get successful if non mandatory fields are missing in batch file
     Given batch file is created for below data where non mandatory fields are missing
         | patient_id        | unique_id             |

@@ -19,7 +19,7 @@ Scenario Outline:  Verify that the POST Create API for different vaccine types
       |Random    | FLU         | MAVIS        |
       |Random    | MMR         | Postman_Auth |
       |Random    | MENACWY     | TPP          |
-      |Random    | 3in1        | TPP          |
+      |Random    | 3IN1        | TPP          |
       |Random    | MMRV        | EMIS         |
       |Random    | PERTUSSIS   | EMIS         |
       |Random    | SHINGLES    | EMIS         |
@@ -48,7 +48,7 @@ Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM fields ar
     And The location key and Etag in header will contain the Immunization Id and version
     And The terms are mapped to first instance of coding.display fields in imms delta table
 
-@Delete_cleanUp @vaccine_type_HEPB @patient_id_Random @supplier_name_MEDIUS
+@Delete_cleanUp @vaccine_type_HEPB @patient_id_Random @supplier_name_MEDICUS
 Scenario: Verify that VACCINATION_PROCEDURE_TERM, VACCINE_PRODUCT_TERM, SITE_OF_VACCINATION_TERM, ROUTE_OF_VACCINATION_TERM fields are mapped to correct instance of coding.display fields in imms delta table
     Given Valid json payload is created where vaccination terms has multiple instance of coding with different coding system
     When Trigger the post create request

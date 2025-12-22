@@ -40,8 +40,8 @@ Scenario Outline: Verify that the POST method of Search API will be successful w
       |SFlag         | SHINGLES    |
       |SupersedeNhsNo| PERTUSSIS   |
       |Random        | FLU         |
-      |SFlag         | 3in1        |
-      |SupersedeNhsNo| 4in1        |
+      |SFlag         | 3IN1        |
+      |SupersedeNhsNo| 4IN1        |
       |Random        | COVID       |
       |SFlag         | BCG         |
       |SupersedeNhsNo| HEPB        |
