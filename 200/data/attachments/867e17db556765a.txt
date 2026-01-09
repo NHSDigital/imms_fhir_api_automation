@@ -1,8 +1,0 @@
-❌ Step failed! **Valid token is generated for the 'MEDICUS'** 
- Error: 
-          {
-            "error": "invalid_request",
-            "error_description": "client_id is missing",
-            "message_id": "rrt-40260090211069976-a-geu2-3659722-96839562-1"
-          }
-        
