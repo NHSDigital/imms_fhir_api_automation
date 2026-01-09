@@ -1,3 +1,0 @@
-❌ Step failed! **I have created a valid vaccination record through API** 
- Error: 
- Expected status code: 201, but got: 403. Response: {'resourceType': 'OperationOutcome', 'id': '6c1788a3-14c5-481d-a5f2-bc065e81a4dd', 'meta': {'profile': ['https://simplifier.net/guide/UKCoreDevelopment2/ProfileUKCore-OperationOutcome']}, 'issue': [{'severity': 'error', 'code': 'forbidden', 'details': {'coding': [{'system': 'https://fhir.nhs.uk/Codesystem/http-error-codes', 'code': 'FORBIDDEN'}]}, 'diagnostics': 'Unauthorized request for vaccine type'}]} 
