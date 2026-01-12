@@ -1,2 +1,0 @@
-❌ Step failed! **bus ack will not have any entry of successfully processed records** 
- Error: 'LOCAL_ID'

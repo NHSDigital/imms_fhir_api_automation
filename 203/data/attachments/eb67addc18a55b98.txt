@@ -1,3 +1,0 @@
-❌ Step failed! **I have created a valid vaccination record through API** 
- Error: 
- Expected status code: 201, but got: 400. Response: {'resourceType': 'OperationOutcome', 'id': '975a44da-6f45-47e1-a373-7da5e94c2518', 'meta': {'profile': ['https://simplifier.net/guide/UKCoreDevelopment2/ProfileUKCore-OperationOutcome']}, 'issue': [{'severity': 'error', 'code': 'invariant', 'details': {'coding': [{'system': 'https://fhir.nhs.uk/Codesystem/http-error-codes', 'code': 'INVARIANT'}]}, 'diagnostics': "Validation errors: vaccineCode.coding[?(@.system=='http://snomed.info/sct')].code is not a valid snomed code"}]} 
