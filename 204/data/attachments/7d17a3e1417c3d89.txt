@@ -1,3 +1,0 @@
-❌ Step failed! **The request will be successful with the status code '200'** 
- Error: 
- Expected status code: 200, but got: 400. Response: {'resourceType': 'OperationOutcome', 'id': 'd400dd02-3d80-41c1-857f-7d6b6aac0b3e', 'meta': {'profile': ['https://simplifier.net/guide/UKCoreDevelopment2/ProfileUKCore-OperationOutcome']}, 'issue': [{'severity': 'error', 'code': 'invalid', 'details': {'coding': [{'system': 'https://fhir.nhs.uk/Codesystem/http-error-codes', 'code': 'INVALID'}]}, 'diagnostics': '-immunization.target must be one or more of the following: ROTAVIRUS, RSV, SHINGLES, 6IN1, MMR, FLU, 3IN1, PERTUSSIS, MENB, HIB, MMRV, BCG, MENACWY, 4IN1, COVID, PNEUMOCOCCAL, HPV, HEPB'}]} 
