@@ -112,7 +112,7 @@ Scenario: verify that vaccination record will be get rejected if Person nhs numb
         | Random            | Fail-white_space_forename-empty_array_item_forename            |
         | Random            | Fail-white_space_surname-empty_surname           | 
         | Random            | Fail-name_length_36-max_len_surname              | 
-        | Random            | Fail-name_length_36-max_len_forename             | 
+        | Random            | Fail-name_length_181-max_len_forename             | 
     When batch file is uploaded in s3 bucket
     Then file will be moved to destination bucket and inf ack file will be created
     And inf ack file has success status for processed batch file
